@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "974162696103",
+    "project_id": "yourbooks-f1f3d",
+    "storage_bucket": "yourbooks-f1f3d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:974162696103:android:5ded6e7a937df8675cc882",
+        "android_client_info": {
+          "package_name": "com.yourbooks"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "974162696103-s5apcfcao6modn4fkdns5gh4f7oqtg14.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyByXveZObay_4yvsy2tNVN-npDetvLk8_E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "974162696103-s5apcfcao6modn4fkdns5gh4f7oqtg14.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "974162696103-kfa92p1ftma7rooe2avtjka2o3jhqg42.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "org.reactjs.native.example.YourBooks"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
