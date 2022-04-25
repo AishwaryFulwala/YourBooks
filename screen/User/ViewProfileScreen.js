@@ -1,0 +1,363 @@
+import React, { useState, useEffect } from 'react';
+import { StyleSheet, View, Text, Image, ImageBackground, ScrollView, Dimensions, TouchableOpacity, TextInput, Alert } from 'react-native';
+
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
+import LinearGradient from 'react-native-linear-gradient';
+import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
+
+import IconF from 'react-native-vector-icons/FontAwesome5';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { StackActions } from '@react-navigation/native';
+
+import { getBooksByUser } from '../../redux/actions/books.action';
+import { getUser } from '../../redux/actions/users.action';
+
+import Colors from '../../constnats/Colors';
+import Fonts from '../../constnats/Fonts';
+import BookList from '../../components/BookList';
+
+const wHeight = Dimensions.get('window').height;
+const wWidth = Dimensions.get('window').width;
+
+const ViewProfileScreen = (props) => {
+    console.log(props)
+    const userID = props.route.params.userID;
+    const user = useSelector((state) => state.users.getUserData.getUser);
+    const books = useSelector((state) => state.books.getBookData.getBooksByUser);
+
+    const [ userAsync, setUserAsync ] = useState(null);
+
+    const dispatch = useDispatch();
+
+    const load = async () => {
+        try {
+            await dispatch(getBooksByUser(userID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
+            await dispatch(getUser(userID));
+        } catch (error) {
+            if(error.request?.status === 404)
+                return
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+    };
+
+    useEffect(() => {
+        props.navigation.addListener('focus', load);
+    }, []);
+
+    useEffect(() => {
+        const userAsyncData = async () => {
+            setUserAsync(JSON.parse(await AsyncStorage.getItem('@userData')));
+        }
+        userAsyncData()
+    }, []);
+
+    if (!books || !books.length || !user || !userAsync) {
+        return (
+            <View style={styles.activity}>
+                <SkeletonPlaceholder 
+                    highlightColor={Colors.btnGray}
+                    backgroundColor={Colors.drakGray}
+                >
+                    <SkeletonPlaceholder.Item 
+                        width={wWidth * 0.9} 
+                        height={150}
+                        borderRadius={4} 
+                        alignSelf="center"
+                        marginBottom={10}
+                        position='absolute'
+                    />
+                    <SkeletonPlaceholder.Item
+                        width={100}
+                        height={100}
+                        borderRadius={100}
+                        borderWidth={5}
+                        alignSelf="center"
+                        position='relative'
+                        marginTop={100}
+                    />
+                    <SkeletonPlaceholder.Item
+                        width={120}
+                        height={20}
+                        alignSelf="center"
+                        marginTop={12}
+                        borderRadius={4}
+                    />
+                    <SkeletonPlaceholder.Item
+                        flexDirection='row'
+                        justifyContent='center'
+                    >
+                        <SkeletonPlaceholder.Item
+                            width={80}
+                            height={20}
+                            alignSelf="center"
+                            marginTop={12}
+                            borderRadius={4}
+                            margin={20}
+                        />
+                        <SkeletonPlaceholder.Item
+                            width={80}
+                            height={20}
+                            alignSelf="center"
+                            marginTop={12}
+                            borderRadius={4}
+                            margin={20}
+                        />
+                    </SkeletonPlaceholder.Item>
+                    <SkeletonPlaceholder.Item 
+                        width={wWidth * 0.9} 
+                        height={50}
+                        borderRadius={4} 
+                        alignSelf="center"
+                        marginBottom={10}
+                    />
+                    <SkeletonPlaceholder.Item 
+                        width={wWidth * 0.9} 
+                        height={100}
+                        borderRadius={4} 
+                        alignSelf="center"
+                        marginBottom={10}
+                    />
+                    <SkeletonPlaceholder.Item 
+                        width={wWidth * 0.9} 
+                        height={50}
+                        borderRadius={4} 
+                        alignSelf="center"
+                        marginBottom={10}
+                    />
+                </SkeletonPlaceholder>
+            </View>
+        );
+    }
+    
+    return(
+        <View style={styles.body}>
+            <LinearGradient
+                colors={[Colors.gradientB1, Colors.gradientB2]}
+                style={styles.liner}
+            >
+                <View style={styles.touchView}>
+                    <TouchableOpacity
+                        onPress={() => {
+                            
+                        }} 
+                        style={styles.imgCover}
+                    >
+                        <ImageBackground
+                            source={{uri: user.CoverPic}}
+                            style={styles.imgCover}
+                        >
+                        </ImageBackground>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.detailView}>
+                    <LinearGradient
+                        colors={[Colors.gradient1, Colors.gradient2, Colors.gradient3, Colors.gradient4, Colors.gradient5]}
+                        style={styles.imglinear}                        
+                    >
+                        <View style={styles.imgView}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                   
+                                }}
+                                style={styles.img}
+                            >
+                                <Image
+                                    source={{uri: user.ProfilePic}}
+                                    style={styles.img}
+                                />
+                        </TouchableOpacity>
+                        </View>
+                    </LinearGradient>
+                    <View style={styles.dispView}>
+                        <View style={styles.txtView}>
+                            <Text style={styles.txtName}>{user.UserName}</Text>
+                        </View>
+                        <View style={styles.followView}>
+                            <View>
+                                <Text style={styles.txtNo}>{books?.length}</Text>
+                                <Text style={styles.txtFollow}>Works</Text>
+                            </View>
+                            <View style={styles.pipeView}></View>
+                            <View>
+                                <Text style={styles.txtNo}>{user.Followers ? user.Followers.length : 0}</Text>
+                                <Text style={styles.txtFollow}>Followers</Text>
+                            </View>
+                            <View style={styles.pipeView}></View>
+                            <View>
+                                <Text style={styles.txtNo}>{user.Followings ? user.Followings.length : 0}</Text>
+                                <Text style={styles.txtFollow}>Following</Text>
+                            </View>
+                        </View>
+                        <ScrollView style={styles.scrollView}>
+                            <View style={styles.aboutView}>
+                                <Text style={styles.userTxt}>About</Text>
+                                <Text style={styles.txtDescription}>{user.About}</Text>
+                            </View>
+                            <BookList 
+                                book={books}
+                                onClick={(id) => {
+                                    props.navigation.dispatch(
+                                        StackActions.push('BookN', {
+                                            bookID: id,
+                                        })
+                                    );
+                                }}
+                            />
+                        </ScrollView>
+                    </View>
+                    {
+                        userAsync.id === userID ?
+                            null
+                        :
+                            <View style={styles.followRoundView}>
+                                <TouchableOpacity
+                                    onPress={() => {}}
+                                    style={styles.followBtn}
+                                >
+                                    <IconF name='user-plus' size={15} color={Colors.bodyColor} />
+                                    </TouchableOpacity>
+                            </View>
+                    }
+                </View>
+            </LinearGradient>
+        </View>
+    );
+};
+
+const styles = StyleSheet.create({
+    body: {
+        flex: 1,
+        backgroundColor: Colors.bodyColor,
+    },
+        liner: {
+        flex: 1
+    },
+    touchView: {
+        zIndex: 1,
+        height: wHeight * 0.2,
+        borderBottomWidth: 1,
+        borderBottomColor: Colors.fontColor,
+    },
+    imgCover: {        
+        height: wHeight * 0.2,
+        width: wWidth,
+        position: 'absolute',
+    },
+    detailView: {
+        alignItems: 'center',
+        flex: 1,
+        zIndex: 2,
+    },
+    imglinear: {
+        height: wHeight * 0.117,
+        width: wHeight * 0.117,
+        position: 'relative',
+        marginTop: -(wHeight * 0.055),
+        borderRadius: 50,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent: 'space-between',
+    },
+    imgView: {
+        height: wHeight * 0.113,
+        width: wHeight * 0.113,
+        borderRadius: 50,
+        backgroundColor: Colors.bodyColor,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent: 'space-between',
+    },
+    img: {
+        height: wHeight * 0.1,
+        width: wHeight * 0.1,
+        borderRadius: 50,
+    },
+    dispView: {
+        alignItems: 'center',
+    },
+    txtView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    txtName: {
+        textAlign: 'center',
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.05,
+        paddingHorizontal: wWidth * 0.02,
+        paddingTop: wHeight * 0.015,
+        paddingBottom: wHeight * 0.01,
+    },
+    followView: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        marginTop: wHeight * 0.01,
+        width: wWidth * 0.7,
+    },
+    pipeView: {
+        borderColor: Colors.fontColor,
+        borderWidth: 1
+    },
+    txtNo: {
+        textAlign: 'center',
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.035,     
+    },
+    txtFollow: {
+        textAlign: 'center',
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.03,
+        paddingTop: wWidth * 0.012
+    },
+    scrollView: {
+        marginVertical: wHeight * 0.02,
+        flex: 1,
+    },
+    aboutView: {
+        marginBottom: wHeight * 0.03,
+        width: wWidth * 0.9,
+        justifyContent: 'center',
+        paddingHorizontal: wWidth * 0.05,
+        paddingVertical: wHeight * 0.02,
+        backgroundColor: Colors.drakGray,
+        borderRadius: 10,
+    },
+    userTxt: {
+        color: Colors.lightGray,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.030,
+    },
+    txtDescription: {
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.03,
+        marginTop: wHeight * 0.007,
+        lineHeight: wHeight * 0.02,
+        width: wWidth * 0.55
+    },
+    followRoundView: {
+        position: 'absolute',
+        bottom: wHeight * 0.025,
+        right: wWidth * 0.07,
+    },
+    followBtn: {
+        height: wHeight * 0.057,
+        width: wHeight * 0.057,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderRadius: 100,
+        backgroundColor: Colors.titleColor,
+    },
+});
+
+export default ViewProfileScreen;

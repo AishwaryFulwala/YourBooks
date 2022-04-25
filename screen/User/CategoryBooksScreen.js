@@ -64,7 +64,6 @@ const CategoryBooksScreen = (props) => {
                 :
                     <ScrollView>
                         <BookList 
-                            cateID={cateID}
                             book={books}
                             onClick={(id) => {
                                 props.navigation.navigate('BookN', {

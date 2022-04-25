@@ -56,12 +56,12 @@ export const logout = () => {
     }    
 };
 
-export const getUser = () => {
+export const getUser = (id = 0) => {
     return async (dispatch) => {
         const userData = await getAsyncData();
 
         try {
-            const res = await Api(`/getUser/${userData.email}`, {
+            const res = await Api(`/getUser/${id !== 0 ? id : userData.id}`, {
                 headers: {
                     'Authorization' : 'Bearer ' + userData.token
                 }
@@ -83,7 +83,7 @@ export const updateUser = (user) => {
     return async (dispatch) => {
         const userData = await getAsyncData();
         try {
-            const res = await Api(`/updateUser/${userData.email}`, {
+            const res = await Api(`/updateUser/${userData.id}`, {
                 user,           
             }, 'PATCH', {
                 headers: {

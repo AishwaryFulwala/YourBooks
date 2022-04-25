@@ -28,7 +28,6 @@ const wWidth = Dimensions.get('window').width;
 
 const MyProfileScreen = (props) => {
     const user = useSelector((state) => state.users.getUserData.getUser);
-
     const [ isUser, setIsUser ] = useState(user ?? {});
 
     useEffect(() => {
@@ -38,8 +37,8 @@ const MyProfileScreen = (props) => {
             Password: user?.Password,
             ContactNo: user?.ContactNo,
             About: user?.About,
-            Following: user?.Following,
-            Followers: user?.Followers,
+            Followings: user?.Followings?.length,
+            Followers: user?.Followers?.length,
             CoverPic: user?.CoverPic,
             ProfilePic: user?.ProfilePic,
         });
@@ -509,7 +508,7 @@ const MyProfileScreen = (props) => {
                         </TouchableOpacity>
                         </View>
                     </LinearGradient>
-                    <View>
+                    <View style={styles.dispView}>
                         <View style={styles.txtView}>
                             {
                                 isNameEdit ?
@@ -536,7 +535,7 @@ const MyProfileScreen = (props) => {
                                         name='check'
                                         size={25}
                                         color={Colors.fontColor}
-                                        onPress={() => {                                            
+                                        onPress={() => {
                                             updateUserHandler({UserName: isUser.UserName});
                                             setIsNameEdit(!isNameEdit);
                                         }}
@@ -545,12 +544,12 @@ const MyProfileScreen = (props) => {
                         </View>
                         <View style={styles.followView}>
                             <View>
-                                <Text style={styles.txtNo}>{isUser.Followers}</Text>
+                                <Text style={styles.txtNo}>{user.Followers ? user.Followers.length : 0}</Text>
                                 <Text style={styles.txtFollow}>Followers</Text>
                             </View>
                             <View style={styles.pipeView}></View>
                             <View>
-                                <Text style={styles.txtNo}>{isUser.Following}</Text>
+                                <Text style={styles.txtNo}>{user.Followings ? user.Followings.length : 0}</Text>
                                 <Text style={styles.txtFollow}>Following</Text>
                             </View>
                         </View>
@@ -724,6 +723,9 @@ const styles = StyleSheet.create({
         height: wHeight * 0.1,
         width: wHeight * 0.1,
         borderRadius: 50,
+    },
+    dispView: {
+        alignItems: 'center',
     },
     txtView: {
         flexDirection: 'row',

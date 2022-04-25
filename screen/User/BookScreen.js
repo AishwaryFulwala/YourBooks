@@ -158,11 +158,17 @@ const BookScreen = (props) => {
                         source={{uri: val.BookPic}}
                     />
                     <Text style={styles.txtTitle}>{val.BookName}</Text>
-                    <Text style={styles.txtAuthor}>{val.UserName}</Text>
+                    <Text
+                        style={styles.txtAuthor} 
+                        onPress={() => {
+                            props.navigation.navigate('ViewProfileN', {
+                                userID: val.UserID,
+                            });
+                        }}
+                    >{val.UserName}</Text>
                 </ImageBackground>
                 <ScrollView style={styles.scrollView}>
                     <View style={styles.containView}>
-                        
                         <TouchableOpacity
                             style={styles.btnRead}
                             onPress={() => {

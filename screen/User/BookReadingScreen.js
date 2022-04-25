@@ -16,8 +16,10 @@ const wWidth = Dimensions.get('window').width;
 const BookReadingScreen = (props) => {
     const bookID = props.route.params.bookID;
     const books = useSelector((state) => state.booksDetail.getBooksDetailData);
+
     const [sliderValue, setSliderValue] = useState(0);
-    
+    const [ref, setRef] = useState(null);
+
     const dispatch = useDispatch();
 
     const load = async () => {
@@ -88,7 +90,6 @@ const BookReadingScreen = (props) => {
             </View>
         );
     };
-    // console.log(sliderValue)
 
     if(!books || !books.length) {
         return (
@@ -112,11 +113,14 @@ const BookReadingScreen = (props) => {
                 pagingEnabled
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
+                ref={(ref) => {
+                    setRef(ref);
+                }}
             />
             <Slider
                 style={styles.slider}
                 minimumValue={0}
-                maximumValue={books.length}
+                maximumValue={books.length - 1}
                 minimumTrackTintColor="#FFFFFF"
                 maximumTrackTintColor="gray"
                 thumbTintColor={Colors.fontColor}
@@ -124,6 +128,13 @@ const BookReadingScreen = (props) => {
                 step={1}
                 value={sliderValue}
                 onValueChange={(sliderValue) => setSliderValue(sliderValue)}
+                onSlidingComplete={() => {
+                    ref.scrollToIndex({
+                        animated: true,
+                        index: sliderValue,
+                        viewPosition: 0
+                    })
+                }}
             />
         </View>
     );

@@ -1,4 +1,4 @@
-import { GET_BOOKS_BY_CATEGORY, GET_BOOKS_BY_ID } from '../actions/books.action';
+import { GET_BOOKS_BY_CATEGORY, GET_BOOKS_BY_ID, GET_BOOKS_BY_USER } from '../actions/books.action';
 import { stateInit } from '../states/InitState';
 
 const BooksReducer = (state = stateInit, action) => {
@@ -18,6 +18,16 @@ const BooksReducer = (state = stateInit, action) => {
                 getBookData: {
                     ...state.getBookData,
                     getBooksByID: [
+                        ...action.books,
+                    ]
+                }
+            }
+
+        case GET_BOOKS_BY_USER:
+            return {
+                getBookData: {
+                    ...state.getBookData,
+                    getBooksByUser: [
                         ...action.books,
                     ]
                 }

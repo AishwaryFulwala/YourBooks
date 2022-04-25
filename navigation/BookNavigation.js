@@ -23,6 +23,7 @@ import MyProfileScreen from '../screen/User/MyProfileScreen';
 import CategoryBooksScreen from '../screen/User/CategoryBooksScreen';
 import BookScreen from '../screen/User/BookScreen';
 import BookReadingScreen from '../screen/User/BookReadingScreen';
+import ViewProfileScreen from '../screen/User/ViewProfileScreen';
 
 const options = {
     headerTitle: () => {
@@ -87,6 +88,11 @@ const HomeNavigator = () => {
             <HomeStack.Screen 
                 name='BookReadingN'
                 component={BookReadingScreen}
+                options={options}
+            />
+            <HomeStack.Screen
+                name='ViewProfileN'
+                component={ViewProfileScreen}
                 options={options}
             />
         </HomeStack.Navigator>
