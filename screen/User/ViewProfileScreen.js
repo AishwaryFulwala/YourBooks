@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StackActions } from '@react-navigation/native';
 
 import { getBooksByUser } from '../../redux/actions/books.action';
-import { getUser } from '../../redux/actions/users.action';
+import { getUser, updateUser, getFollow } from '../../redux/actions/users.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -22,12 +22,13 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const ViewProfileScreen = (props) => {
-    console.log(props)
     const userID = props.route.params.userID;
     const user = useSelector((state) => state.users.getUserData.getUser);
+    const follow = useSelector((state) => state.users.getUserData.getFollow);
     const books = useSelector((state) => state.books.getBookData.getBooksByUser);
 
     const [ userAsync, setUserAsync ] = useState(null);
+    const [ isfollow, setIsFollow ] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -41,22 +42,61 @@ const ViewProfileScreen = (props) => {
         try {
             await dispatch(getUser(userID));
         } catch (error) {
-            if(error.request?.status === 404)
-                return
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
+            await dispatch(getFollow(userID));
+        } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
     };
 
     useEffect(() => {
         props.navigation.addListener('focus', load);
-    }, []);
 
-    useEffect(() => {
         const userAsyncData = async () => {
             setUserAsync(JSON.parse(await AsyncStorage.getItem('@userData')));
         }
-        userAsyncData()
+        userAsyncData();
+
+        if(follow)
+            setIsFollow(true);
+        else
+            setIsFollow(false);
     }, []);
+
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                await dispatch(getUser(userID));
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            }
+
+            try {
+                await dispatch(getFollow(userID));
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            }
+        }
+        fetchData();
+    }, [isfollow])
+
+    const followHandler = async () => {
+        try {
+            const res = await dispatch(updateUser({Follow: user._id}));
+            
+            if(res.res === 'Update')
+                setIsFollow(true);
+            else
+                setIsFollow(false);
+        } catch (error) {
+            if(error.request?.status === 404)
+                return
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+    };
 
     if (!books || !books.length || !user || !userAsync) {
         return (
@@ -143,18 +183,11 @@ const ViewProfileScreen = (props) => {
                 style={styles.liner}
             >
                 <View style={styles.touchView}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            
-                        }} 
+                    <ImageBackground
+                        source={{uri: user.CoverPic}}
                         style={styles.imgCover}
                     >
-                        <ImageBackground
-                            source={{uri: user.CoverPic}}
-                            style={styles.imgCover}
-                        >
-                        </ImageBackground>
-                    </TouchableOpacity>
+                    </ImageBackground>
                 </View>
                 <View style={styles.detailView}>
                     <LinearGradient
@@ -162,17 +195,10 @@ const ViewProfileScreen = (props) => {
                         style={styles.imglinear}                        
                     >
                         <View style={styles.imgView}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                   
-                                }}
+                            <Image
+                                source={{uri: user.ProfilePic}}
                                 style={styles.img}
-                            >
-                                <Image
-                                    source={{uri: user.ProfilePic}}
-                                    style={styles.img}
-                                />
-                        </TouchableOpacity>
+                            />
                         </View>
                     </LinearGradient>
                     <View style={styles.dispView}>
@@ -186,13 +212,35 @@ const ViewProfileScreen = (props) => {
                             </View>
                             <View style={styles.pipeView}></View>
                             <View>
-                                <Text style={styles.txtNo}>{user.Followers ? user.Followers.length : 0}</Text>
-                                <Text style={styles.txtFollow}>Followers</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        props.navigation.navigate('Follow',{
+                                            screen: 'Followers',
+                                            params:{
+                                                userID: user._id,
+                                            }
+                                        });
+                                    }}
+                                >
+                                    <Text style={styles.txtNo}>{user.Followers ? user.Followers.length : 0}</Text>
+                                    <Text style={styles.txtFollow}>Followers</Text>
+                                </TouchableOpacity>
                             </View>
                             <View style={styles.pipeView}></View>
                             <View>
-                                <Text style={styles.txtNo}>{user.Followings ? user.Followings.length : 0}</Text>
-                                <Text style={styles.txtFollow}>Following</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        props.navigation.navigate('Follow',{
+                                            screen: 'Followings',
+                                            params:{
+                                                userID: user._id,
+                                            }
+                                        });
+                                    }}
+                                >
+                                    <Text style={styles.txtNo}>{user.Followings ? user.Followings.length : 0}</Text>
+                                    <Text style={styles.txtFollow}>Following</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                         <ScrollView style={styles.scrollView}>
@@ -218,10 +266,15 @@ const ViewProfileScreen = (props) => {
                         :
                             <View style={styles.followRoundView}>
                                 <TouchableOpacity
-                                    onPress={() => {}}
+                                    onPress={followHandler}
                                     style={styles.followBtn}
                                 >
-                                    <IconF name='user-plus' size={15} color={Colors.bodyColor} />
+                                    {
+                                        isfollow ?
+                                            <IconF name='user-check' size={20} color={Colors.fontColor} />
+                                        :
+                                            <IconF name='user-plus' size={20} color={Colors.fontColor} />
+                                    }
                                     </TouchableOpacity>
                             </View>
                     }
@@ -232,6 +285,12 @@ const ViewProfileScreen = (props) => {
 };
 
 const styles = StyleSheet.create({
+    activity: {
+        flex: 1,
+        backgroundColor: Colors.bodyColor,
+        justifyContent: 'center',
+        alignContent: 'center'
+    },
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,
@@ -347,8 +406,8 @@ const styles = StyleSheet.create({
     },
     followRoundView: {
         position: 'absolute',
-        bottom: wHeight * 0.025,
-        right: wWidth * 0.07,
+        right: wWidth * 0.03,
+        bottom: wHeight * 0.015,
     },
     followBtn: {
         height: wHeight * 0.057,
@@ -356,7 +415,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         borderRadius: 100,
-        backgroundColor: Colors.titleColor,
+        backgroundColor: Colors.bookColor,
     },
 });
 

@@ -158,14 +158,15 @@ const BookScreen = (props) => {
                         source={{uri: val.BookPic}}
                     />
                     <Text style={styles.txtTitle}>{val.BookName}</Text>
-                    <Text
-                        style={styles.txtAuthor} 
+                    <TouchableOpacity
                         onPress={() => {
                             props.navigation.navigate('ViewProfileN', {
                                 userID: val.UserID,
                             });
                         }}
-                    >{val.UserName}</Text>
+                    >
+                        <Text style={styles.txtAuthor}>{val.UserName}</Text>
+                    </TouchableOpacity>
                 </ImageBackground>
                 <ScrollView style={styles.scrollView}>
                     <View style={styles.containView}>
@@ -494,8 +495,8 @@ const styles = StyleSheet.create({
     },
     starView: {
         position: 'absolute',
-        right: wWidth * 0.05,
-        bottom: wHeight * 0.02,
+        right: wWidth * 0.03,
+        bottom: wHeight * 0.015,
     },
     starBtn: {
         height: wHeight * 0.057,

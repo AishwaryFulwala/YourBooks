@@ -4,11 +4,13 @@ import { Image, Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 
 import IconI from 'react-native-vector-icons/Ionicons';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Colors from '../constnats/Colors';
+import Fonts from '../constnats/Fonts';
 
 import AuthScreen from '../screen/AuthScreen';
 
@@ -24,6 +26,8 @@ import CategoryBooksScreen from '../screen/User/CategoryBooksScreen';
 import BookScreen from '../screen/User/BookScreen';
 import BookReadingScreen from '../screen/User/BookReadingScreen';
 import ViewProfileScreen from '../screen/User/ViewProfileScreen';
+import FollowersScreen from '../screen/User/FollowersScreen';
+import FollowingsScreen from '../screen/User/FollowingsScreen';
 
 const options = {
     headerTitle: () => {
@@ -66,6 +70,39 @@ const SigninNavigator = () => {
     );
 };
 
+const FollowTab = createMaterialTopTabNavigator();
+const FollowNavigator = () => {
+    return (
+        <FollowTab.Navigator
+            screenOptions={{
+                tabBarLabelStyle: {
+                    fontFamily: Fonts.bodyFont,
+                    fontSize: 13,
+                },
+                tabBarStyle: { 
+                    backgroundColor: Colors.bodyColor,
+                },
+                tabBarIndicatorStyle: {
+                    backgroundColor: Colors.bookColor,
+                },
+                tabBarInactiveTintColor: Colors.fontColor,
+                tabBarActiveTintColor: Colors.bookColor,
+            }}
+        >
+            <FollowTab.Screen 
+                name='Followers'
+                component={FollowersScreen}
+                options={options}
+            />
+            <FollowTab.Screen 
+                name='Followings'
+                component={FollowingsScreen}
+                options={options}
+            />
+        </FollowTab.Navigator>
+    );
+};
+
 const HomeStack = createStackNavigator();
 const HomeNavigator = () => {
     return(
@@ -93,6 +130,11 @@ const HomeNavigator = () => {
             <HomeStack.Screen
                 name='ViewProfileN'
                 component={ViewProfileScreen}
+                options={options}
+            />
+            <HomeStack.Screen
+                name='Follow'
+                component={FollowNavigator}
                 options={options}
             />
         </HomeStack.Navigator>

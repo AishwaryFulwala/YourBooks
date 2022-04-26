@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 
 import Colors from '../../constnats/Colors';
+import Fonts from '../../constnats/Fonts';
 
 const SearchScreen = (props) => {
     return(

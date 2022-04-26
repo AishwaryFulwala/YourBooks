@@ -4,6 +4,7 @@ import Api from "../../services/Api";
 
 export const LOGOUT = 'LOGOUT';
 export const GET_USER = 'GET_USER';
+export const GET_FOLLOW = 'GET_FOLLOW';
 export const UPDATE_USER = 'UPDATE_USER';
 
 const saveToStorage = (token, email, id) => {
@@ -79,6 +80,29 @@ export const getUser = (id = 0) => {
     }
 };
 
+export const getFollow = (fid) => {
+    return async (dispatch) => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/getFollow/${userData.id}/${fid}`, {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            }, 'GET');
+
+            dispatch({
+                type: GET_FOLLOW,
+                user: res.data,
+            });
+            
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            return await Promise.reject(error.response);
+        }
+    }
+};
+
 export const updateUser = (user) => {
     return async (dispatch) => {
         const userData = await getAsyncData();
@@ -95,6 +119,8 @@ export const updateUser = (user) => {
                 type: GET_USER,
                 user,
             });
+
+            return await Promise.resolve(res.data);
         } catch (error) {
             return await Promise.reject(error.response);
         }
