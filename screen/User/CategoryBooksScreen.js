@@ -80,7 +80,6 @@ const CategoryBooksScreen = (props) => {
 const styles = StyleSheet.create({
     activity: {
         flex: 1,
-        backgroundColor: Colors.bodyColor,
         justifyContent: 'center',
     },
     body: {

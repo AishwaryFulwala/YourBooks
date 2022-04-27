@@ -23,7 +23,6 @@ export const getBooksDetailByID = (id) => {
             
             return await Promise.resolve(res.data);
         } catch (error) {
-            console.log(error)
             return await Promise.reject(error.response);
         }
     }

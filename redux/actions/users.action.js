@@ -80,12 +80,12 @@ export const getUser = (id = 0) => {
     }
 };
 
-export const getFollow = (fid) => {
+export const getFollow = (id) => {
     return async (dispatch) => {
         const userData = await getAsyncData();
 
         try {
-            const res = await Api(`/getFollow/${userData.id}/${fid}`, {
+            const res = await Api(`/getFollow/${id}`, {
                 headers: {
                     'Authorization' : 'Bearer ' + userData.token
                 }
@@ -113,11 +113,6 @@ export const updateUser = (user) => {
                 headers: {
                     'Authorization' : 'Bearer ' + userData.token
                 },
-            });
-
-            dispatch({
-                type: GET_USER,
-                user,
             });
 
             return await Promise.resolve(res.data);

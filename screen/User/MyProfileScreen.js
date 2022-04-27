@@ -239,6 +239,7 @@ const MyProfileScreen = (props) => {
 
         try {
             await dispatch(updateUser(value));
+            load();
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
@@ -544,12 +545,12 @@ const MyProfileScreen = (props) => {
                         </View>
                         <View style={styles.followView}>
                             <View>
-                                <Text style={styles.txtNo}>{user.Followers ? user.Followers.length : 0}</Text>
+                                <Text style={styles.txtNo}>{isUser.Followers}</Text>
                                 <Text style={styles.txtFollow}>Followers</Text>
                             </View>
                             <View style={styles.pipeView}></View>
                             <View>
-                                <Text style={styles.txtNo}>{user.Followings ? user.Followings.length : 0}</Text>
+                                <Text style={styles.txtNo}>{isUser.Followings}</Text>
                                 <Text style={styles.txtFollow}>Following</Text>
                             </View>
                         </View>

@@ -12,7 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StackActions } from '@react-navigation/native';
 
 import { getBooksByUser } from '../../redux/actions/books.action';
-import { getUser, updateUser, getFollow } from '../../redux/actions/users.action';
+import { getUser, updateUser } from '../../redux/actions/users.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -24,7 +24,6 @@ const wWidth = Dimensions.get('window').width;
 const ViewProfileScreen = (props) => {
     const userID = props.route.params.userID;
     const user = useSelector((state) => state.users.getUserData.getUser);
-    const follow = useSelector((state) => state.users.getUserData.getFollow);
     const books = useSelector((state) => state.books.getBookData.getBooksByUser);
 
     const [ userAsync, setUserAsync ] = useState(null);
@@ -36,17 +35,12 @@ const ViewProfileScreen = (props) => {
         try {
             await dispatch(getBooksByUser(userID));
         } catch (error) {
-            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
 
         try {
             await dispatch(getUser(userID));
-        } catch (error) {
-            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-        }
-
-        try {
-            await dispatch(getFollow(userID));
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
@@ -59,38 +53,19 @@ const ViewProfileScreen = (props) => {
             setUserAsync(JSON.parse(await AsyncStorage.getItem('@userData')));
         }
         userAsyncData();
-
-        if(follow)
-            setIsFollow(true);
-        else
-            setIsFollow(false);
     }, []);
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                await dispatch(getUser(userID));
-            } catch (error) {
-                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-            }
-
-            try {
-                await dispatch(getFollow(userID));
-            } catch (error) {
-                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-            }
-        }
-        fetchData();
-    }, [isfollow])
+        if(user?.Followers?.length)
+            setIsFollow(true)
+        else
+            setIsFollow(false)
+    }, [ user ])
 
     const followHandler = async () => {
         try {
             const res = await dispatch(updateUser({Follow: user._id}));
-            
-            if(res.res === 'Update')
-                setIsFollow(true);
-            else
-                setIsFollow(false);
+            load();
         } catch (error) {
             if(error.request?.status === 404)
                 return
@@ -98,7 +73,7 @@ const ViewProfileScreen = (props) => {
         }
     };
 
-    if (!books || !books.length || !user || !userAsync) {
+    if (!user || !userAsync) {
         return (
             <View style={styles.activity}>
                 <SkeletonPlaceholder 
@@ -216,8 +191,8 @@ const ViewProfileScreen = (props) => {
                                     onPress={() => {
                                         props.navigation.navigate('Follow',{
                                             screen: 'Followers',
-                                            params:{
-                                                userID: user._id,
+                                            params: {
+                                                userID: user._id
                                             }
                                         });
                                     }}
@@ -232,8 +207,8 @@ const ViewProfileScreen = (props) => {
                                     onPress={() => {
                                         props.navigation.navigate('Follow',{
                                             screen: 'Followings',
-                                            params:{
-                                                userID: user._id,
+                                            params: {
+                                                userID: user._id
                                             }
                                         });
                                     }}
@@ -248,16 +223,22 @@ const ViewProfileScreen = (props) => {
                                 <Text style={styles.userTxt}>About</Text>
                                 <Text style={styles.txtDescription}>{user.About}</Text>
                             </View>
-                            <BookList 
-                                book={books}
-                                onClick={(id) => {
-                                    props.navigation.dispatch(
-                                        StackActions.push('BookN', {
-                                            bookID: id,
-                                        })
-                                    );
-                                }}
-                            />
+                            {
+                                books && 
+                            
+                            <View style={styles.bookView}>
+                                <BookList 
+                                    book={books}
+                                    onClick={(id) => {
+                                        props.navigation.dispatch(
+                                            StackActions.push('BookN', {
+                                                bookID: id,
+                                            })
+                                        );
+                                    }}
+                                />
+                            </View>
+                            }
                         </ScrollView>
                     </View>
                     {
@@ -275,7 +256,7 @@ const ViewProfileScreen = (props) => {
                                         :
                                             <IconF name='user-plus' size={20} color={Colors.fontColor} />
                                     }
-                                    </TouchableOpacity>
+                                </TouchableOpacity>
                             </View>
                     }
                 </View>
@@ -379,11 +360,12 @@ const styles = StyleSheet.create({
         paddingTop: wWidth * 0.012
     },
     scrollView: {
-        marginVertical: wHeight * 0.02,
+        marginTop: wHeight * 0.02,
+        marginBottom: wHeight * 0.07,
         flex: 1,
     },
     aboutView: {
-        marginBottom: wHeight * 0.03,
+        marginBottom: wHeight * 0.005,
         width: wWidth * 0.9,
         justifyContent: 'center',
         paddingHorizontal: wWidth * 0.05,

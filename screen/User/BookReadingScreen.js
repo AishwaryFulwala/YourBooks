@@ -42,7 +42,7 @@ const BookReadingScreen = (props) => {
 
         for(let i = 1; i < arr.length; i++){
             let word = arr[i];
-            if(subStr.length + word.length + 1 <= 550)
+            if(subStr.length + word.length + 1 <= 420)
                 subStr = subStr + ' ' + word;
             else{
                 contain.push(subStr);
@@ -170,7 +170,6 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.5,
         shadowRadius: 5,
         elevation: 20,
-        
     },
     txtPartNo: {
         color: Colors.fontColor,
@@ -185,7 +184,7 @@ const styles = StyleSheet.create({
         fontSize: wWidth * 0.04,
         marginTop: wHeight * 0.02,
         marginHorizontal : wWidth * 0.03,
-        lineHeight: wHeight * 0.03,
+        lineHeight: wHeight * 0.04,
         textAlign: 'justify',
     },
     slider: {

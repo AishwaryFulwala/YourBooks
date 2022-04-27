@@ -11,7 +11,6 @@ const UsersReducer = (state = stateInit, action) => {
                 getUserData: {
                     ...state.getUserData,
                     getUser: {
-                        ...state.getUserData.getUser,
                         ...action.user,
                     }
                 }

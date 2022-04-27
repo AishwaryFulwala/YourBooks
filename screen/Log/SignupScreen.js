@@ -103,13 +103,16 @@ const SignupScreen = (props) => {
             UsersActions.signup(userName, contactNo, email, password)
         )
         .then((res) => {
-            Alert.alert('User Created!', 'Successfully created.', [{ text: 'Okay' }]);
             setMsg({});
             setUserName('');
             setContactNo('');
             setemail('');
             setPassword('');
             setConfirmPassword('');
+
+            props?.navigation?.dispatch(
+                StackActions.replace('Signin')
+            );
         })
         .catch ((error) => {
            Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);

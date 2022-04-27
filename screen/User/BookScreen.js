@@ -53,7 +53,6 @@ const BookScreen = (props) => {
         try {
             await dispatch(getRatingByBook(bookID));
         } catch (error) {
-            console.log('err',error)
             if(error.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
@@ -115,7 +114,6 @@ const BookScreen = (props) => {
         try {
             await dispatch(getRatingByBook(bookID));
         } catch (error) {
-            console.log('err',error)
             if(error.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }

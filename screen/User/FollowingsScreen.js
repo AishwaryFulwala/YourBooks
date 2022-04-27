@@ -1,8 +1,12 @@
-import React from 'react';
-import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, Dimensions } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, ScrollView, Dimensions, Alert } from 'react-native';
 
-import LinearGradient from 'react-native-linear-gradient';
+import { useDispatch, useSelector } from 'react-redux';
+import { StackActions } from '@react-navigation/native';
 
+import { getFollow, getUser, updateUser } from '../../redux/actions/users.action';
+
+import FollowList from '../../components/FollowList';
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
@@ -11,32 +15,65 @@ const wWidth = Dimensions.get('window').width;
 
 const FollowingsScreen = (props) => {
     const userID = props?.route?.params?.userID;
-    console.log('userID Followings',userID)
+    const user = useSelector((state) => state.users.getUserData.getUser);
+    const follow = useSelector((state) => state.users.getUserData.getFollow);
+
+    const dispatch = useDispatch();
+
+    const load = async () => {
+        try {
+            await dispatch(getUser());
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
+            await dispatch(getFollow(userID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+    };
+
+    useEffect(() => {
+        props.navigation.addListener('focus', load);
+    }, [ follow ]);
+
+    const followHandler = async (val) => {
+        try {
+            const res = await dispatch(updateUser({Follow: val}));
+            load();
+        } catch (error) {
+            if(error.request?.status === 404)
+                return
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+    };
+
     return(
         <View style={styles.body}>
-            <ScrollView>
-                <View style={styles.dispView}>
-                    <LinearGradient
-                        colors={[Colors.gradient1, Colors.gradient2, Colors.gradient3, Colors.gradient4, Colors.gradient5]}
-                        style={styles.imglinear}                        
-                    >
-                        <View style={styles.imgView}>
-                            <Image 
-                                source={require('../../assets/image/HomeCover.webp')}
-                                style={styles.imgProfile}
-                            />
-                        </View>
-                    </LinearGradient>
-                    <Text
-                        style={styles.txtName}
-                        numberOfLines={1}
-                        ellipsizeMode='tail'
-                    >Aishwarya Fulwala</Text>
-                    <TouchableOpacity style={styles.btn}>
-                        <Text style={styles.btnTxt}>Follow</Text>
-                    </TouchableOpacity>
-                </View>
-            </ScrollView>
+            {
+                !(follow?.Followings?.length) ?
+                    <View style={styles.activity}>
+                        <Text style={styles.txtNoFollow}>No Followings</Text>
+                    </View>
+                :
+                <ScrollView>
+                    <FollowList
+                        follow={follow?.Followings}
+                        onFollow={(val) => {
+                            followHandler(val)
+                        }}
+                        onUser={(val) => {
+                            props.navigation.dispatch(
+                                StackActions.push('ViewProfileN', {
+                                    userID: val,
+                                })
+                            );
+                        }}
+                        user={user}
+                    />
+                </ScrollView>
+            }
         </View>
     );
 };
@@ -45,54 +82,17 @@ const styles = StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,
+        paddingBottom: wHeight * 0.01,
     },
-    dispView: {
-        borderWidth: 0.5,
-        borderColor: Colors.fontColor,
-        paddingHorizontal: wWidth * 0.05,
-        paddingVertical: wHeight * 0.02,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center'
-    },
-    imglinear: {
-        height: wHeight * 0.07,
-        width: wHeight * 0.07,
-        borderRadius: 50,
-        alignItems: 'center',
+    activity: {
+        flex: 1,
         justifyContent: 'center',
-        alignContent: 'space-between',
     },
-    imgView: {
-        height: wHeight * 0.067,
-        width: wHeight * 0.067,
-        borderRadius: 50,
-        backgroundColor: Colors.bodyColor,
-        alignItems: 'center',
-        justifyContent: 'center',
-        alignContent: 'space-between',
-    },
-    imgProfile: {
-        height: wHeight * 0.06,
-        width: wHeight * 0.06,
-        borderRadius: 50,
-    },
-    txtName: {
+    txtNoFollow: {
         color: Colors.fontColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.04,
-        width: wWidth * 0.5,
-    },
-    btn: {
-        borderWidth: 1,
-        borderColor: 'white'
-    },
-    btnTxt: {
-        color: Colors.fontColor,
-        fontFamily: Fonts.bodyFont,
-        fontSize: wWidth * 0.04,
-        borderWidth: 1,
-        borderColor: 'white'
+        textAlign: 'center',
     },
 });
 
