@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, ImageBackground, ScrollView, Dimensions, TouchableOpacity, TextInput, Alert } from 'react-native';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { StyleSheet, View, Text, Image, ImageBackground, ScrollView, Dimensions, TouchableOpacity, Alert } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -12,7 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StackActions } from '@react-navigation/native';
 
 import { getBooksByUser } from '../../redux/actions/books.action';
-import { getUser, updateUser } from '../../redux/actions/users.action';
+import { getAsyncItem, getUser, updateUser } from '../../redux/actions/users.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -33,10 +31,9 @@ const ViewProfileScreen = (props) => {
 
     const load = async () => {
         try {
-            await dispatch(getBooksByUser(userID));
+            setUserAsync(await dispatch(getAsyncItem()));
         } catch (error) {
-            if(error.request?.status !== 404)
-                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
 
         try {
@@ -44,27 +41,29 @@ const ViewProfileScreen = (props) => {
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
+        
+        try {
+            await dispatch(getBooksByUser(userID));
+        } catch (error) {
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
     };
 
     useEffect(() => {
         props.navigation.addListener('focus', load);
-
-        const userAsyncData = async () => {
-            setUserAsync(JSON.parse(await AsyncStorage.getItem('@userData')));
-        }
-        userAsyncData();
     }, []);
 
     useEffect(() => {
-        if(user?.Followers?.length)
+        if(user?.Followers?.find((val) => val === userAsync?.id))
             setIsFollow(true)
         else
             setIsFollow(false)
-    }, [ user ])
+    }, [ user ]);
 
     const followHandler = async () => {
         try {
-            const res = await dispatch(updateUser({Follow: user._id}));
+            await dispatch(updateUser({Follow: user._id}));
             load();
         } catch (error) {
             if(error.request?.status === 404)
@@ -189,12 +188,14 @@ const ViewProfileScreen = (props) => {
                             <View>
                                 <TouchableOpacity
                                     onPress={() => {
-                                        props.navigation.navigate('Follow',{
-                                            screen: 'Followers',
-                                            params: {
-                                                userID: user._id
-                                            }
-                                        });
+                                        props.navigation.dispatch(
+                                            StackActions.push('Follow',{
+                                                screen: 'Followers',
+                                                params: {
+                                                    userID: user._id
+                                                }
+                                            })
+                                        );
                                     }}
                                 >
                                     <Text style={styles.txtNo}>{user.Followers ? user.Followers.length : 0}</Text>
@@ -205,12 +206,14 @@ const ViewProfileScreen = (props) => {
                             <View>
                                 <TouchableOpacity
                                     onPress={() => {
-                                        props.navigation.navigate('Follow',{
-                                            screen: 'Followings',
-                                            params: {
-                                                userID: user._id
-                                            }
-                                        });
+                                        props.navigation.dispatch(
+                                            StackActions.push('Follow',{
+                                                screen: 'Followings',
+                                                params: {
+                                                    userID: user._id
+                                                }
+                                            })
+                                        );
                                     }}
                                 >
                                     <Text style={styles.txtNo}>{user.Followings ? user.Followings.length : 0}</Text>

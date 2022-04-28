@@ -1,13 +1,11 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import Api from "../../services/Api";
+import { getAsyncData } from "./users.action";
 
 export const GET_BOOKS_DETAIL_BY_ID = 'GET_BOOKS_DETAIL_BY_ID';
 
 export const getBooksDetailByID = (id) => {
     return async (dispatch) => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/getBooksDetailByID/${id}`, {

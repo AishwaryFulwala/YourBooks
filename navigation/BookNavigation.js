@@ -71,7 +71,7 @@ const SigninNavigator = () => {
 };
 
 const FollowTab = createMaterialTopTabNavigator();
-const FollowNavigator = () => {
+const FollowTabNavigator = () => {
     return (
         <FollowTab.Navigator
             screenOptions={{
@@ -134,7 +134,7 @@ const HomeNavigator = () => {
             />
             <HomeStack.Screen
                 name='Follow'
-                component={FollowNavigator}
+                component={FollowTabNavigator}
                 options={options}
             />
         </HomeStack.Navigator>
@@ -161,6 +161,11 @@ const MyProfileNavigator = () => {
             <MyProfileStack.Screen 
                 name='MyProfileN'
                 component={MyProfileScreen}
+                options={options}
+            />
+            <MyProfileStack.Screen
+                name='Follow'
+                component={FollowTabNavigator}
                 options={options}
             />
         </MyProfileStack.Navigator>

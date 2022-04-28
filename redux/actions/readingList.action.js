@@ -1,6 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import Api from "../../services/Api";
+import { getAsyncData } from "./users.action";
 
 export const GET_READING_LIST_BY_ID = 'GET_READING_LIST_BY_ID';
 export const CHANGE = 'CHANGE';
@@ -8,8 +7,7 @@ export const CHANGE = 'CHANGE';
 export const getReadingListByID = (id) => {
   
     return async (dispatch) => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/getReadingListByID/${id}/${userData.id}`, {
@@ -37,8 +35,7 @@ export const getReadingListByID = (id) => {
 
 export const addReadingList = (id) => {
     return async (dispatch) => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/addReadingList`, {
@@ -64,8 +61,7 @@ export const addReadingList = (id) => {
 
 export const deleteReadingList = (id) => {
     return async (dispatch) => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/deleteReadingList/${id}`, {

@@ -6,6 +6,8 @@ export const LOGOUT = 'LOGOUT';
 export const GET_USER = 'GET_USER';
 export const GET_FOLLOW = 'GET_FOLLOW';
 export const UPDATE_USER = 'UPDATE_USER';
+export const GET_ASYNC_DATA = 'GET_ASYNC_DATA'
+export const GET_ID = 'GET_ID';
 
 const saveToStorage = (token, email, id) => {
     AsyncStorage.setItem('@userData', JSON.stringify({
@@ -15,15 +17,20 @@ const saveToStorage = (token, email, id) => {
     }));
 };
 
-const getAsyncData = async () => {
-    let userData = await AsyncStorage.getItem('@userData');
-    return JSON.parse(userData);
+export const getAsyncData = async () => {
+    return JSON.parse(await AsyncStorage.getItem('@userData'));
+};
+
+export const getAsyncItem = () => {
+    return async () => {
+        return await getAsyncData();
+    }    
 };
 
 export const signup = (userName, contactNo, email, password) => {
-    return async (dispatch) => {
+    return async () => {
         try {
-            const res = await Api('/signup', {
+            await Api('/signup', {
                 UserName: userName,
                 ContactNo : contactNo,
                 Email: email,
@@ -36,7 +43,7 @@ export const signup = (userName, contactNo, email, password) => {
 };
 
 export const signin = (email, password) => {
-    return async (dispatch) => {
+    return async () => {
         try {
             const res = await Api('/signin', {
                 Email: email,
@@ -104,7 +111,7 @@ export const getFollow = (id) => {
 };
 
 export const updateUser = (user) => {
-    return async (dispatch) => {
+    return async () => {
         const userData = await getAsyncData();
         try {
             const res = await Api(`/updateUser/${userData.id}`, {
@@ -121,3 +128,10 @@ export const updateUser = (user) => {
         }
     };
 };
+
+export const getID = (id) => {
+    return {
+        type: GET_ID,
+        id
+    }
+}

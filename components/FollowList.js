@@ -18,10 +18,12 @@ const FollowList = (props) => {
                 onPress={() => props.onUser(val._id)}
             >
                 <View style={styles.dispView}>
-                    <Image 
-                        source={{ uri: val.ProfilePic }}
-                        style={styles.imgProfile}
-                    /> 
+                    <View style={styles.imgView}>
+                        <Image 
+                            source={{ uri: val.ProfilePic }}
+                            style={styles.imgProfile}
+                        />
+                    </View>
                     <Text
                         style={styles.txtName}
                         numberOfLines={1}
@@ -49,6 +51,17 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
     },
+    imgView: {
+        height: wHeight * 0.063,
+        width: wHeight * 0.063,
+        borderWidth: 1,
+        borderColor: Colors.titleColor,
+        borderRadius: 50,
+        backgroundColor: Colors.bodyColor,
+        alignItems: 'center',
+        justifyContent: 'center',
+        alignContent: 'space-between',
+    },
     imgProfile: {
         height: wHeight * 0.06,
         width: wHeight * 0.06,
@@ -58,10 +71,12 @@ const styles = StyleSheet.create({
         color: Colors.fontColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.04,
-        width: wWidth * 0.53,
+        width: wWidth * 0.47,
         marginLeft: wWidth * 0.05,
     },
     btn: {
+        alignItems: 'center',
+        width: wWidth * 0.25,
         borderWidth: 1,
         borderRadius: 5,
         borderColor: Colors.titleColor,

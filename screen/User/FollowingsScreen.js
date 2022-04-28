@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, Alert } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { StackActions } from '@react-navigation/native';
 
-import { getFollow, getUser, updateUser } from '../../redux/actions/users.action';
+import { getFollow, getID, getUser, updateUser } from '../../redux/actions/users.action';
 
 import FollowList from '../../components/FollowList';
 import Colors from '../../constnats/Colors';
@@ -15,12 +15,21 @@ const wWidth = Dimensions.get('window').width;
 
 const FollowingsScreen = (props) => {
     const userID = props?.route?.params?.userID;
+    const id = useSelector((state) => state.users.getUserData.getID);
     const user = useSelector((state) => state.users.getUserData.getUser);
     const follow = useSelector((state) => state.users.getUserData.getFollow);
 
     const dispatch = useDispatch();
 
     const load = async () => {
+        if(userID) {
+            try {
+                await dispatch(getID(userID));
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            }
+        }
+
         try {
             await dispatch(getUser());
         } catch (error) {
@@ -28,7 +37,7 @@ const FollowingsScreen = (props) => {
         }
 
         try {
-            await dispatch(getFollow(userID));
+            await dispatch(getFollow(userID || id));
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
@@ -36,11 +45,11 @@ const FollowingsScreen = (props) => {
 
     useEffect(() => {
         props.navigation.addListener('focus', load);
-    }, [ follow ]);
+    }, []);
 
     const followHandler = async (val) => {
         try {
-            const res = await dispatch(updateUser({Follow: val}));
+            await dispatch(updateUser({Follow: val}));
             load();
         } catch (error) {
             if(error.request?.status === 404)

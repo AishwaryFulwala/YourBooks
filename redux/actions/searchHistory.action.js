@@ -1,23 +1,22 @@
 import Api from "../../services/Api";
 import { getAsyncData } from "./users.action";
 
-export const GET_CATEGORIES = 'GET_CATEGORIES';
-export const GET_CATEGORY = 'GET_CATEGORY';
+export const GET_SEARCH_HISTORY = 'GET_SEARCH_HISTORY';
 
-export const getCategories = () => {
+export const getSearchHistoryByID = (id) => {
     return async (dispatch) => {
         const userData = await getAsyncData();
 
         try {
-            const res = await Api(`/getCategories`, {
+            const res = await Api(`/getSearchHistoryByID/${id}`, {
                 headers: {
                     'Authorization' : 'Bearer ' + userData.token
                 }
             }, 'GET');
 
             dispatch({
-                type: GET_CATEGORIES,
-                categories: res.data,
+                type: GET_SEARCH_HISTORY,
+                history: res.data,
             });
             
             return await Promise.resolve(res.data);
@@ -27,22 +26,19 @@ export const getCategories = () => {
     }
 };
 
-export const getCategoryByID = (id) => {
-    return async (dispatch) => {
+export const deleteSearchHistory = (id, history) => {
+    return async () => {
         const userData = await getAsyncData();
 
         try {
-            const res = await Api(`/getCategoryByID/${id}`, {
+            const res = await Api(`/deleteSearchHistory/${id}`,{
+                history,           
+            }, 'PATCH', {
                 headers: {
                     'Authorization' : 'Bearer ' + userData.token
-                }
-            }, 'GET');
-
-            dispatch({
-                type: GET_CATEGORY,
-                category: res.data,
+                },
             });
-            
+
             return await Promise.resolve(res.data);
         } catch (error) {
             return await Promise.reject(error.response);

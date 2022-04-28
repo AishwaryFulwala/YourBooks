@@ -1,14 +1,12 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import Api from "../../services/Api";
+import { getAsyncData } from "./users.action";
 
 export const GET_AVG_RATING = 'GET_AVG_RATING';
 export const GET_RATING_BY_BOOK = 'GET_RATING_BY_BOOK';
 
 export const addRating = (rate, review, bid) => {
     return async () => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/addRating`, {
@@ -32,8 +30,7 @@ export const addRating = (rate, review, bid) => {
 
 export const getAvgRating = (id) => {
     return async (dispatch) => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/getAvgRating/${id}`, {
@@ -61,8 +58,7 @@ export const getAvgRating = (id) => {
 
 export const getRatingByBook = (id) => {
     return async (dispatch) => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/getRatingByBook/${id}`, {

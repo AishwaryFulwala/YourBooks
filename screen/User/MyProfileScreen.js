@@ -32,6 +32,7 @@ const MyProfileScreen = (props) => {
 
     useEffect(() => {
         setIsUser({
+            userID: user?._id,
             UserName: user?.UserName,
             Email: user?.Email,
             Password: user?.Password,
@@ -545,13 +546,39 @@ const MyProfileScreen = (props) => {
                         </View>
                         <View style={styles.followView}>
                             <View>
-                                <Text style={styles.txtNo}>{isUser.Followers}</Text>
-                                <Text style={styles.txtFollow}>Followers</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        props.navigation.dispatch(
+                                            StackActions.push('Follow',{
+                                                screen: 'Followers',
+                                                params: {
+                                                    userID: isUser.userID
+                                                }
+                                            })
+                                        );
+                                    }}
+                                >
+                                    <Text style={styles.txtNo}>{isUser.Followers}</Text>
+                                    <Text style={styles.txtFollow}>Followers</Text>
+                                </TouchableOpacity>
                             </View>
                             <View style={styles.pipeView}></View>
                             <View>
-                                <Text style={styles.txtNo}>{isUser.Followings}</Text>
-                                <Text style={styles.txtFollow}>Following</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        props.navigation.dispatch(
+                                            StackActions.push('Follow',{
+                                                screen: 'Followings',
+                                                params: {
+                                                    userID: isUser.userID
+                                                }
+                                            })
+                                        );
+                                    }}
+                                >
+                                    <Text style={styles.txtNo}>{isUser.Followings}</Text>
+                                    <Text style={styles.txtFollow}>Following</Text>
+                                </TouchableOpacity>
                             </View>
                         </View>
                     </View>

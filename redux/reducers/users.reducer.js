@@ -1,4 +1,4 @@
-import { GET_FOLLOW, GET_USER, LOGOUT, UPDATE_USER } from '../actions/users.action';
+import { GET_ASYNC_DATA, GET_FOLLOW, GET_ID, GET_USER, LOGOUT, UPDATE_USER } from '../actions/users.action';
 import { stateInit } from '../states/InitState';
 
 const UsersReducer = (state = stateInit, action) => {
@@ -34,6 +34,24 @@ const UsersReducer = (state = stateInit, action) => {
                         ...state.getUserData.getUser,
                         ...action.user,
                     }
+                }
+            }
+
+        case GET_ASYNC_DATA:
+            return {
+                getUserData: {
+                    ...state.getUserData,
+                    getAsync: {
+                        ...action.user,
+                    }
+                }
+            }
+
+        case GET_ID:
+            return {
+                getUserData: {
+                    ...state.getUserData,
+                    getID: action.id,
                 }
             }
 

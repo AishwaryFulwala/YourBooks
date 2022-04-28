@@ -5,4 +5,5 @@ export const stateInit = {
     getRatingData: {},
     getReadingListData: {},
     getBooksDetailData: {},
+    getSearchHistoryData: {},
 };

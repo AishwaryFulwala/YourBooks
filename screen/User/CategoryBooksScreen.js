@@ -81,6 +81,7 @@ const styles = StyleSheet.create({
     activity: {
         flex: 1,
         justifyContent: 'center',
+        backgroundColor: Colors.bodyColor,
     },
     body: {
         flex: 1,

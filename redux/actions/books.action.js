@@ -1,6 +1,5 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 import Api from "../../services/Api";
+import { getAsyncData } from "./users.action";
 
 export const GET_BOOKS_BY_CATEGORY = 'GET_BOOKS_BY_CATEGORY';
 export const GET_BOOKS_BY_ID = 'GET_BOOKS_BY_ID';
@@ -8,8 +7,7 @@ export const GET_BOOKS_BY_USER = 'GET_BOOKS_BY_USER';
 
 export const getBooksByCategory = (id) => {
     return async (dispatch) => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/getBooksByCategory/${id}`, {
@@ -37,8 +35,7 @@ export const getBooksByCategory = (id) => {
 
 export const getBooksByID = (id) => {
     return async (dispatch) => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/getBooksByID/${id}`, {
@@ -61,8 +58,7 @@ export const getBooksByID = (id) => {
 
 export const getBooksByUser = (id) => {
     return async (dispatch) => {
-        let user = await AsyncStorage.getItem('@userData');
-        const userData = JSON.parse(user);
+        const userData = await getAsyncData();
 
         try {
             const res = await Api(`/getBooksByUser/${id}`, {
