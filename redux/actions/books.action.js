@@ -1,5 +1,5 @@
 import Api from "../../services/Api";
-import { getAsyncData } from "./users.action";
+import { getAsyncData } from "./Users.action";
 
 export const GET_BOOKS_BY_CATEGORY = 'GET_BOOKS_BY_CATEGORY';
 export const GET_BOOKS_BY_ID = 'GET_BOOKS_BY_ID';

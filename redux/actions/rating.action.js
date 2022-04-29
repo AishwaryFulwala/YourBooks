@@ -1,5 +1,5 @@
 import Api from "../../services/Api";
-import { getAsyncData } from "./users.action";
+import { getAsyncData } from "./Users.action";
 
 export const GET_AVG_RATING = 'GET_AVG_RATING';
 export const GET_RATING_BY_BOOK = 'GET_RATING_BY_BOOK';

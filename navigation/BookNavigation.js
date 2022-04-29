@@ -14,20 +14,23 @@ import Fonts from '../constnats/Fonts';
 
 import AuthScreen from '../screen/AuthScreen';
 
-import SigninHomeScreen from '../screen/Log/SigninHomeScreen';
-import SigninScreen from '../screen/Log/SigninScreen';
-import SignupScreen from '../screen/Log/SignupScreen';
+import SigninHomeScreen from '../screen/log/SigninHomeScreen';
+import SigninScreen from '../screen/log/SigninScreen';
+import SignupScreen from '../screen/log/SignupScreen';
 
-import HomeScreen from '../screen/User/HomeScreen';
-import SearchScreen from '../screen/User/SearchScreen';
-import LibraryScreen from '../screen/User/LibraryScreen';
-import MyProfileScreen from '../screen/User/MyProfileScreen';
-import CategoryBooksScreen from '../screen/User/CategoryBooksScreen';
-import BookScreen from '../screen/User/BookScreen';
-import BookReadingScreen from '../screen/User/BookReadingScreen';
-import ViewProfileScreen from '../screen/User/ViewProfileScreen';
-import FollowersScreen from '../screen/User/FollowersScreen';
-import FollowingsScreen from '../screen/User/FollowingsScreen';
+import HomeScreen from '../screen/user/HomeScreen';
+import SearchScreen from '../screen/user/SearchScreen';
+import MyProfileScreen from '../screen/user/MyProfileScreen';
+import CategoryBooksScreen from '../screen/user/CategoryBooksScreen';
+import BookScreen from '../screen/user/BookScreen';
+import BookReadingScreen from '../screen/user/BookReadingScreen';
+import ViewProfileScreen from '../screen/user/ViewProfileScreen';
+
+import FollowersScreen from '../screen/user/FollowersScreen';
+import FollowingsScreen from '../screen/user/FollowingsScreen';
+
+import ReadingListScreen from '../screen/user/ReadingListScreen';
+import WritingScreen from '../screen/user/WritingScreen';
 
 const options = {
     headerTitle: () => {
@@ -45,6 +48,21 @@ const options = {
     headerTintColor: Colors.fontColor,
     headerBackTitle: ' ',
     headerTitleAlign: 'center',
+};
+
+const tabOptions = {
+    tabBarLabelStyle: {
+        fontFamily: Fonts.bodyFont,
+        fontSize: 13,
+    },
+    tabBarStyle: { 
+        backgroundColor: Colors.bodyColor,
+    },
+    tabBarIndicatorStyle: {
+        backgroundColor: Colors.bookColor,
+    },
+    tabBarInactiveTintColor: Colors.fontColor,
+    tabBarActiveTintColor: Colors.bookColor,
 };
 
 const SigninStack = createStackNavigator();
@@ -74,20 +92,7 @@ const FollowTab = createMaterialTopTabNavigator();
 const FollowTabNavigator = () => {
     return (
         <FollowTab.Navigator
-            screenOptions={{
-                tabBarLabelStyle: {
-                    fontFamily: Fonts.bodyFont,
-                    fontSize: 13,
-                },
-                tabBarStyle: { 
-                    backgroundColor: Colors.bodyColor,
-                },
-                tabBarIndicatorStyle: {
-                    backgroundColor: Colors.bookColor,
-                },
-                tabBarInactiveTintColor: Colors.fontColor,
-                tabBarActiveTintColor: Colors.bookColor,
-            }}
+            screenOptions={tabOptions}
         >
             <FollowTab.Screen 
                 name='Followers'
@@ -150,6 +155,26 @@ const SearchNavigator = () => {
                 component={SearchScreen}
                 options={options}
             />
+            <SearchStack.Screen 
+                name='BookN'
+                component={BookScreen}
+                options={options}
+            />
+            <SearchStack.Screen 
+                name='BookReadingN'
+                component={BookReadingScreen}
+                options={options}
+            />
+            <SearchStack.Screen
+                name='ViewProfileN'
+                component={ViewProfileScreen}
+                options={options}
+            />
+            <SearchStack.Screen
+                name='Follow'
+                component={FollowTabNavigator}
+                options={options}
+            />
         </SearchStack.Navigator>
     );
 };
@@ -172,13 +197,33 @@ const MyProfileNavigator = () => {
     );
 };
 
+const LibraryTab = createMaterialTopTabNavigator();
+const LibraryTabNavigator = () => {
+    return (
+        <LibraryTab.Navigator
+            screenOptions={tabOptions}
+        >
+            <LibraryTab.Screen 
+                name='Read'
+                component={ReadingListScreen}
+                options={options}
+            />
+            <LibraryTab.Screen 
+                name='Write'
+                component={WritingScreen}
+                options={options}
+            />
+        </LibraryTab.Navigator>
+    );
+};
+
 const LibraryStack = createStackNavigator();
 const LibraryNavigator = () => {
     return(
         <LibraryStack.Navigator>
             <LibraryStack.Screen 
-                name='LibraryN'
-                component={LibraryScreen}
+                name='LibraryTab'
+                component={LibraryTabNavigator}
                 options={options}
             />
         </LibraryStack.Navigator>

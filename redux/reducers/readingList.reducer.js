@@ -1,4 +1,4 @@
-import { CHANGE, GET_READING_LIST_BY_ID } from '../actions/readingList.action';
+import { CHANGE, GET_READING_LIST_BY_ID } from '../actions/ReadingList.action';
 import { stateInit } from '../states/InitState';
 
 const ReadingListReducer = (state = stateInit, action) => {

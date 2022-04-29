@@ -8,9 +8,9 @@ import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getBooksByID } from '../../redux/actions/books.action';
-import { addRating, getAvgRating, getRatingByBook } from '../../redux/actions/rating.action';
-import { addReadingList, deleteReadingList, getReadingListByID } from '../../redux/actions/readingList.action';
+import { getBooksByID } from '../../redux/actions/Books.action';
+import { addRating, getAvgRating, getRatingByBook } from '../../redux/actions/Rating.action';
+import { addReadingList, deleteReadingList, getReadingListByID } from '../../redux/actions/ReadingList.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';

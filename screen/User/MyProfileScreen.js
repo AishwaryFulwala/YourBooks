@@ -14,7 +14,7 @@ import * as ImagePicker from 'react-native-image-picker';
 import IconM from 'react-native-vector-icons/MaterialIcons';
 import IconI from 'react-native-vector-icons/Ionicons';
 
-import { logout, getUser, updateUser } from '../../redux/actions/users.action';
+import { logout, getUser, updateUser } from '../../redux/actions/Users.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';

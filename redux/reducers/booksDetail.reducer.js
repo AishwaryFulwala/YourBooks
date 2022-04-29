@@ -1,4 +1,4 @@
-import { GET_BOOKS_DETAIL_BY_ID } from '../actions/booksDetail.action';
+import { GET_BOOKS_DETAIL_BY_ID } from '../actions/BooksDetail.action';
 import { stateInit } from '../states/InitState';
 
 const BooksDetailReducer = (state = stateInit, action) => {

@@ -7,7 +7,7 @@ import { useDispatch } from "react-redux";
 
 import IconI from 'react-native-vector-icons/Ionicons';
 
-import * as UsersActions from '../../redux/actions/users.action';
+import * as UsersActions from '../../redux/actions/Users.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';

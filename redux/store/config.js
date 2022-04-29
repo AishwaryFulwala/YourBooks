@@ -1,13 +1,13 @@
 import { createStore, combineReducers, applyMiddleware } from "redux";
 import ReduxThunk from 'redux-thunk';
 
-import UsersReducer from '../reducers/users.reducer';
-import CategoriesReducer from "../reducers/categories.reducer";
-import BooksReducer from "../reducers/books.reducer";
-import RatingReducer from "../reducers/rating.reducer";
-import ReadingListReducer from "../reducers/readingList.reducer";
-import BooksDetailReducer from "../reducers/booksDetail.reducer";
-import SearchHistoryReducer from "../reducers/searchHistory.reducer";
+import UsersReducer from '../reducers/Users.reducer';
+import CategoriesReducer from "../reducers/Categories.reducer";
+import BooksReducer from "../reducers/Books.reducer";
+import RatingReducer from "../reducers/Rating.reducer";
+import ReadingListReducer from "../reducers/ReadingList.reducer";
+import BooksDetailReducer from "../reducers/BooksDetail.reducer";
+import SearchHistoryReducer from "../reducers/SearchHistory.reducer";
 
 const rootReducer = combineReducers({
     users: UsersReducer,

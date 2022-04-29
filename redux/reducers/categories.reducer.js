@@ -1,4 +1,4 @@
-import { GET_CATEGORIES, GET_CATEGORY } from '../actions/categories.action';
+import { GET_CATEGORIES, GET_CATEGORY } from '../actions/Categories.action';
 import { stateInit } from '../states/InitState';
 
 const CategoriesReducer = (state = stateInit, action) => {

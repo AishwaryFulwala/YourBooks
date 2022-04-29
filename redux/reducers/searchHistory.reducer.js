@@ -1,5 +1,5 @@
 
-import { GET_SEARCH_HISTORY } from '../actions/searchHistory.action';
+import { GET_SEARCH_DATA, GET_SEARCH_HISTORY } from '../actions/SearchHistory.action';
 import { stateInit } from '../states/InitState';
 
 const SearchHistoryReducer = (state = stateInit, action) => {
@@ -7,7 +7,20 @@ const SearchHistoryReducer = (state = stateInit, action) => {
         case GET_SEARCH_HISTORY:
             return {
                 getSearchHistoryData: {
-                    ...action.history
+                    ...state.getSearchHistoryData,
+                    getHistory: {
+                        ...action.history,
+                    }
+                }
+            }
+
+        case GET_SEARCH_DATA:
+            return {
+                getSearchHistoryData: {
+                    ...state.getSearchHistoryData,
+                    getData: {
+                        ...action.data,
+                    }
                 }
             }
 

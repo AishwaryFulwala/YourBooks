@@ -3,8 +3,8 @@ import { View, Text, StyleSheet, Dimensions, Alert, ActivityIndicator, ScrollVie
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getCategoryByID } from '../../redux/actions/categories.action';
-import { getBooksByCategory } from '../../redux/actions/books.action';
+import { getCategoryByID } from '../../redux/actions/Categories.action';
+import { getBooksByCategory } from '../../redux/actions/Books.action';
 
 import BookList from '../../components/BookList';
 

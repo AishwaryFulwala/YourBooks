@@ -3,7 +3,7 @@ import SplashScreen from "react-native-splash-screen";
 import { Provider } from "react-redux";
 
 import BookNavigation from './navigation/BookNavigation';
-import store from './redux/store/config';
+import store from './redux/store/Config';
 
 const App = () => {
     useEffect(() => {

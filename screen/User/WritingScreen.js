@@ -1,10 +1,13 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
-const LibraryScreen = (props) => {
+const wHeight = Dimensions.get('window').height;
+const wWidth = Dimensions.get('window').width;
+
+const WritingScreen = (props) => {
     return(
         <View style={styles.body}>
             <Text>lib</Text>
@@ -19,4 +22,4 @@ const styles = StyleSheet.create({
     },
 });
 
-export default LibraryScreen;
+export default WritingScreen;

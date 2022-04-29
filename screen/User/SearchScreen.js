@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Dimensions, FlatList, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Dimensions, FlatList, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
+
+import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { StackActions } from '@react-navigation/native';
@@ -7,11 +9,13 @@ import { StackActions } from '@react-navigation/native';
 import IconI from 'react-native-vector-icons/Ionicons';
 import IconF from 'react-native-vector-icons/Feather';
 
-import { deleteSearchHistory, getSearchHistoryByID } from '../../redux/actions/searchHistory.action';
-import { getAsyncItem } from '../../redux/actions/users.action';
+import { updateSearchHistory, getEmpty, getSearchData, getSearchHistoryByID } from '../../redux/actions/SearchHistory.action';
+import { getAsyncItem } from '../../redux/actions/Users.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
+
+import SearchList from '../../components/SearchList';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
@@ -21,7 +25,14 @@ const SearchScreen = (props) => {
     const [ isSearch, setIsSearch ] = useState('');
     const [ userAsync, setUserAsync ] = useState(null);
 
-    const history = useSelector((state) => state.searchHistory.getSearchHistoryData);
+    const [index, setIndex] = React.useState(0);
+    const [routes] = React.useState([
+        { key: 'book', title: 'Book' },
+        { key: 'user', title: 'User' },
+    ]);
+
+    const history = useSelector((state) => state.searchHistory.getSearchHistoryData.getHistory);
+    const searchData = useSelector((state) => state.searchHistory.getSearchHistoryData.getData);
 
     const dispatch = useDispatch();
 
@@ -33,56 +44,160 @@ const SearchScreen = (props) => {
         }
     };
 
+    const getHistory = async () => {
+        try {
+            await dispatch(getSearchHistoryByID(userAsync?.id));
+        } catch (error) {
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+    };
+
     useEffect(() => {
         props.navigation.addListener('focus', load);
     }, []);
 
     useEffect(() => {
-        const getHistory = async () => {
-            try {
-                await dispatch(getSearchHistoryByID(userAsync?.id));
-            } catch (error) {
-                if(error.request?.status !== 404)
-                    Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-            }
-        };
-
         if(userAsync)
             getHistory();
-    }, [ userAsync, history ]);
+    }, [ userAsync ]);
 
-    const debounce = (search, delay = 300) => {
+    const crossHandler = () => {
+        setIsSearch('');
+        setIndex(0)
+        empty();
+    }
+
+    const debounce = (search, delay) => {
         let timer;
+        
         return (...args) => {
             clearTimeout(timer);
-            timer = setTimeout(() => search.apply(this, args), delay);
+            timer = setTimeout(() => search(args), delay);
         }
     };
 
-    const search = () => {
-        console.log('search')
-    }
-
-    const changeTxt = (txt) => {
-        setIsSearch(txt);
-        debounce(() => search());
-    }
-
-    const deleteHistory = async (data) => {
+    const search = async (txt) => {
         try {
-            await dispatch(deleteSearchHistory(userAsync?.id, data));
+            await dispatch(getSearchData(txt));
+        } catch (error) {
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+    }
+
+    const empty = async () => {
+        try {
+            await dispatch(getEmpty());
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
+    }
+
+    const changeTxt = async (txt) => {
+        setIsSearch(txt);
+
+        if(txt)
+            debounce(() => search(txt), 500)();
+        else 
+            empty()
+    }
+
+    const searchSubmit = () => {
+        if(isSearch) {
+            if(history?.Data) {
+                history?.Data?.push(isSearch);
+                updateHistory(history.Data);
+            }
+            else {
+                updateHistory([isSearch]);
+            }
+            
+        }        
     };
 
-    if(!history) {
+    const updateHistory = async (data) => {
+        try {
+            await dispatch(updateSearchHistory(userAsync?.id, data));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+        
+        getHistory();
+    };
+
+    const tabs = (props) => {
         return (
-            <View style={styles.activity}>
-                <ActivityIndicator color={Colors.fontColor} />
+            <TabBar 
+                {...props}
+                style={styles.tabBarView}
+                labelStyle={styles.lableStyle}
+                indicatorStyle={styles.indicatorStyle}
+                activeColor={Colors.bookColor}
+                inactiveColor={Colors.fontColor}
+            />
+        );
+    };
+
+    const bookTab = () => {
+        if(!searchData) {
+            return (
+                <View style={styles.activity}>
+                    <ActivityIndicator color={Colors.fontColor} />
+                </View>
+            );
+        }
+
+        if(!searchData?.Book?.length) {
+            return (
+                <View style={styles.activity}>
+                    <Text style={styles.txtNoFound}>No Book Found</Text>
+                </View>
+            );
+        }
+
+        return (
+            <View style={styles.body}>
+                <SearchList
+                    data={searchData.Book}
+                    onClick={(id) => {
+                        props.navigation.navigate('BookN', {
+                            bookID: id,
+                        });
+                    }}
+                />
             </View>
         );
-    }
+    };
+
+    const userTab = () => {
+        if(!searchData) {
+            return (
+                <View style={styles.activity}>
+                    <ActivityIndicator color={Colors.fontColor} />
+                </View>
+            );
+        }
+
+        if(!searchData?.User?.length) {
+            return (
+                <View style={styles.activity}>
+                    <Text style={styles.txtNoFound}>No User Found</Text>
+                </View>
+            );
+        }
+
+        return (
+            <View style={styles.body}>
+                <SearchList data={searchData.User} />
+            </View>
+        );
+    };
+    
+    const renderScene = SceneMap({
+        book: bookTab,
+        user: userTab,
+    });
 
     return(
         <View style={styles.body}>
@@ -95,9 +210,13 @@ const SearchScreen = (props) => {
                 />
                 <TextInput 
                     style={styles.txtSerach}
+                    returnKeyType='search'
+                    autoCorrect={false}
+                    autoCapitalize='none'
                     value={isSearch}
                     onChangeText={changeTxt}
                     onPressIn={() => setIsCross(true)}
+                    onSubmitEditing={searchSubmit}
                 />
                 {
                     isCross && 
@@ -106,39 +225,58 @@ const SearchScreen = (props) => {
                         color={Colors.fontColor}
                         size={15}
                         style={styles.searchIcon}
-                        onPress={() => setIsSearch('')}
+                        onPress={crossHandler}
                     />
                 }
             </View>            
             <View style={styles.dispView}>
                 {
-                    history?.Data &&
-                    <View style={styles.historyView}>
-                        <Text style={styles.txtRecent}>Recent</Text>
-                        <FlatList 
-                            data={history.Data}
-                            renderItem={({item, index}) => {
-                                return (
-                                    <View style={styles.flatView} key={index}>
-                                        <Text
-                                            style={styles.txtData}
-                                            numberOfLines={1}
-                                            ellipsizeMode='tail'
-                                        >{item}</Text>
-                                        <IconF
-                                            name='x'
-                                            color={Colors.fontColor}
-                                            size={15}
-                                            style={styles.crosssIcon}
-                                            onPress={() => {
-                                                deleteHistory(history.Data.filter((val, i) => i !== index));
-                                            }}
-                                        />
-                                    </View>
-                                );
-                            }}
+                    isSearch ?
+                        <TabView
+                            navigationState={{ index, routes }}
+                            renderScene={renderScene}
+                            onIndexChange={setIndex}
+                            style={styles.tabView}
+                            renderTabBar={tabs}
+                            keyboardDismissMode='none'
                         />
-                    </View>
+                    :
+                        (history?.Data && !!history?.Data?.length) &&
+                        <View style={styles.historyView}>
+                            <View style={styles.recentView}>
+                                <Text style={styles.txtRecent}>Recent</Text>
+                                <TouchableOpacity
+                                    onPress={() => updateHistory([])}
+                                >
+                                    <Text style={styles.iconClearAll}>Clear All</Text>
+                                </TouchableOpacity>
+                            </View>
+                            <FlatList 
+                                data={history.Data}
+                                renderItem={({item, index}) => {
+                                    return (
+                                        <TouchableOpacity
+                                            style={styles.flatView}
+                                            key={index}
+                                            onPress={() => changeTxt(item)}
+                                        >
+                                            <Text
+                                                style={styles.txtData}
+                                                numberOfLines={1}
+                                                ellipsizeMode='tail'
+                                            >{item}</Text>
+                                            <IconF
+                                                name='x'
+                                                color={Colors.fontColor}
+                                                size={15}
+                                                style={styles.crosssIcon}
+                                                onPress={() => updateHistory(history.Data.filter((val, i) => i !== index))}
+                                            />
+                                        </TouchableOpacity>
+                                    );
+                                }}
+                            />
+                        </View>
                 }
             </View>
         </View>
@@ -150,6 +288,12 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'center',
         backgroundColor: Colors.bodyColor,
+    },
+    txtNoFound: {
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.04,
+        textAlign: 'center',
     },
     body: {
         flex: 1,
@@ -183,16 +327,42 @@ const styles = StyleSheet.create({
         borderTopLeftRadius: 50,
         borderTopRightRadius: 50,
     },
+    tabView: {
+        borderTopLeftRadius: 50,
+        borderTopRightRadius: 50,
+        backgroundColor: Colors.bodyColor,
+    },
+    tabBarView: {
+        backgroundColor: Colors.bodyColor,
+        height: wHeight * 0.05,
+        width: wWidth * 0.5,
+    },
+    lableStyle: {
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.035,
+    },
+    indicatorStyle: {
+        backgroundColor: Colors.bookColor,
+    },
     historyView:  {
         flex: 1,
+    },
+    recentView: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginHorizontal: wWidth * 0.07,
+        marginTop: wHeight * 0.03,
+        marginBottom: wHeight * 0.02,
     },
     txtRecent: {
         color: Colors.lightGray,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.05,
-        marginHorizontal: wWidth * 0.07,
-        marginTop: wHeight * 0.03,
-        marginBottom: wHeight * 0.02,
+    },
+    iconClearAll: {
+        color: Colors.titleColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.03,
     },
     flatView:  {
         flexDirection: 'row',

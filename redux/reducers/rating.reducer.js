@@ -1,4 +1,4 @@
-import { GET_AVG_RATING, GET_RATING_BY_BOOK } from '../actions/rating.action';
+import { GET_AVG_RATING, GET_RATING_BY_BOOK } from '../actions/Rating.action';
 import { stateInit } from '../states/InitState';
 
 const RatingReducer = (state = stateInit, action) => {

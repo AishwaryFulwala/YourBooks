@@ -6,8 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
-import { getCategories } from '../../redux/actions/categories.action';
-import { getUser } from '../../redux/actions/users.action';
+import { getCategories } from '../../redux/actions/Categories.action';
+import { getUser } from '../../redux/actions/Users.action';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;

@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, ScrollView, Dimensions, Alert } from 'react-nat
 import { useDispatch, useSelector } from 'react-redux';
 import { StackActions } from '@react-navigation/native';
 
-import { getFollow, getID, getUser, updateUser } from '../../redux/actions/users.action';
+import { getFollow, getID, getUser, updateUser } from '../../redux/actions/Users.action';
 
 import FollowList from '../../components/FollowList';
 import Colors from '../../constnats/Colors';

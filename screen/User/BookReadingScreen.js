@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
-import { getBooksDetailByID } from '../../redux/actions/booksDetail.action';
+import { getBooksDetailByID } from '../../redux/actions/BooksDetail.action';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;

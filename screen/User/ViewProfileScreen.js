@@ -9,8 +9,8 @@ import IconF from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch, useSelector } from 'react-redux';
 import { StackActions } from '@react-navigation/native';
 
-import { getBooksByUser } from '../../redux/actions/books.action';
-import { getAsyncItem, getUser, updateUser } from '../../redux/actions/users.action';
+import { getBooksByUser } from '../../redux/actions/Books.action';
+import { getAsyncItem, getUser, updateUser } from '../../redux/actions/Users.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';

@@ -1,5 +1,5 @@
 import Api from "../../services/Api";
-import { getAsyncData } from "./users.action";
+import { getAsyncData } from "./Users.action";
 
 export const GET_READING_LIST_BY_ID = 'GET_READING_LIST_BY_ID';
 export const CHANGE = 'CHANGE';

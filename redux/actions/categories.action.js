@@ -1,5 +1,5 @@
 import Api from "../../services/Api";
-import { getAsyncData } from "./users.action";
+import { getAsyncData } from "./Users.action";
 
 export const GET_CATEGORIES = 'GET_CATEGORIES';
 export const GET_CATEGORY = 'GET_CATEGORY';
