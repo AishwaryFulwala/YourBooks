@@ -22,5 +22,7 @@ export default {
 
     shadowColor: '#3C4846',
 
+    borderColor: '#cccccc',
+
     colorArr: ['#c28285', '#063266', '#483C32', '#964B00', '#008080', '#78828B', '#B87333', '#9B111E', '#023020', '#D4AF37'],
 }

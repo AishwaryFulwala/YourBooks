@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, Image, ImageBackground, ScrollView, Dimensions, TouchableOpacity, TextInput, Alert } from 'react-native';
+import { StyleSheet, View, Text, Image, ImageBackground, ScrollView, Dimensions, TouchableOpacity, TextInput, Alert,  KeyboardAvoidingView, Keyboard, TouchableWithoutFeedback } from 'react-native';
 
 import LinearGradient from 'react-native-linear-gradient';
 import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
@@ -458,187 +458,195 @@ const MyProfileScreen = (props) => {
 
     return(
         <View style={styles.body}>
-            <SliderModal 
-                op1Txt='Take Photo'
-                op2Txt='Chooce from Library'
-                op1Press={launchCameraHandler}
-                op2Press={launchImageLibraryHandler}
-                op1Icon='camera-plus'
-                op2Icon='image-multiple'
-                visible={isOpenModal}
-                onClick={closeModal}
-            />
-            {
-                isPwdEdit && chnagePwdModal()
-            }
-            <LinearGradient
-                colors={[Colors.gradientB1, Colors.gradientB2]}
-                style={styles.liner}
-            >
-                <View style={styles.touchView}>
-                    <TouchableOpacity
-                        onPress={() => {
-                            setIsOpenModal(!isOpenModal);
-                            setPickCover(!pickCover);
-                        }} 
-                        style={styles.imgCover}
-                    >
-                        <ImageBackground
-                            source={imgCover}
-                            style={styles.imgCover}
-                        >
-                        </ImageBackground>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.detailView}>
-                    <LinearGradient
-                        colors={[Colors.gradient1, Colors.gradient2, Colors.gradient3, Colors.gradient4, Colors.gradient5]}
-                        style={styles.imglinear}                        
-                    >
-                        <View style={styles.imgView}>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setIsOpenModal(!isOpenModal);
-                                    setPickPic(!pickPic);
-                                }}
-                                style={styles.img}
-                            >
-                                <Image
-                                    source={imgProfile}
-                                    style={styles.img}
-                                />
-                        </TouchableOpacity>
-                        </View>
-                    </LinearGradient>
-                    <View style={styles.dispView}>
-                        <View style={styles.txtView}>
-                            {
-                                isNameEdit ?
-                                    <Text style={styles.txtName}>{isUser.UserName}</Text>
-                                :
-                                    <TextInput
-                                        style={styles.txtNameInput}
-                                        value={isUser.UserName}
-                                        onChangeText={(txt) => {
-                                            setIsUser({ ...isUser, UserName: txt })
-                                        }}
-                                    />
-                            }
-                            {
-                                isNameEdit ?
-                                    <IconM
-                                        name='edit'
-                                        size={25}
-                                        color={Colors.fontColor}
-                                        onPress={() => setIsNameEdit(!isNameEdit)}
-                                    />
-                                :
-                                    <IconM
-                                        name='check'
-                                        size={25}
-                                        color={Colors.fontColor}
-                                        onPress={() => {
-                                            updateUserHandler({UserName: isUser.UserName});
-                                            setIsNameEdit(!isNameEdit);
-                                        }}
-                                    />
-                            }
-                        </View>
-                        <View style={styles.followView}>
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        props.navigation.dispatch(
-                                            StackActions.push('Follow',{
-                                                screen: 'Followers',
-                                                params: {
-                                                    userID: isUser.userID
-                                                }
-                                            })
-                                        );
-                                    }}
-                                >
-                                    <Text style={styles.txtNo}>{isUser.Followers}</Text>
-                                    <Text style={styles.txtFollow}>Followers</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.pipeView}></View>
-                            <View>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        props.navigation.dispatch(
-                                            StackActions.push('Follow',{
-                                                screen: 'Followings',
-                                                params: {
-                                                    userID: isUser.userID
-                                                }
-                                            })
-                                        );
-                                    }}
-                                >
-                                    <Text style={styles.txtNo}>{isUser.Followings}</Text>
-                                    <Text style={styles.txtFollow}>Following</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </View>
-                    <ScrollView style={styles.linerView}>
+             <ScrollView>
+                <KeyboardAvoidingView
+                    behavior='position'
+                    keyboardVerticalOffset={Platform.OS === "ios" ? 0 : -100}
+                >
+                    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.body}>
                         <View>
-                            <View style={styles.emailView}>
-                                <Text style={styles.emailTxt}>Email</Text>
-                                <Text style={styles.emailInputTxt}>{isUser.Email}</Text>
-                            </View>
-                            <View style={styles.userView}>
-                                <EditInput
-                                    txt='Contact No'
-                                    value={isUser.ContactNo}
-                                    onChangeText={(txt) => {
-                                        setIsUser({ ...isUser, ContactNo: txt })
-                                    }}
-                                    edit={isContactNoEdit}
-                                    onEdit={() => setIsContactNoEdit(!isContactNoEdit)}
-                                    onSave={() => {                                            
-                                        updateUserHandler({ContactNo: isUser.ContactNo});
-                                        setIsContactNoEdit(!isContactNoEdit);
-                                    }}
-                                />
-                                {
-                                    msg.id === 'contactNo' && msg.error !== '' && 
-                                        <Text style={styles.msgError}>{msg.error}</Text>
-                                }
-                                <View style={styles.horizontalView}></View>
-                                <EditInput
-                                    txt='About'
-                                    value={isUser.About}
-                                    onChangeText={(txt) => {
-                                        setIsUser({ ...isUser, About: txt })
-                                    }}
-                                    multiline
-                                    numberOfLines={3}
-                                    edit={isAboutEdit}
-                                    onEdit={() => setIsAboutEdit(!isAboutEdit)}
-                                    onSave={() => {                                            
-                                        updateUserHandler({About: isUser.About});
-                                        setIsAboutEdit(!isAboutEdit);
-                                    }}
-                                />
-                            </View>
-                            <View style={styles.logoutView}>
-                                <TouchableOpacity
-                                    style={styles.logoutBtn}
-                                    onPress={() => { setIsPwdEdit(!isPwdEdit) }}>
-                                    <Text style={styles.logoutBtnTxt}>Change Password</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <View style={styles.logoutView}>
-                                <TouchableOpacity style={styles.logoutBtn} onPress={logOut}>
-                                    <Text style={styles.logoutBtnTxt}>Log Out</Text>
-                                </TouchableOpacity>
-                            </View>
+                            <SliderModal 
+                                op1Txt='Take Photo'
+                                op2Txt='Chooce from Library'
+                                op1Press={launchCameraHandler}
+                                op2Press={launchImageLibraryHandler}
+                                op1Icon='camera-plus'
+                                op2Icon='image-multiple'
+                                visible={isOpenModal}
+                                onClick={closeModal}
+                            />
+                            {
+                                isPwdEdit && chnagePwdModal()
+                            }
+                            <LinearGradient
+                                colors={[Colors.gradientB1, Colors.gradientB2]}
+                                style={styles.liner}
+                            >
+                                <View style={styles.touchView}>
+                                    <TouchableOpacity
+                                        onPress={() => {
+                                            setIsOpenModal(!isOpenModal);
+                                            setPickCover(!pickCover);
+                                        }}
+                                        style={styles.imgCover}
+                                    >
+                                        <ImageBackground
+                                            source={imgCover}
+                                            style={styles.imgCover}
+                                        >
+                                        </ImageBackground>
+                                    </TouchableOpacity>
+                                </View>
+                                <View style={styles.detailView}>
+                                    <LinearGradient
+                                        colors={[Colors.gradient1, Colors.gradient2, Colors.gradient3, Colors.gradient4, Colors.gradient5]}
+                                        style={styles.imglinear}                        
+                                    >
+                                        <View style={styles.imgView}>
+                                            <TouchableOpacity
+                                                onPress={() => {
+                                                    setIsOpenModal(!isOpenModal);
+                                                    setPickPic(!pickPic);
+                                                }}
+                                                style={styles.img}
+                                            >
+                                                <Image
+                                                    source={imgProfile}
+                                                    style={styles.img}
+                                                />
+                                        </TouchableOpacity>
+                                        </View>
+                                    </LinearGradient>
+                                    <View style={styles.dispView}>
+                                        <View style={styles.txtView}>
+                                            {
+                                                isNameEdit ?
+                                                    <Text style={styles.txtName}>{isUser.UserName}</Text>
+                                                :
+                                                    <TextInput
+                                                        style={styles.txtNameInput}
+                                                        value={isUser.UserName}
+                                                        onChangeText={(txt) => {
+                                                            setIsUser({ ...isUser, UserName: txt })
+                                                        }}
+                                                    />
+                                            }
+                                            {
+                                                isNameEdit ?
+                                                    <IconM
+                                                        name='edit'
+                                                        size={25}
+                                                        color={Colors.fontColor}
+                                                        onPress={() => setIsNameEdit(!isNameEdit)}
+                                                    />
+                                                :
+                                                    <IconM
+                                                        name='check'
+                                                        size={25}
+                                                        color={Colors.fontColor}
+                                                        onPress={() => {
+                                                            updateUserHandler({UserName: isUser.UserName});
+                                                            setIsNameEdit(!isNameEdit);
+                                                        }}
+                                                    />
+                                            }
+                                        </View>
+                                        <View style={styles.followView}>
+                                            <View>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        props.navigation.dispatch(
+                                                            StackActions.push('Follow',{
+                                                                screen: 'Followers',
+                                                                params: {
+                                                                    userID: isUser.userID
+                                                                }
+                                                            })
+                                                        );
+                                                    }}
+                                                >
+                                                    <Text style={styles.txtNo}>{isUser.Followers}</Text>
+                                                    <Text style={styles.txtFollow}>Followers</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={styles.pipeView}></View>
+                                            <View>
+                                                <TouchableOpacity
+                                                    onPress={() => {
+                                                        props.navigation.dispatch(
+                                                            StackActions.push('Follow',{
+                                                                screen: 'Followings',
+                                                                params: {
+                                                                    userID: isUser.userID
+                                                                }
+                                                            })
+                                                        );
+                                                    }}
+                                                >
+                                                    <Text style={styles.txtNo}>{isUser.Followings}</Text>
+                                                    <Text style={styles.txtFollow}>Following</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                    </View>
+                                        <View style={styles.linerView}>
+                                            <View style={styles.emailView}>
+                                                <Text style={styles.emailTxt}>Email</Text>
+                                                <Text style={styles.emailInputTxt}>{isUser.Email}</Text>
+                                            </View>
+                                            <View style={styles.userView}>
+                                                <EditInput
+                                                    txt='Contact No'
+                                                    value={isUser.ContactNo}
+                                                    onChangeText={(txt) => {
+                                                        setIsUser({ ...isUser, ContactNo: txt })
+                                                    }}
+                                                    edit={isContactNoEdit}
+                                                    onEdit={() => setIsContactNoEdit(!isContactNoEdit)}
+                                                    onSave={() => {                                            
+                                                        updateUserHandler({ContactNo: isUser.ContactNo});
+                                                        setIsContactNoEdit(!isContactNoEdit);
+                                                    }}
+                                                />
+                                                {
+                                                    msg.id === 'contactNo' && msg.error !== '' && 
+                                                        <Text style={styles.msgError}>{msg.error}</Text>
+                                                }
+                                                <View style={styles.horizontalView}></View>
+                                                <EditInput
+                                                    txt='About'
+                                                    value={isUser.About}
+                                                    onChangeText={(txt) => {
+                                                        setIsUser({ ...isUser, About: txt })
+                                                    }}
+                                                    multiline
+                                                    edit={isAboutEdit}
+                                                    onEdit={() => setIsAboutEdit(!isAboutEdit)}
+                                                    onSave={() => {                                            
+                                                        updateUserHandler({About: isUser.About});
+                                                        setIsAboutEdit(!isAboutEdit);
+                                                    }}
+                                                />
+                                            </View>
+                                            <View style={styles.logoutView}>
+                                                <TouchableOpacity
+                                                    style={styles.logoutBtn}
+                                                    onPress={() => { setIsPwdEdit(!isPwdEdit) }}>
+                                                    <Text style={styles.logoutBtnTxt}>Change Password</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                            <View style={styles.logoutView}>
+                                                <TouchableOpacity style={styles.logoutBtn} onPress={logOut}>
+                                                    <Text style={styles.logoutBtnTxt}>Log Out</Text>
+                                                </TouchableOpacity>
+                                            </View>
+                                        </View>
+                                </View>
+                            </LinearGradient>
                         </View>
-                    </ScrollView>
-                </View>
-            </LinearGradient>
+                    </TouchableWithoutFeedback>
+                </KeyboardAvoidingView>
+            </ScrollView>
         </View>
     );
 };

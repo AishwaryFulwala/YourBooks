@@ -21,6 +21,11 @@ const HomeScreen = (props) => {
     const load = async () => {
         try {
             await dispatch(getUser());
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
             await dispatch(getCategories());
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
@@ -43,7 +48,7 @@ const HomeScreen = (props) => {
                                 <TouchableOpacity
                                     style={styles.btnCat}
                                     key={index}
-                                    onPress={(e) => {
+                                    onPress={() => {
                                         props.navigation.navigate('CategoryN', {
                                             cateID: val._id
                                         });

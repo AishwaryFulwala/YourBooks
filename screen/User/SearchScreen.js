@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, Dimensions, FlatList, Alert, ActivityIndicator, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, TextInput, Dimensions, FlatList, Alert, ActivityIndicator, TouchableOpacity, TouchableWithoutFeedback, Keyboard } from 'react-native';
 
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { StackActions } from '@react-navigation/native';
 
 import IconI from 'react-native-vector-icons/Ionicons';
 import IconF from 'react-native-vector-icons/Feather';
@@ -201,84 +200,88 @@ const SearchScreen = (props) => {
 
     return(
         <View style={styles.body}>
-            <View style={styles.serachView}>
-                <IconI
-                    name='search-outline'
-                    color={Colors.fontColor}
-                    size={25}
-                    style={styles.searchIcon}
-                />
-                <TextInput 
-                    style={styles.txtSerach}
-                    returnKeyType='search'
-                    autoCorrect={false}
-                    autoCapitalize='none'
-                    value={isSearch}
-                    onChangeText={changeTxt}
-                    onPressIn={() => setIsCross(true)}
-                    onSubmitEditing={searchSubmit}
-                />
-                {
-                    isCross && 
-                    <IconF
-                        name='x'
-                        color={Colors.fontColor}
-                        size={15}
-                        style={styles.searchIcon}
-                        onPress={crossHandler}
-                    />
-                }
-            </View>            
-            <View style={styles.dispView}>
-                {
-                    isSearch ?
-                        <TabView
-                            navigationState={{ index, routes }}
-                            renderScene={renderScene}
-                            onIndexChange={setIndex}
-                            style={styles.tabView}
-                            renderTabBar={tabs}
-                            keyboardDismissMode='none'
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+                <View style={styles.body}>
+                    <View style={styles.serachView}>
+                        <IconI
+                            name='search-outline'
+                            color={Colors.fontColor}
+                            size={25}
+                            style={styles.searchIcon}
                         />
-                    :
-                        (history?.Data && !!history?.Data?.length) &&
-                        <View style={styles.historyView}>
-                            <View style={styles.recentView}>
-                                <Text style={styles.txtRecent}>Recent</Text>
-                                <TouchableOpacity
-                                    onPress={() => updateHistory([])}
-                                >
-                                    <Text style={styles.iconClearAll}>Clear All</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <FlatList 
-                                data={history.Data}
-                                renderItem={({item, index}) => {
-                                    return (
-                                        <TouchableOpacity
-                                            style={styles.flatView}
-                                            key={index}
-                                            onPress={() => changeTxt(item)}
-                                        >
-                                            <Text
-                                                style={styles.txtData}
-                                                numberOfLines={1}
-                                                ellipsizeMode='tail'
-                                            >{item}</Text>
-                                            <IconF
-                                                name='x'
-                                                color={Colors.fontColor}
-                                                size={15}
-                                                style={styles.crosssIcon}
-                                                onPress={() => updateHistory(history.Data.filter((val, i) => i !== index))}
-                                            />
-                                        </TouchableOpacity>
-                                    );
-                                }}
+                        <TextInput 
+                            style={styles.txtSerach}
+                            returnKeyType='search'
+                            autoCorrect={false}
+                            autoCapitalize='none'
+                            value={isSearch}
+                            onChangeText={changeTxt}
+                            onPressIn={() => setIsCross(true)}
+                            onSubmitEditing={searchSubmit}
+                        />
+                        {
+                            isCross && 
+                            <IconF
+                                name='x'
+                                color={Colors.fontColor}
+                                size={15}
+                                style={styles.searchIcon}
+                                onPress={crossHandler}
                             />
-                        </View>
-                }
-            </View>
+                        }
+                    </View>            
+                    <View style={styles.dispView}>
+                        {
+                            isSearch ?
+                                <TabView
+                                    navigationState={{ index, routes }}
+                                    renderScene={renderScene}
+                                    onIndexChange={setIndex}
+                                    style={styles.tabView}
+                                    renderTabBar={tabs}
+                                    keyboardDismissMode='none'
+                                />
+                            :
+                                (history?.Data && !!history?.Data?.length) &&
+                                <View style={styles.historyView}>
+                                    <View style={styles.recentView}>
+                                        <Text style={styles.txtRecent}>Recent</Text>
+                                        <TouchableOpacity
+                                            onPress={() => updateHistory([])}
+                                        >
+                                            <Text style={styles.iconClearAll}>Clear All</Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                    <FlatList 
+                                        data={history.Data}
+                                        renderItem={({item, index}) => {
+                                            return (
+                                                <TouchableOpacity
+                                                    style={styles.flatView}
+                                                    key={index}
+                                                    onPress={() => changeTxt(item)}
+                                                >
+                                                    <Text
+                                                        style={styles.txtData}
+                                                        numberOfLines={1}
+                                                        ellipsizeMode='tail'
+                                                    >{item}</Text>
+                                                    <IconF
+                                                        name='x'
+                                                        color={Colors.fontColor}
+                                                        size={15}
+                                                        style={styles.crosssIcon}
+                                                        onPress={() => updateHistory(history.Data.filter((val, i) => i !== index))}
+                                                    />
+                                                </TouchableOpacity>
+                                            );
+                                        }}
+                                    />
+                                </View>
+                        }
+                    </View>
+                </View>
+            </TouchableWithoutFeedback>
         </View>
     );
 };
@@ -301,8 +304,8 @@ const styles = StyleSheet.create({
     },
     serachView: {
         borderColor: Colors.fontColor,
-        borderWidth: 1,
-        borderRadius: 20,
+        borderWidth: 2,
+        borderRadius: 23,
         marginHorizontal: wWidth * 0.03,
         marginVertical: wHeight * 0.03,
         flexDirection: 'row',

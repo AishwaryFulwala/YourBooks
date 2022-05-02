@@ -31,6 +31,10 @@ import FollowingsScreen from '../screen/user/FollowingsScreen';
 
 import ReadingListScreen from '../screen/user/ReadingListScreen';
 import WritingScreen from '../screen/user/WritingScreen';
+import EditBookScreen from '../screen/user/EditBookScreen';
+import AddBookScreen from '../screen/user/AddBookScreen';
+import AddBookDetailScreen from '../screen/user/AddBookDetailScreen';
+import AddCategoryScreen from '../screen/user/AddCategoryScreen';
 
 const options = {
     headerTitle: () => {
@@ -244,6 +248,26 @@ const LibraryNavigator = () => {
             <LibraryStack.Screen 
                 name='BookReadingN'
                 component={BookReadingScreen}
+                options={options}
+            />
+            <LibraryStack.Screen 
+                name='EditBookN'
+                component={EditBookScreen}
+                options={options}
+            />
+            <LibraryStack.Screen 
+                name='AddBookN'
+                component={AddBookScreen}
+                options={options}
+            />
+            <LibraryStack.Screen 
+                name='AddCategoryN'
+                component={AddCategoryScreen}
+                options={options}
+            />
+            <LibraryStack.Screen 
+                name='AddBookDetailN'
+                component={AddBookDetailScreen}
                 options={options}
             />
         </LibraryStack.Navigator>

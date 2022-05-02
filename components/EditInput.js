@@ -60,13 +60,13 @@ const styles = StyleSheet.create({
     btnView: {
         flexDirection: 'row',
         justifyContent: 'space-between',
+        paddingLeft: wWidth * 0.011,
     },
     userInputTxt: {
         color: Colors.fontColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.04,
         paddingTop: wHeight * 0.015,
-        paddingLeft: wWidth * 0.011,
     },
     userInput: {
         color: Colors.fontColor,
@@ -75,7 +75,6 @@ const styles = StyleSheet.create({
         borderBottomColor: Colors.fontColor,
         borderBottomWidth: 1,
         width: wWidth * 0.55,
-        paddingLeft: wWidth * 0.011,
     },
     btnEdit: {
         justifyContent: 'center',

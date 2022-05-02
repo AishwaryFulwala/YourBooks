@@ -9,6 +9,7 @@ import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import SliderModal from '../../components/SliderModal';
+import BookFlatList from '../../components/BookFlatLIst';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
@@ -92,35 +93,14 @@ const ReadingListScreen = (props) => {
                                 op1Press={() => startReadingHandler(isBookID)}
                                 op2Press={() => deleteToList(isID)}
                             />
-                            {
-                                readingList &&
-                                <FlatList
-                                    style={styles.btn}
-                                    numColumns={3}
-                                    data={readingList}
-                                    renderItem={({item, index}) => {
-                                        return (
-                                            <TouchableOpacity
-                                                key={index}
-                                                style={styles.btn}
-                                                onPress={() => {
-                                                    setIsID(item._id.ID);
-                                                    setIsBookID(item._id.BookID);
-                                                    setOpen(!open);
-                                                }}
-                                            >
-                                                <View style={styles.bookShadow}>
-                                                    <Image 
-                                                        source={{uri: item._id.BookPic}}
-                                                        style={styles.bookImg}
-                                                    />
-                                                </View>
-                                                <Text style={styles.txtName}>{item._id.BookName}</Text>
-                                            </TouchableOpacity>
-                                        );
-                                    }}
-                                /> 
-                            }
+                            <BookFlatList
+                                book={readingList}
+                                onList={(id, bid) => {
+                                    setIsID(id);
+                                    setIsBookID(bid);
+                                    setOpen(!open);
+                                }}
+                            />
                         </View>
                     </View>
             }
@@ -179,32 +159,6 @@ const styles = StyleSheet.create({
         color: Colors.lightGray,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.035,
-    },
-    btn: {
-        marginBottom: wHeight * 0.01,
-    },
-    bookShadow: {
-        shadowColor: Colors.shadowColor,
-        shadowOffset: { width: 5, height: 0 },
-        shadowOpacity: 1,
-        shadowRadius: 1,
-        elevation: 10,
-        position: 'relative',
-        marginTop: wHeight * 0.01,
-        marginHorizontal: wWidth * 0.039
-    },
-    bookImg: {
-        height: wHeight * 0.18,
-        width: wWidth * 0.25,
-        borderRadius: 5,
-    },
-    txtName: {
-        color: Colors.lightGray,
-        fontFamily: Fonts.bodyFont,
-        fontSize: wWidth * 0.035,
-        width: wWidth * 0.3,
-        marginLeft: wWidth * 0.039,
-        marginTop: wHeight * 0.01,
     },
 });
 

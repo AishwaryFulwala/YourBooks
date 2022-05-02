@@ -83,3 +83,55 @@ export const getBooksByUser = (id) => {
         }
     }
 };
+
+export const getBookNameByUser = () => {
+    return async (dispatch) => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/getBookNameByUser/${userData.id}`, {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            }, 'GET');
+
+            dispatch({
+                type: GET_BOOKS_BY_USER,
+                books: res.data,
+            });
+            
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            dispatch({
+                type: GET_BOOKS_BY_USER,
+                books: [],
+            });
+            
+            return await Promise.reject(error.response);
+        }
+    }
+};
+
+export const addBook = (img, title, desc, cate) => {
+    return async () => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/addBook`, {
+                BookName: title,
+                Description: desc,
+                BookPic: img,
+                CategoryID: cate,
+                UserID: userData.id
+            }, 'POST', {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                },
+            });
+
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            return await Promise.reject(error.response);
+        }
+    }
+};

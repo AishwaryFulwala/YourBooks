@@ -54,7 +54,7 @@ const styles = StyleSheet.create({
         marginTop: wHeight * 0.03,
         marginHorizontal: wWidth * 0.05,
         paddingHorizontal: 10,
-        borderBottomColor: '#cccccc',
+        borderBottomColor: Colors.borderColor,
         borderBottomWidth: 3,
         flexDirection: 'row',
         alignItems: 'center',

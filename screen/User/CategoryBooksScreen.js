@@ -26,11 +26,16 @@ const CategoryBooksScreen = (props) => {
     const load = async () => {
         try {
             await dispatch(getCategoryByID(cateID));
+        } catch (error) {
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
             await dispatch(getBooksByCategory(cateID));
         } catch (error) {
-            if(error.request?.status === 404)
-                return
-            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
     };
 
