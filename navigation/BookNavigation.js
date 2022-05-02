@@ -1,7 +1,7 @@
 import React from 'react';
 import { Image, Platform } from 'react-native';
 
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
@@ -193,6 +193,21 @@ const MyProfileNavigator = () => {
                 component={FollowTabNavigator}
                 options={options}
             />
+            <MyProfileStack.Screen
+                name='ViewProfileN'
+                component={ViewProfileScreen}
+                options={options}
+            />
+            <SearchStack.Screen 
+                name='BookN'
+                component={BookScreen}
+                options={options}
+            />
+            <SearchStack.Screen 
+                name='BookReadingN'
+                component={BookReadingScreen}
+                options={options}
+            />
         </MyProfileStack.Navigator>
     );
 };
@@ -226,6 +241,11 @@ const LibraryNavigator = () => {
                 component={LibraryTabNavigator}
                 options={options}
             />
+            <LibraryStack.Screen 
+                name='BookReadingN'
+                component={BookReadingScreen}
+                options={options}
+            />
         </LibraryStack.Navigator>
     );
 };
@@ -241,6 +261,7 @@ const TabNavigator = () => {
                 },
                 tabBarActiveTintColor: Colors.titleColor,
                 tabBarInactiveTintColor: Colors.fontColor,
+                tabBarHideOnKeyboard: true,
                 title: '',
                 tabBarIcon: ({ focused, color }) => {
                     if(route.name === 'Home') 
@@ -282,7 +303,7 @@ const TabNavigator = () => {
 const BookStack = createStackNavigator();
 const BookNavigator = () => {
     return(
-        <NavigationContainer>
+        <NavigationContainer theme={DarkTheme}>
             <BookStack.Navigator
                 screenOptions={{
                     headerShown: false

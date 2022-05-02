@@ -409,10 +409,10 @@ PODS:
     - React-Core
   - RNCMaskedView (0.2.6):
     - React-Core
-  - RNFBApp (14.8.1):
+  - RNFBApp (14.9.1):
     - Firebase/CoreOnly (= 8.15.0)
     - React-Core
-  - RNFBStorage (14.8.1):
+  - RNFBStorage (14.9.1):
     - Firebase/Storage (= 8.15.0)
     - React-Core
     - RNFBApp
@@ -719,8 +719,8 @@ SPEC CHECKSUMS:
   ReactCommon: fab89a13b52f1ac42b59a0e4b4f76f21aea9eebe
   RNCAsyncStorage: 005c0e2f09575360f142d0d1f1f15e4ec575b1af
   RNCMaskedView: c298b644a10c0c142055b3ae24d83879ecb13ccd
-  RNFBApp: 6aa068869d959488039cbceb2d830f53d4136c72
-  RNFBStorage: 7551b322d199c5078d082f62c7efb8b29a1fe927
+  RNFBApp: fd23737680ed2bdde41ca27d8bfb171b6d668c6b
+  RNFBStorage: 6073d7684eba9d2ec155436c067021b3eafe04e4
   RNGestureHandler: e1ad51d31a580755079d5124d3ab66f0fcaa8311
   RNPermissions: 34d678157c800b25b22a488e4d8babb57456e796
   RNReanimated: e42de406edd11350af29016cf6802ef16ee364d0

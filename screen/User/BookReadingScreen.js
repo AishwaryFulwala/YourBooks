@@ -26,7 +26,6 @@ const BookReadingScreen = (props) => {
         try {
             await dispatch(getBooksDetailByID(bookID));
         } catch (error) {
-            
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
     };
@@ -93,7 +92,6 @@ const BookReadingScreen = (props) => {
 
     if(!books || !books.length) {
         return (
-
             <View style={styles.activity}>
                 <ActivityIndicator color={Colors.fontColor} />
             </View>
@@ -141,6 +139,11 @@ const BookReadingScreen = (props) => {
 };
 
 const styles = StyleSheet.create({
+     activity: {
+        flex: 1,
+        justifyContent: 'center',
+        backgroundColor: Colors.bodyColor,
+    },
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,

@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     txtNoBook: {
-        color: Colors.fontColor,
+        color: Colors.lightGray,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.04,
         textAlign: 'center',

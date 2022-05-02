@@ -290,7 +290,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.bodyColor,
     },
     txtNoFound: {
-        color: Colors.fontColor,
+        color: Colors.lightGray,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.04,
         textAlign: 'center',

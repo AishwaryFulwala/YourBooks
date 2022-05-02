@@ -32,6 +32,12 @@ target 'YourBooks' do
 
 
 
+
+
+  pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
+
+  pod 'RNFBStorage', :path => '../node_modules/@react-native-firebase/storage'
+
   target 'YourBooksTests' do
     inherit! :complete
     # Pods for testing
