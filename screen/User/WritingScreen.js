@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, Alert, TouchableOpacity, ActivityIndicator, FlatList, Image} from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 

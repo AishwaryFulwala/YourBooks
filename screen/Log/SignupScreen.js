@@ -5,6 +5,8 @@ import { StackActions } from "@react-navigation/native";
 
 import { useDispatch } from "react-redux";
 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 import IconI from 'react-native-vector-icons/Ionicons';
 
 import * as UsersActions from '../../redux/actions/Users.action';
@@ -140,7 +142,7 @@ const SignupScreen = (props) => {
     };
 
     return (
-        <ScrollView style={styles.scrollColor}>
+        <KeyboardAwareScrollView extraScrollHeight={100}>
             <View style={styles.body}>
                 <Text style={styles.title}>Sign up</Text>
                 <View style={styles.box}>
@@ -251,14 +253,11 @@ const SignupScreen = (props) => {
                     >{' '}Sign In</Text>
                 </Text>
             </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
     );
 };
 
 const styles = StyleSheet.create({
-    scrollColor: {
-        backgroundColor: Colors.bodyColor
-    },
     body: {
         flex: 1,
         alignItems: 'center',

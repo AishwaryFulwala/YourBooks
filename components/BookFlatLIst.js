@@ -18,8 +18,7 @@ const BookFlatList = (props) => {
                     style={styles.btnBook}
                     numColumns={3}
                     data={book}
-                    renderItem={({item, index}) => {
-                        console.log(item);
+                    renderItem={({item, index}) => {;
                         return (
                             <TouchableOpacity
                                 key={index}

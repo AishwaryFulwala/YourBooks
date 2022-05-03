@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, TextInput, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, ScrollView, Alert } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, TextInput, Alert, Keyboard } from 'react-native';
 
 import { firebase } from '@react-native-firebase/storage';
 
-import { useDispatch, useSelector } from 'react-redux';
-import { StackActions } from '@react-navigation/native';
+import { useDispatch } from 'react-redux';
 
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { launchImageLibrary } from 'react-native-image-picker';
+
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import IconA from 'react-native-vector-icons/AntDesign';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -25,6 +26,8 @@ const AddBookScreen = (props) => {
     const [ isDesc, setIsDesc ] = useState('');
     const [ isPic, setIsPic ] = useState('');
     const isCate = props?.route?.params || '';
+
+    const [ isKey, setIsKey ] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -92,87 +95,86 @@ const AddBookScreen = (props) => {
         }
     };
 
+    useEffect(() => {
+        Keyboard.addListener('keyboardDidHide',() => {setIsKey(false)})
+        Keyboard.addListener('keyboardDidShow',() => {setIsKey(true)})
+    }, [ isDesc, isTitle ]);
+
     return (
         <View style={styles.body}>
-            <ScrollView>
-                <KeyboardAvoidingView
-                    behavior='position'
-                    keyboardVerticalOffset={Platform.OS === "ios" ? 100 : -100}
-                >
-                    <TouchableWithoutFeedback onPress={Keyboard.dismiss} style={styles.body}>
-                        <View>
-                            <TouchableOpacity
-                                style={styles.btnImg}
-                                onPress={launchImageLibraryHandler}
-                            >
-                                {
-                                    !bookPic ?
-                                        <View style={styles.btnView}>
-                                            <View style={styles.imgView}>
-                                                <IconA
-                                                    name='plus'
-                                                    color={Colors.fontColor}
-                                                    size={50}
-                                                />
-                                            </View>
-                                            <Text style={styles.txtImg}>Add Book Cover</Text>
-                                        </View>
-                                    :
-                                        <View style={styles.btnView}>
-                                            <View style={styles.imgView}>
-                                                <Image
-                                                    source={{uri: bookPic.uri}}
-                                                    style={styles.img}
-                                                />
-                                            </View>
-                                            <Text style={styles.txtImg}>Edit Book Cover</Text>
-                                        </View>
-                                }
-                            </TouchableOpacity>
-                            <View style={styles.inputView}>
-                                <Text style={styles.titleTxt}>Book title</Text>
-                                <TextInput 
-                                    style={styles.titleInput}
-                                    value={isTitle}
-                                    onChangeText={(txt) => setIsTitle(txt)}
-                                />
-                            </View>
-                            <View style={styles.inputView}>
-                                <Text style={styles.titleTxt}>Book Decription</Text>
-                                <TextInput 
-                                    style={styles.titleInput}
-                                    multiline
-                                    value={isDesc}
-                                    onChangeText={(txt) => setIsDesc(txt)}
-                                />
-                            </View>
-                            <View style={styles.inputView}>
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        props.navigation.navigate('AddCategoryN');
-                                    }}
-                                >
-                                    <Text style={styles.titleTxt}>Category</Text>
-                                    <Text style={styles.categoryTxt}>{isCate.cateName || ''}</Text>
-                                </TouchableOpacity>
-                            </View>
-                        </View>
-                    </TouchableWithoutFeedback>
-                </KeyboardAvoidingView>
-            </ScrollView>
-            <View style={styles.saveView}>
-                <TouchableOpacity
-                    onPress={saveHandler}
-                    style={styles.saveBtn}
-                >
-                    <IconM
-                        name='content-save-check'
-                        color={Colors.fontColor}
-                        size={30}
-                    />
-                </TouchableOpacity>
-            </View>
-        </View>
+            <KeyboardAwareScrollView  extraScrollHeight={100}>
+                <View>
+                    <TouchableOpacity
+                        style={styles.btnImg}
+                        onPress={launchImageLibraryHandler}
+                    >
+                        {
+                            !bookPic ?
+                                <View style={styles.btnView}>
+                                    <View style={styles.imgView}>
+                                        <IconA
+                                            name='plus'
+                                            color={Colors.fontColor}
+                                            size={50}
+                                        />
+                                    </View>
+                                    <Text style={styles.txtImg}>Add Book Cover</Text>
+                                </View>
+                            :
+                                <View style={styles.btnView}>
+                                    <View style={styles.imgView}>
+                                        <Image
+                                            source={{uri: bookPic.uri}}
+                                            style={styles.img}
+                                        />
+                                    </View>
+                                    <Text style={styles.txtImg}>Edit Book Cover</Text>
+                                </View>
+                        }
+                    </TouchableOpacity>
+                    <View style={styles.inputView}>
+                        <Text style={styles.titleTxt}>Book title</Text>
+                        <TextInput 
+                            style={styles.titleInput}
+                            value={isTitle}
+                            onChangeText={(txt) => setIsTitle(txt)}
+                        />
+                    </View>
+                    <View style={styles.inputView}>
+                        <Text style={styles.titleTxt}>Book Decription</Text>
+                        <TextInput 
+                            style={styles.titleInput}
+                            multiline
+                            value={isDesc}
+                            onChangeText={(txt) => setIsDesc(txt)}
+                        />
+                    </View>
+                    <View style={styles.inputView}>
+                        <TouchableOpacity
+                                onPress={() => props.navigation.navigate('AddCategoryN') }
+                        >
+                            <Text style={styles.titleTxt}>Category</Text>
+                            <Text style={styles.categoryTxt}>{isCate.cateName || ''}</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </KeyboardAwareScrollView>
+            {
+                !isKey &&
+                <View style={styles.saveView}>
+                    <TouchableOpacity
+                        onPress={saveHandler}
+                        style={styles.saveBtn}
+                    >
+                        <IconM
+                            name='content-save-check'
+                            color={Colors.fontColor}
+                            size={30}
+                        />
+                    </TouchableOpacity>
+                </View>
+            }
+         </View>
     );
 };
 

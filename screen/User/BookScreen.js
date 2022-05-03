@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, ImageBackground, Image, ScrollView, TouchableOpacity, Alert, TextInput, ActivityIndicator } from 'react-native';
 
+import { useDispatch, useSelector } from 'react-redux';
+
 import IconFA from 'react-native-vector-icons/FontAwesome';
 import IconO from 'react-native-vector-icons/Octicons';
 import IconI from 'react-native-vector-icons/Ionicons';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import { useDispatch, useSelector } from 'react-redux';
 
 import { getBooksByID } from '../../redux/actions/Books.action';
 import { addRating, getAvgRating, getRatingByBook } from '../../redux/actions/Rating.action';
@@ -260,57 +260,57 @@ const BookScreen = (props) => {
                         onClose={() => setIsLike(!isLike)}
                         visible={isLike}
                     >
-                            <View style={styles.mainView}>
-                                <Text style={styles.ratingTitle}>Your opinion matter to us</Text>
-                                <View style={styles.horizontalView}></View>
-                                <Text style={styles.ratingTxt}>Share your feedback.</Text>
-                                <View style={styles.ratingIconView}>
-                                    <IconM
-                                        name={rate === 1 ? 'emoticon-dead' : 'emoticon-dead-outline'}
-                                        size={rate === 1 ? 40 : 35}
-                                        color={Colors.fontColor}
-                                        onPress={() => rate !== 1 ? setRate(1) : setRate(0)}
-                                    />
-                                    <IconM
-                                        name={rate === 2 ? 'emoticon-sad' : 'emoticon-sad-outline'}
-                                        size={rate === 2 ? 40 : 35}
-                                        color={Colors.fontColor}
-                                        onPress={() => rate !== 2 ? setRate(2) : setRate(0)}
-                                    />
-                                    <IconM
-                                        name={rate === 3 ? 'emoticon-neutral' : 'emoticon-neutral-outline'}
-                                        size={rate === 3 ? 40 : 35}
-                                        color={Colors.fontColor}
-                                        onPress={() => rate !== 3 ? setRate(3) : setRate(0)}
-                                    />
-                                    <IconM
-                                        name={rate === 4 ? 'emoticon-happy' : 'emoticon-happy-outline'}
-                                        size={rate === 4 ? 40 : 35}
-                                        color={Colors.fontColor}
-                                        onPress={() => rate !== 4 ? setRate(4) : setRate(0)}
-                                    />
-                                    <IconM
-                                        name={rate === 5 ? 'emoticon-excited' : 'emoticon-excited-outline'}
-                                        size={rate === 5 ? 40 : 35}
-                                        color={Colors.fontColor}
-                                        onPress={() => rate !== 5 ? setRate(5) : setRate(0)}
-                                    />
-                                </View>
-                                <TextInput 
-                                    style={styles.reviewInput}
-                                    multiline={true}
-                                    placeholder="Leave a message, if you want"
-                                    placeholderTextColor={Colors.fontColor}
-                                    value={review}
-                                    onChangeText={(txt) => setReview(txt)}
+                        <View style={styles.mainView}>
+                            <Text style={styles.ratingTitle}>Your opinion matter to us</Text>
+                            <View style={styles.horizontalView}></View>
+                            <Text style={styles.ratingTxt}>Share your feedback.</Text>
+                            <View style={styles.ratingIconView}>
+                                <IconM
+                                    name={rate === 1 ? 'emoticon-dead' : 'emoticon-dead-outline'}
+                                    size={rate === 1 ? 40 : 35}
+                                    color={Colors.fontColor}
+                                    onPress={() => rate !== 1 ? setRate(1) : setRate(0)}
                                 />
-                                <TouchableOpacity
-                                    style={styles.ratingBtn}
-                                    onPress={rateNowHandler}
-                                >
-                                    <Text style={styles.ratingBtnTxt}>Rate Now</Text>
-                                </TouchableOpacity>
+                                <IconM
+                                    name={rate === 2 ? 'emoticon-sad' : 'emoticon-sad-outline'}
+                                    size={rate === 2 ? 40 : 35}
+                                    color={Colors.fontColor}
+                                    onPress={() => rate !== 2 ? setRate(2) : setRate(0)}
+                                />
+                                <IconM
+                                    name={rate === 3 ? 'emoticon-neutral' : 'emoticon-neutral-outline'}
+                                    size={rate === 3 ? 40 : 35}
+                                    color={Colors.fontColor}
+                                    onPress={() => rate !== 3 ? setRate(3) : setRate(0)}
+                                />
+                                <IconM
+                                    name={rate === 4 ? 'emoticon-happy' : 'emoticon-happy-outline'}
+                                    size={rate === 4 ? 40 : 35}
+                                    color={Colors.fontColor}
+                                    onPress={() => rate !== 4 ? setRate(4) : setRate(0)}
+                                />
+                                <IconM
+                                    name={rate === 5 ? 'emoticon-excited' : 'emoticon-excited-outline'}
+                                    size={rate === 5 ? 40 : 35}
+                                    color={Colors.fontColor}
+                                    onPress={() => rate !== 5 ? setRate(5) : setRate(0)}
+                                />
                             </View>
+                            <TextInput 
+                                style={styles.reviewInput}
+                                multiline
+                                placeholder="Leave a message, if you want"
+                                placeholderTextColor={Colors.fontColor}
+                                value={review}
+                                onChangeText={(txt) => setReview(txt)}
+                            />
+                            <TouchableOpacity
+                                style={styles.ratingBtn}
+                                onPress={rateNowHandler}
+                            >
+                                <Text style={styles.ratingBtnTxt}>Rate Now</Text>
+                            </TouchableOpacity>
+                        </View>
                     </PicModal>
                 </View>         
             </View>
