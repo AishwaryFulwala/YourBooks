@@ -39,7 +39,7 @@ const WritingScreen = (props) => {
                 <ActivityIndicator color={Colors.fontColor} />
             </View>
         );
-    }   
+    }
 
     return(
         <View style={styles.body}>
@@ -62,7 +62,7 @@ const WritingScreen = (props) => {
                 <BookFlatList
                     book={books}
                     onBook={(id) => {
-                        props.navigation.navigate('AddBookDetailN', {
+                        props.navigation.navigate('EditBookN', {
                             bookID: id
                         });
                     }}

@@ -67,6 +67,7 @@ const styles = StyleSheet.create({
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.04,
         paddingTop: wHeight * 0.015,
+        width: wWidth * 0.76,
     },
     userInput: {
         color: Colors.fontColor,
@@ -74,7 +75,7 @@ const styles = StyleSheet.create({
         fontSize: wWidth * 0.04,
         borderBottomColor: Colors.fontColor,
         borderBottomWidth: 1,
-        width: wWidth * 0.55,
+        width: wWidth * 0.76,
     },
     btnEdit: {
         justifyContent: 'center',

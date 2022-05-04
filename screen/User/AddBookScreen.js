@@ -87,8 +87,10 @@ const AddBookScreen = (props) => {
                 storeImage(bookPic);
             
             try {
-                await dispatch(addBook(isPic, isTitle, isDesc, isCate.cateID));
-                props.navigation.navigate('AddBookDetailN');
+                const res = await dispatch(addBook(isPic, isTitle, isDesc, isCate.cateID));
+                props.navigation.navigate('AddBookDetailN',{
+                    bookID: res._id
+                });
             } catch (error) {
                 Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
             }

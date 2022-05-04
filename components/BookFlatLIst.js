@@ -25,7 +25,7 @@ const BookFlatList = (props) => {
                                 style={styles.btnBook}
                                 onPress={() => {
                                     props.onList && props.onList(item._id.ID || item._id, item._id.BookID)
-                                    props.onBook && props.onBook(item._id.BookID || item.BookID)
+                                    props.onBook && props.onBook(item._id.BookID || item._id)
                                 }}
                             >
                                 <View style={styles.bookShadow}>

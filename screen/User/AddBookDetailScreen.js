@@ -1,13 +1,21 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image, TextInput, Keyboard } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
 
+import { useDispatch, useSelector } from 'react-redux';
+
+import { firebase } from '@react-native-firebase/storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor";
 
-import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+
+import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import CustomHeaderButton from '../../components/CustomHeaderButton';
+
+import { addBookDetail, getPartsByID } from '../../redux/actions/BooksDetail.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -16,19 +24,30 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const AddBookDetailScreen = (props) => {
-    const [ bookPic, setBookPic ] = useState('');
+    const bookID = props.route.params.bookID;
+    const part = useSelector((state) => state.booksDetail.getBooksDetailData);
+
     const [ isTitle, setIsTitle ] = useState('');
     const [ isDesc, setIsDesc ] = useState('');
     const [ isPic, setIsPic ] = useState('');
-
-    const [ isKey, setIsKey ] = useState(false);
-
-    useEffect(() => {
-        Keyboard.addListener('keyboardDidHide',() => {setIsKey(false)})
-        Keyboard.addListener('keyboardDidShow',() => {setIsKey(true)})
-    }, [ isTitle ]);
+    const [ open, setOpen ] = useState(false);
 
     const RichText = useRef();
+
+    const dispatch = useDispatch();
+
+    const load = async () => {
+        try {
+            await dispatch(getPartsByID(bookID));
+        } catch (error) {
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+    };
+
+    useEffect(() => {
+        props.navigation.addListener('focus', load);
+    }, []);
 
     const verifyPermission = async () => {
         const res = await request(Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA)
@@ -41,7 +60,7 @@ const AddBookDetailScreen = (props) => {
     };
 
     const storeImage = (val) => {
-        const path = `/Images/Book/${Date.now() + val.fileName}`;
+        const path = `/Images/BookDetail/${Date.now() + val.fileName}`;
         const imgRef = firebase.app().storage('gs://yourbooks-f1f3d.appspot.com').ref(path);
 
         imgRef.putFile(val.uri)
@@ -58,9 +77,6 @@ const AddBookDetailScreen = (props) => {
     };
 
     const launchImageLibraryHandler = async () => {
-    //     RichText.current?.insertImage(
-    //   "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a7/React-icon.svg/100px-React-icon.svg.png"
-    // );
         const hasPermission = verifyPermission()
         
         if(!hasPermission)
@@ -77,106 +93,94 @@ const AddBookDetailScreen = (props) => {
         if(img === undefined || img.assets === undefined){
             return;
         }
-console.log(img.assets[0])
-        RichText.current?.insertImage(img.assets[0].uri);
+
+        storeImage(img.assets[0])
+        RichText.current?.insertImage(isPic);
     };
-    
+
+    const saveHandler = async () => {
+        try {
+            await dispatch(addBookDetail(part.length + 1, isTitle, isDesc, bookID));
+            props.navigation.navigate('EditBookN', {
+                bookID: bookID
+            });
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+    };
+
+    useEffect(() => {
+        props.navigation.setOptions({
+            headerRight: () => {
+                return (
+                    <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+                        <Item
+                            title='Save'
+                            iconName='book-arrow-up-outline'
+                            IconComponent={IconMC}
+                            onPress={saveHandler}
+                        />
+                    </HeaderButtons>
+                );                
+            },
+        });
+    }, [ isTitle, isDesc ]);
+
     return(
-        <View style={styles.body}>
-            <KeyboardAwareScrollView extraScrollHeight={100}>
-                <View>
-                    <TouchableOpacity
-                        style={styles.btnImg}
-                        onPress={() => {}}
-                    >
-                    {
-                        !bookPic ?
-                            <View style={styles.imgView}>
-                            <IconM 
-                                    name='image-edit-outline'
-                                    size={30}
-                                    color={Colors.fontColor}
-                                />
-                                <Text style={styles.txtImg}>Tab to add Media</Text>
-                            </View>
-                        :
-                            <Image
-                                source={require('../../assets/image/HomeCover.webp')}
-                                style={styles.img}
-                            />
-                    }
-                    </TouchableOpacity>
-                    <View style={styles.inputView}>
-                        <TextInput 
-                            style={styles.titleInput}
-                            placeholder='Title your Story Part'
-                            placeholderTextColor={Colors.fontColor}
-                            value={isTitle}
-                            onChangeText={(txt) => setIsTitle(txt)}
-                        />
-                    </View>
-                    <View style={styles.descInput}>
-                        <RichEditor
-                            editorStyle={styles.editInput}
-                            ref={RichText}
-                            placeholder='Tap here to start writing'
-                            onChange={(txt) => console.log(txt)}
-                        />
-                    </View>
-                    <View >
-                        <RichToolbar
-                            style={styles.richTool}
-                            editor={RichText}
-                            iconTint={Colors.btnGray}
-                            selectedIconTint={Colors.fontColor}
-                            iconSize={20}
-                            actions={[
-                                actions.undo,
-                                actions.setBold,
-                                actions.setItalic,
-                                actions.setUnderline,
-                                actions.insertImage,
-                                actions.redo,
-                            ]}
-                            onPressAddImage={launchImageLibraryHandler}
-                        />
-                    </View>
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={styles.body}>
+                <View style={styles.inputView}>
+                    <Text style={styles.titleTxt}>Book title</Text>
+                    <TextInput 
+                        style={styles.titleInput}
+                        value={isTitle}
+                        onChangeText={(txt) => setIsTitle(txt)}
+                    />
                 </View>
-            </KeyboardAwareScrollView>
-        </View>
+                <RichEditor
+                    style={styles.descInput}
+                    editorStyle={styles.editInput}
+                    ref={RichText}
+                    placeholder='Tap here to start writing'
+                    useContainer
+                    onChange={(txt) => setIsDesc(txt)}
+                />
+                <RichToolbar
+                    style={styles.richTool}
+                    editor={RichText}
+                    iconTint={Colors.btnGray}
+                    selectedIconTint={Colors.fontColor}
+                    iconSize={20}
+                    actions={[
+                        actions.undo,
+                        actions.setBold,
+                        actions.setItalic,
+                        actions.setUnderline,
+                        actions.insertImage,
+                        actions.redo,
+                    ]}
+                    onPressAddImage={launchImageLibraryHandler}
+                />
+            </View>
+        </TouchableWithoutFeedback>
     );
 };
 
 const styles = StyleSheet.create({
     body: {
-        height: wHeight * 0.8,
+        flex: 1,
         backgroundColor: Colors.bodyColor,
     },
-    btnImg: {
-        backgroundColor: Colors.drakGray,
-        marginVertical: wHeight * 0.02,
-    },
-    imgView: {
-        borderColor: Colors.fontColor,
-        borderStyle: 'dashed',
-        borderWidth: 1,
-        height: wHeight * 0.2,
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    txtImg: {
-        color: Colors.fontColor,
-        fontFamily: Fonts.bodyFont,
-        fontSize: wWidth * 0.04,
-        marginTop: wHeight * 0.01,     
-    },
-    img: {
-        height: wHeight * 0.2,
-        width: wWidth,
-    },
     inputView: {
+        backgroundColor: Colors.drakGray,
         marginVertical: wHeight * 0.01,
+        paddingLeft: wWidth * 0.05,
         paddingVertical: wWidth * 0.03,
+    },
+    titleTxt: {
+        color: Colors.lightGray,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.03,
     },
     titleInput: {
         color: Colors.fontColor,
@@ -184,19 +188,26 @@ const styles = StyleSheet.create({
         fontSize: wWidth * 0.04,
         borderBottomColor: Colors.fontColor,
         borderBottomWidth: 1,
+        width: wWidth * 0.9,
         paddingVertical: wHeight * 0.01,
-        textAlign: 'center'
     },
     descInput: {
-        marginVertical: wHeight * 0.01,
-        height: wHeight * 0.34,
+        flex: 1,
         borderColor: Colors.fontColor,
         borderWidth: 1,
+        maxHeight: 500,
     },
     editInput:{
         backgroundColor: Colors.bodyColor,
         color: Colors.fontColor,
-        maxHeight: wHeight * 0.34,
+        placeholderColor: Colors.fontColor,
+        contentCSSText: `
+            font-size: ${wWidth * 0.04}px;
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100px;
+            position: absolute; 
+            top: 0; right: 0; bottom: 0; left: 0;`,
     },
     richTool: {
         backgroundColor: "#c6c3b3",

@@ -147,8 +147,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between',
         marginHorizontal: wWidth * 0.05,
-        marginTop: wHeight * 0.02,
-        marginBottom: wHeight * 0.02,
+        marginVertical: wHeight * 0.02,
     },
     txtTitle: {
         color: Colors.lightGray,

@@ -594,9 +594,7 @@ const MyProfileScreen = (props) => {
                                 <EditInput
                                     txt='Contact No'
                                     value={isUser.ContactNo}
-                                    onChangeText={(txt) => {
-                                        setIsUser({ ...isUser, ContactNo: txt })
-                                    }}
+                                    onChangeText={(txt) => setIsUser({ ...isUser, ContactNo: txt })}
                                     edit={isContactNoEdit}
                                     onEdit={() => setIsContactNoEdit(!isContactNoEdit)}
                                     onSave={() => {                                            
@@ -809,7 +807,6 @@ const styles = StyleSheet.create({
     },
     emailView: {
         marginBottom: wHeight * 0.03,
-        width: wWidth * 0.9,
         justifyContent: 'center',
         paddingHorizontal: wWidth * 0.05,
         paddingVertical: wHeight * 0.02,
