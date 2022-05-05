@@ -4,6 +4,7 @@ import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity , FlatList,
 import { useDispatch, useSelector } from 'react-redux';
 
 import { deleteReadingList, getReadingListByUserID } from '../../redux/actions/ReadingList.action';
+import { updateBook } from '../../redux/actions/Books.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -20,6 +21,7 @@ const ReadingListScreen = (props) => {
     const [ open, setOpen ] = useState(false);
     const [ isID, setIsID ] = useState(null);
     const [ isBookID, setIsBookID ] = useState(null);
+    const [ isReads, setIsReads ] = useState(null);
 
     const dispatch = useDispatch();
 
@@ -35,12 +37,19 @@ const ReadingListScreen = (props) => {
         props.navigation.addListener('focus', load);
     }, []);
 
-    const deleteToList = async (id) => {
+    const deleteToList = async (id, bid, no) => {
         try {
             await dispatch(deleteReadingList(id));
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
+
+        try {
+            await dispatch(updateBook(bid, { NoOfReads: (no-1) }));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
         load();
         setOpen(!open);
     };
@@ -91,13 +100,14 @@ const ReadingListScreen = (props) => {
                                 op1Icon='book-plus-multiple'
                                 op2Icon='book-open-page-variant'
                                 op1Press={() => startReadingHandler(isBookID)}
-                                op2Press={() => deleteToList(isID)}
+                                op2Press={() => deleteToList(isID, isBookID, isReads)}
                             />
                             <BookFlatList
                                 book={readingList}
-                                onList={(id, bid) => {
+                                onList={(id, bid, no) => {
                                     setIsID(id);
                                     setIsBookID(bid);
+                                    setIsReads(no)
                                     setOpen(!open);
                                 }}
                             />

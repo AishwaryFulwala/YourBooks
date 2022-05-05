@@ -153,7 +153,7 @@ const AddBookScreen = (props) => {
                     </View>
                     <View style={styles.inputView}>
                         <TouchableOpacity
-                                onPress={() => props.navigation.navigate('AddCategoryN') }
+                            onPress={() => props.navigation.navigate('AddCategoryN') }
                         >
                             <Text style={styles.titleTxt}>Category</Text>
                             <Text style={styles.categoryTxt}>{isCate.cateName || ''}</Text>

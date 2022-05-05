@@ -1,9 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, TextInput, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { firebase } from '@react-native-firebase/storage';
+import { PERMISSIONS, request } from 'react-native-permissions';
+import { launchImageLibrary } from 'react-native-image-picker';
+
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+import IconA from 'react-native-vector-icons/AntDesign';
+import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { getBooksByID } from '../../redux/actions/Books.action';
 import { getBooksDetailByID } from '../../redux/actions/BooksDetail.action';
@@ -12,7 +19,6 @@ import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import EditInput from '../../components/EditInput';
-
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
@@ -21,8 +27,16 @@ const EditBookScreen = (props) => {
     const book = useSelector((state) => state.books.getBookData.getBooksByID);
     const bookDetail = useSelector((state) => state.booksDetail.getBooksDetailData);
 
+    const [ isTitle, setIsTitle ] = useState('');
+    const [ isDesc, setIsDesc ] = useState('');
+    const [ isPic, setIsPic ] = useState('');
+
     const [ isTitleEdit, setIsTitleEdit ] = useState(true);
     const [ isDescEdit, setIsDescEdit ] = useState(true);
+
+    const [ msg, setMsg ] = useState({});
+
+    const [ isLoad, setIsLoad ] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -36,7 +50,7 @@ const EditBookScreen = (props) => {
         try {
             await dispatch(getBooksDetailByID(bookID));
         } catch (error) {
-            if(error.request?.status !== 404)
+            if(error?.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
     };
@@ -45,7 +59,94 @@ const EditBookScreen = (props) => {
         props.navigation.addListener('focus', load);
     }, []);
 
-    if(!book || !bookDetail) {
+    const verifyPermission = async () => {
+        const res = await request(Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA)
+
+        if (res !== 'granted') {
+            Alert.alert('Insufficient Permission', 'You need to grant camera permission', [{text: 'okay'}]);
+            return false;
+        }
+        return true;
+    };
+
+    const storeImage = (val) => {
+        const path = `/Images/Book/${Date.now() + val.fileName}`;
+        const imgRef = firebase.app().storage('gs://yourbooks-f1f3d.appspot.com').ref(path);
+
+        setIsLoad(true);
+
+        imgRef.putFile(val.uri)
+            .then(async () => {
+                try {
+                   const url = await imgRef.getDownloadURL();
+
+                   setIsPic(url);
+                   setIsLoad(false);
+                   updateBook({BookPic: url});
+                } catch (error) {
+                    Alert.alert('An error occurred!', 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+                }
+            })
+            .catch(() => {
+                Alert.alert('An error occurred!', 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            });
+    };
+
+    const launchImageLibraryHandler = async () => {
+        const hasPermission = verifyPermission()
+        
+        if(!hasPermission)
+            return;
+
+        let img;
+        try {
+            img = await launchImageLibrary()
+        } catch (error) {
+            Alert.alert('', 'Can\'t access Library', [{text: okay}])
+            return;
+        }
+
+        if(img === undefined || img.assets === undefined){
+            return;
+        }
+
+        storeImage(img.assets[0]);
+    };
+
+    useEffect(() => {
+        if(book) {
+            setIsTitle(book[0]?._id?.BookName);
+            setIsDesc(book[0]?._id?.Description);
+            setIsPic(book[0]?._id?.BookPic);
+        }
+    }, [ book ]);
+
+    const updateBook = async (val) => {
+        console.log(val)
+        if(isTitle === ''){
+            setMsg({
+                id: 'title',
+                error: 'Title can\'t be empty.'
+            });
+            return
+        }
+        else 
+            setMsg({
+                id: 'opassword',
+                error: ''
+            });
+
+        try {
+            await dispatch(updateBook(bookID, val));
+        } catch (error) {
+            console.log(error)
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        load();
+    };
+
+    if(!book || !bookDetail || isLoad) {
         return (
             <View style={styles.activity}>
                 <ActivityIndicator color={Colors.fontColor} />
@@ -59,14 +160,17 @@ const EditBookScreen = (props) => {
                 <View>
                     <TouchableOpacity
                         style={styles.btnImg}
-                        onPress={() => {}}
+                        onPress={launchImageLibraryHandler}
                     >
                         <View style={styles.btnView}>
                             <View style={styles.imgView}>
-                                <Image
-                                    source={{uri: book[0]._id.BookPic}}
-                                    style={styles.img}
-                                />
+                                {   
+                                    !!isPic &&
+                                    <Image
+                                        source={{uri: isPic}}
+                                        style={styles.img}
+                                    />
+                                }
                             </View>
                             <Text style={styles.txtImg}>Edit Book Cover</Text>
                         </View>
@@ -74,27 +178,31 @@ const EditBookScreen = (props) => {
                     <View style={styles.containView}>
                         <EditInput
                             txt='Book Title'
-                            value={book[0]._id.BookName}
-                            onChangeText={(txt) => {}}
+                            value={isTitle}
+                            onChangeText={(txt) => setIsTitle(txt)}
                             edit={isTitleEdit}
                             onEdit={() =>  setIsTitleEdit(!isTitleEdit)}
-                            onSave={() => {                                            
-                                        
+                            onSave={() => {
+                                updateBook({BookName: isTitle});
+                                setIsTitleEdit(!isTitleEdit);
                             }}
                         />
-                        {/* {
-                            msg.id === 'contactNo' && msg.error !== '' && 
+                        {
+                            msg.id === 'title' && msg.error !== '' && 
                             <Text style={styles.msgError}>{msg.error}</Text>
-                        } */}
+                        }
                         <View style={styles.horizontalView}></View>
                         <EditInput
                             txt='Book Description'
-                            value={book[0]._id.Description}
-                            onChangeText={(txt) => {}}
+                            value={isDesc}
+                            onChangeText={(txt) => setIsDesc(txt)}
                             multiline
                             edit={isDescEdit}
-                            onEdit={() => {}}
-                            onSave={() => {}}
+                            onEdit={() => setIsDescEdit(!isDescEdit)}
+                            onSave={() => {
+                                updateBook({Description: isDesc});
+                                setIsDescEdit(!isDescEdit);
+                            }}
                         />
                     </View>
                     <View style={styles.cateView}>
@@ -103,23 +211,58 @@ const EditBookScreen = (props) => {
                     </View>
                 </View>
                 <View>
-                    <Text style={styles.tableTxt}>TABLE OF CONTENT</Text>
-                    <View style={styles.ratingDispView}>
-                            {/* {
-                                bookDetail.map((val, index) => {
-                                    return ( */}
-                                        <View style={styles.ratingUser}>
-                                            <View style={styles.ratingUserDate}>
-                                                <Text style={styles.txtRatingUser}>val.UserName</Text>
-                                                <Text style={styles.txtReview}>val.Review</Text>
-                                            </View>
-                                        </View>
-                                    {/* )
-                                }) 
-                            } */}
-                        </View>
+                    <View style={styles.tableView}>
+                        <Text style={styles.tableTxt}>TABLE OF CONTENT</Text>
+                        <IconM
+                            name='dots-vertical'
+                            size={25}
+                            color={Colors.fontColor}
+                            onPress={() => {}}
+                        />
+                    </View>
+                        {
+                            !!bookDetail.length &&
+                            <View style={styles.detailView}>
+                                {
+                                    bookDetail.map((val, index) => {
+                                        return (
+                                            <TouchableOpacity
+                                                style={styles.detailBlock}
+                                                key={index}
+                                                onPress={() => {
+                                                    props.navigation.navigate('AddBookDetailN',{
+                                                        bookID: bookID,
+                                                        partID: val._id,
+                                                    });
+                                                }}
+                                            >
+                                                <Text style={styles.detailTxt}>{val.PartNo}. {val.PartName}</Text>
+                                            </TouchableOpacity>
+                                        );
+                                    })
+                                }
+                            </View>
+                        }
+                        <TouchableOpacity
+                            style={styles.addView}
+                            onPress={() => {
+                                props.navigation.navigate('AddBookDetailN',{
+                                    bookID: bookID
+                                });
+                            }}
+                        >
+                            <IconA
+                                name='plus'
+                                color={Colors.lightGray}
+                                size={30}
+                            />
+                            <Text style={styles.addTxt}>Add New Part</Text>
+                        </TouchableOpacity>
                  </View>
             </KeyboardAwareScrollView>
+            <TouchableOpacity style={styles.triangleCorner}>
+                <Text style={styles.statusTxt}>{book[0]._id.Status ? 'Ongoing' : 'Complete'}</Text>
+            </TouchableOpacity>
         </View>
     );
 };
@@ -167,8 +310,15 @@ const styles = StyleSheet.create({
     },
     containView: {
         backgroundColor: Colors.drakGray,
-        borderRadius: 15,
         paddingHorizontal: wWidth * 0.05,
+    },
+    msgError: {
+        width: wWidth * 0.7,
+        marginTop: -(wHeight * 0.01),
+        marginBottom: wHeight * 0.02,
+        paddingHorizontal: wWidth * 0.03,
+        fontFamily: Fonts.bodyFont,
+        color: Colors.errorColor,
     },
     horizontalView: {
         borderColor: Colors.btnGray,
@@ -180,7 +330,6 @@ const styles = StyleSheet.create({
         paddingHorizontal: wWidth * 0.05,
         paddingVertical: wHeight * 0.02,
         backgroundColor: Colors.drakGray,
-        borderRadius: 10,
     },
     cateTxt: {
         color: Colors.lightGray,
@@ -194,68 +343,67 @@ const styles = StyleSheet.create({
         paddingTop: wHeight * 0.01,
         paddingLeft: wWidth * 0.011,
     },
+    tableView: {
+        flexDirection: 'row',
+        marginTop: wHeight * 0.02,
+        paddingTop: wHeight * 0.01,
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        paddingHorizontal: wWidth * 0.06,
+    },
     tableTxt: {
-        color: Colors.lightGray,
+        color: Colors.fontColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.045,
-        marginHorizontal: wWidth * 0.05,
-        marginVertical: wHeight * 0.03,
     },
-    ratingDispView:{
+    detailView: {
         backgroundColor: Colors.drakGray,
-        borderRadius: 10,
-        marginHorizontal: wWidth * 0.05,
-        marginTop: wHeight * 0.02,
-        alignItems: 'center',
+        marginTop: wHeight * 0.03,
     },
-    ratingDispBlock: {
-        backgroundColor: Colors.btnGray,
-        borderRadius: 7,
-        marginVertical: wHeight * 0.02,
-        paddingVertical: wHeight * 0.02,
-        width: wWidth * 0.8,
-        alignItems: 'center',
+    detailBlock: {
+        height: wHeight * 0.09,
+        borderBottomColor: Colors.lightGray,
+        borderBottomWidth: 0.5,
     },
-    ratingUser: {
-        flexDirection: 'row',
-    },
-    ratingUserImgView: {
-        height: wHeight * 0.05,
-        width: wHeight * 0.05,
-        alignItems: 'center',
-        justifyContent: 'center',
-        borderRadius: 100,
-    },
-    ratingUserImg: {
-        height: wHeight * 0.05,
-        width: wHeight * 0.05,
-        borderRadius: 100,
-    },
-    ratingUserDate: {
-        marginLeft: wWidth * 0.03,
-        width: wWidth * 0.6,
-    },
-    txtRatingUser: {
+    detailTxt: {
+        marginVertical: wHeight * 0.03,
         color: Colors.fontColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.04,
+        paddingHorizontal: wWidth * 0.05,
     },
-    txtRatingDate: {
+    addView: {
+        marginVertical: wHeight * 0.03,
+        backgroundColor: Colors.drakGray,
+        borderColor: Colors.lightGray,
+        borderWidth: 1,
+        borderStyle: 'dashed',
+        height: wHeight * 0.13,
+        justifyContent: 'center',
+        alignItems: 'center'
+    },
+    addTxt: {
         color: Colors.lightGray,
         fontFamily: Fonts.bodyFont,
-        fontSize: wWidth * 0.03,
+        fontSize: wWidth * 0.04,
     },
-    ratingStar: {
-        flexDirection: 'row',
-        marginTop: wHeight * 0.005,
+    triangleCorner: {
+        width: wWidth * 0.45,
+        height: wHeight * 0.05,
+        backgroundColor: Colors.bookColor,
+        borderStyle: "solid",
+        transform: [{ rotate: "-45deg" }],
+        position: 'absolute',
+        bottom: wWidth * 0.05,
+        right: -(wWidth * 0.125),
+        alignItems: 'center',
+        justifyContent: 'center'
     },
-    txtReview: {
-        marginTop: wHeight * 0.005,
+    statusTxt: {
         color: Colors.fontColor,
         fontFamily: Fonts.bodyFont,
-        fontSize: wWidth * 0.035,
+        fontSize: wWidth * 0.045,
     },
-    
 });
 
 export default EditBookScreen;

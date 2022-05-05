@@ -8,7 +8,7 @@ import IconO from 'react-native-vector-icons/Octicons';
 import IconI from 'react-native-vector-icons/Ionicons';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { getBooksByID } from '../../redux/actions/Books.action';
+import { getBooksByID, updateBook } from '../../redux/actions/Books.action';
 import { addRating, getAvgRating, getRatingByBook } from '../../redux/actions/Rating.action';
 import { addReadingList, deleteReadingList, getReadingListByID } from '../../redux/actions/ReadingList.action';
 
@@ -69,10 +69,24 @@ const BookScreen = (props) => {
         props.navigation.addListener('focus', load);
     }, []);
 
-    const addToList = async () => {
+    const loadBook = async () => {
+        try {
+            await dispatch(getBooksByID(bookID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+    };
+
+    const addToList = async (no) => {
         if(readingList._id) {
             try {
                 await dispatch(deleteReadingList(readingList._id));
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            }
+
+            try {
+                await dispatch(updateBook(bookID, { NoOfReads: (no-1) }));
             } catch (error) {
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
             }
@@ -83,7 +97,14 @@ const BookScreen = (props) => {
             } catch (error) {
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
             }
+
+            try {
+                await dispatch(updateBook(bookID, { NoOfReads: (no+1) }));
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            }
         }
+        loadBook();
     };
 
     const startReadingHandler = () => {
@@ -139,11 +160,11 @@ const BookScreen = (props) => {
                 <SliderModal 
                     visible={open}
                     onClick={() => setOpen(!open)}
-                    op1Txt={!(readingList.BookID) ? 'Add to Reading List' : 'Remove From Reading List'}
+                    op1Txt={!readingList.BookID ? 'Add to Reading List' : 'Remove From Reading List'}
                     op2Txt='Start Reading'
                     op1Icon='book-plus-multiple'
                     op2Icon='book-open-page-variant'
-                    op1Press={addToList}
+                    op1Press={() => addToList(val.NoOfReads)}
                     op2Press={startReadingHandler}
                 />            
                 <ImageBackground

@@ -24,7 +24,7 @@ const BookFlatList = (props) => {
                                 key={index}
                                 style={styles.btnBook}
                                 onPress={() => {
-                                    props.onList && props.onList(item._id.ID || item._id, item._id.BookID)
+                                    props.onList && props.onList(item._id.ID || item._id, item._id.BookID, item._id.NoOfReads)
                                     props.onBook && props.onBook(item._id.BookID || item._id)
                                 }}
                             >

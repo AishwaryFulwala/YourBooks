@@ -135,3 +135,24 @@ export const addBook = (img, title, desc, cate) => {
         }
     }
 };
+
+export const updateBook = (id, book) => {
+    return async () => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/updateBook/${id}`, {
+                book,
+            }, 'PATCH', {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                },
+            });
+
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            console.log(error)
+            return await Promise.reject(error.response);
+        }
+    }
+};

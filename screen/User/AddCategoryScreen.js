@@ -15,7 +15,6 @@ import CustomHeaderButton from '../../components/CustomHeaderButton';
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
-
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 

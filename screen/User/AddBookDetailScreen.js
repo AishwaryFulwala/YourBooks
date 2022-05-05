@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback, Alert } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback, Alert, ActivityIndicator } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -25,12 +25,13 @@ const wWidth = Dimensions.get('window').width;
 
 const AddBookDetailScreen = (props) => {
     const bookID = props.route.params.bookID;
+    const partID = props.route.params?.partID;
     const part = useSelector((state) => state.booksDetail.getBooksDetailData);
 
+    const [ isPart , setIsPart ] = useState();
     const [ isTitle, setIsTitle ] = useState('');
     const [ isDesc, setIsDesc ] = useState('');
-    const [ isPic, setIsPic ] = useState('');
-    const [ open, setOpen ] = useState(false);
+    const [ isLoading, setIsLoading ] = useState();
 
     const RichText = useRef();
 
@@ -47,7 +48,17 @@ const AddBookDetailScreen = (props) => {
 
     useEffect(() => {
         props.navigation.addListener('focus', load);
+
+        part.map((val) => {
+            if(val._id===partID)
+                setIsPart(val);
+        });
     }, []);
+
+    useEffect(() => {
+        setIsTitle(isPart?.PartName);
+        setIsDesc(isPart?.PartContain);
+    }, [ isPart ]);
 
     const verifyPermission = async () => {
         const res = await request(Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA)
@@ -62,12 +73,17 @@ const AddBookDetailScreen = (props) => {
     const storeImage = (val) => {
         const path = `/Images/BookDetail/${Date.now() + val.fileName}`;
         const imgRef = firebase.app().storage('gs://yourbooks-f1f3d.appspot.com').ref(path);
+        
+        setIsLoading(true);
 
         imgRef.putFile(val.uri)
             .then(async () => {
                 try {
-                    setIsPic(await imgRef.getDownloadURL());
-                } catch (error) {
+                    const res = await imgRef.getDownloadURL();
+
+                    setIsLoading(false);
+                    RichText.current?.insertImage(res);
+               } catch (error) {
                     Alert.alert('An error occurred!', 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
                 }
             })
@@ -94,8 +110,7 @@ const AddBookDetailScreen = (props) => {
             return;
         }
 
-        storeImage(img.assets[0])
-        RichText.current?.insertImage(isPic);
+        await storeImage(img.assets[0])
     };
 
     const saveHandler = async () => {
@@ -119,6 +134,7 @@ const AddBookDetailScreen = (props) => {
                             iconName='book-arrow-up-outline'
                             IconComponent={IconMC}
                             onPress={saveHandler}
+                            disabled={isLoading ? true : false}
                         />
                     </HeaderButtons>
                 );                
@@ -127,42 +143,53 @@ const AddBookDetailScreen = (props) => {
     }, [ isTitle, isDesc ]);
 
     return(
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={styles.body}>
-                <View style={styles.inputView}>
-                    <Text style={styles.titleTxt}>Book title</Text>
-                    <TextInput 
-                        style={styles.titleInput}
-                        value={isTitle}
-                        onChangeText={(txt) => setIsTitle(txt)}
+        <View style={styles.body}>
+            {
+                isLoading &&
+                <ActivityIndicator color={Colors.fontColor} />
+            }
+            <TouchableWithoutFeedback onPress={Keyboard.dismiss} disabled={isLoading ? true : false}>
+                <View style={styles.body}>
+                    <View style={styles.inputView}>
+                        <Text style={styles.titleTxt}>Book title</Text>
+                        <TextInput 
+                            style={styles.titleInput}
+                            value={isTitle}
+                            onChangeText={(txt) => setIsTitle(txt)}
+                            editable={isLoading ? false : true}
+                        />
+                    </View>
+                    <RichEditor
+                        style={styles.descInput}
+                        editorStyle={styles.editInput}
+                        ref={RichText}
+                        placeholder='Tap here to start writing'
+                        useContainer
+                        onChange={(txt) => setIsDesc(txt)}
+                        disabled={isLoading ? true : false}
+                        initialContentHTML={isDesc}
+                    />
+                    <RichToolbar
+                        style={styles.richTool}
+                        editor={RichText}
+                        iconTint={Colors.btnGray}
+                        selectedIconTint={Colors.fontColor}
+                        iconSize={20}
+                        actions={[
+                            actions.undo,
+                            actions.setBold,
+                            actions.setItalic,
+                            actions.setUnderline,
+                            actions.insertImage,
+                            actions.redo,
+                        ]}
+                        onPressAddImage={launchImageLibraryHandler}
+                        disabled={isLoading ? true : false}
                     />
                 </View>
-                <RichEditor
-                    style={styles.descInput}
-                    editorStyle={styles.editInput}
-                    ref={RichText}
-                    placeholder='Tap here to start writing'
-                    useContainer
-                    onChange={(txt) => setIsDesc(txt)}
-                />
-                <RichToolbar
-                    style={styles.richTool}
-                    editor={RichText}
-                    iconTint={Colors.btnGray}
-                    selectedIconTint={Colors.fontColor}
-                    iconSize={20}
-                    actions={[
-                        actions.undo,
-                        actions.setBold,
-                        actions.setItalic,
-                        actions.setUnderline,
-                        actions.insertImage,
-                        actions.redo,
-                    ]}
-                    onPressAddImage={launchImageLibraryHandler}
-                />
-            </View>
-        </TouchableWithoutFeedback>
+            </TouchableWithoutFeedback>
+    
+        </View>
     );
 };
 
