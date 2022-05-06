@@ -838,7 +838,6 @@ const styles = StyleSheet.create({
         marginTop: wHeight * 0.03,
     },
     logoutBtn: {
-        width: wWidth * 0.9,
         height: wHeight * 0.05,
         alignItems: 'center',
         justifyContent: 'center',

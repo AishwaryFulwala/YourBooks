@@ -35,6 +35,7 @@ import EditBookScreen from '../screen/user/EditBookScreen';
 import AddBookScreen from '../screen/user/AddBookScreen';
 import AddBookDetailScreen from '../screen/user/AddBookDetailScreen';
 import AddCategoryScreen from '../screen/user/AddCategoryScreen';
+import EditBookDetailScreen from '../screen/user/EditBookDetailScreen';
 
 const options = {
     headerTitle: () => {
@@ -268,6 +269,11 @@ const LibraryNavigator = () => {
             <LibraryStack.Screen 
                 name='AddBookDetailN'
                 component={AddBookDetailScreen}
+                options={options}
+            />
+            <LibraryStack.Screen 
+                name='EditBookDetailN'
+                component={EditBookDetailScreen}
                 options={options}
             />
         </LibraryStack.Navigator>

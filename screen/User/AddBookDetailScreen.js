@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback, Alert, ActivityIndicator } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
+import { StackActions } from "@react-navigation/native";
 
 import { firebase } from '@react-native-firebase/storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
@@ -15,7 +16,7 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import CustomHeaderButton from '../../components/CustomHeaderButton';
 
-import { addBookDetail, getPartsByID } from '../../redux/actions/BooksDetail.action';
+import { addBookDetail, getPartsByID, updateBookDetail } from '../../redux/actions/BooksDetail.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -26,6 +27,7 @@ const wWidth = Dimensions.get('window').width;
 const AddBookDetailScreen = (props) => {
     const bookID = props.route.params.bookID;
     const partID = props.route.params?.partID;
+    const add = props.route.params?.add;
     const part = useSelector((state) => state.booksDetail.getBooksDetailData);
 
     const [ isPart , setIsPart ] = useState();
@@ -49,10 +51,11 @@ const AddBookDetailScreen = (props) => {
     useEffect(() => {
         props.navigation.addListener('focus', load);
 
-        part.map((val) => {
-            if(val._id===partID)
-                setIsPart(val);
-        });
+        if(part.length)
+            part.map((val) => {
+                if(val._id===partID)
+                    setIsPart(val);
+            });
     }, []);
 
     useEffect(() => {
@@ -114,13 +117,31 @@ const AddBookDetailScreen = (props) => {
     };
 
     const saveHandler = async () => {
-        try {
-            await dispatch(addBookDetail(part.length + 1, isTitle, isDesc, bookID));
-            props.navigation.navigate('EditBookN', {
-                bookID: bookID
-            });
-        } catch (error) {
-            Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        if(isPart) {
+            try {
+                await dispatch(updateBookDetail(isPart?._id, { PartName: isTitle, PartContain: isDesc }));
+                props.navigation.navigate('EditBookN', {
+                    bookID: bookID
+                });
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            }
+        }
+        else {
+            try {
+                await dispatch(addBookDetail(part.length + 1, isTitle, isDesc, bookID));
+                if(add) {
+                    props.navigation.dispatch(
+                        StackActions.pop(2)
+                    );
+                }
+
+                props.navigation.navigate('EditBookN', {
+                    bookID: bookID
+                });
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            }
         }
     };
 
@@ -150,6 +171,7 @@ const AddBookDetailScreen = (props) => {
             }
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} disabled={isLoading ? true : false}>
                 <View style={styles.body}>
+                    <Text style={styles.txtTitle}>Book Detail</Text>
                     <View style={styles.inputView}>
                         <Text style={styles.titleTxt}>Book title</Text>
                         <TextInput 
@@ -188,7 +210,6 @@ const AddBookDetailScreen = (props) => {
                     />
                 </View>
             </TouchableWithoutFeedback>
-    
         </View>
     );
 };
@@ -197,6 +218,13 @@ const styles = StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,
+    },
+    txtTitle: {
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.05,
+        alignSelf: 'center',
+        marginVertical: wHeight * 0.01,
     },
     inputView: {
         backgroundColor: Colors.drakGray,
@@ -237,7 +265,7 @@ const styles = StyleSheet.create({
             top: 0; right: 0; bottom: 0; left: 0;`,
     },
     richTool: {
-        backgroundColor: "#c6c3b3",
+        backgroundColor: Colors.richColor,
         borderRadius: 10,
         width: wWidth,       
     },

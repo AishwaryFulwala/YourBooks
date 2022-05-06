@@ -21,8 +21,8 @@ export default {
     lightGray: '#888891',
 
     shadowColor: '#3C4846',
-
     borderColor: '#cccccc',
+    richColor: '#c6c3b3',
 
     colorArr: ['#c28285', '#063266', '#483C32', '#964B00', '#008080', '#78828B', '#B87333', '#9B111E', '#023020', '#D4AF37'],
 }

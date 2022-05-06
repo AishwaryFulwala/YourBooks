@@ -151,7 +151,24 @@ export const updateBook = (id, book) => {
 
             return await Promise.resolve(res.data);
         } catch (error) {
-            console.log(error)
+            return await Promise.reject(error.response);
+        }
+    }
+};
+
+export const deleteBook = (id) => {
+    return async () => {
+        const userData = await getAsyncData();
+
+        try {
+           const res = await Api(`/deleteBook/${id}`, {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            }, 'DELETE');
+
+            return await Promise.resolve(res.data);
+        } catch (error) {
             return await Promise.reject(error.response);
         }
     }

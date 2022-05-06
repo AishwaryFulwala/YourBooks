@@ -119,8 +119,8 @@ const BookReadingScreen = (props) => {
                 style={styles.slider}
                 minimumValue={0}
                 maximumValue={books.length - 1}
-                minimumTrackTintColor="#FFFFFF"
-                maximumTrackTintColor="gray"
+                minimumTrackTintColor={Colors.fontColor}
+                maximumTrackTintColor={Colors.lightGray}
                 thumbTintColor={Colors.fontColor}
                 tapToSeek={true}
                 step={1}

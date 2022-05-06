@@ -9,16 +9,21 @@ import { launchImageLibrary } from 'react-native-image-picker';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
-import IconA from 'react-native-vector-icons/AntDesign';
-import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
+import { HeaderButtons, Item } from 'react-navigation-header-buttons';
+import CustomHeaderButton from '../../components/CustomHeaderButton';
 
-import { getBooksByID } from '../../redux/actions/Books.action';
-import { getBooksDetailByID } from '../../redux/actions/BooksDetail.action';
+import IconA from 'react-native-vector-icons/AntDesign';
+import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
+
+import { deleteBook, getBooksByID, updateBook } from '../../redux/actions/Books.action';
+import { deleteAllBookDetail, getPartsByID } from '../../redux/actions/BooksDetail.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import EditInput from '../../components/EditInput';
+import PicModal from '../../components/PicModal';
+
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
@@ -37,6 +42,7 @@ const EditBookScreen = (props) => {
     const [ msg, setMsg ] = useState({});
 
     const [ isLoad, setIsLoad ] = useState(false);
+    const [ open, setOpen ] = useState(false);
 
     const dispatch = useDispatch();
 
@@ -48,7 +54,7 @@ const EditBookScreen = (props) => {
         }
 
         try {
-            await dispatch(getBooksDetailByID(bookID));
+            await dispatch(getPartsByID(bookID));
         } catch (error) {
             if(error?.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
@@ -58,6 +64,31 @@ const EditBookScreen = (props) => {
     useEffect(() => {
         props.navigation.addListener('focus', load);
     }, []);
+
+    useEffect(() => {
+        if(book) {
+            setIsTitle(book[0]?._id?.BookName);
+            setIsDesc(book[0]?._id?.Description);
+            setIsPic(book[0]?._id?.BookPic);
+        }
+    }, [ book ]);
+
+    useEffect(() => {
+        props.navigation.setOptions({
+            headerRight: () => {
+                return (
+                    <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+                        <Item
+                            title='Save'
+                            iconName='delete-outline'
+                            IconComponent={IconMC}
+                            onPress={() => setOpen(!open)}
+                        />
+                    </HeaderButtons>
+                );                
+            },
+        });
+    }, [ isTitle, isDesc, isPic ]);
 
     const verifyPermission = async () => {
         const res = await request(Platform.OS === 'ios' ? PERMISSIONS.IOS.CAMERA : PERMISSIONS.ANDROID.CAMERA)
@@ -82,7 +113,7 @@ const EditBookScreen = (props) => {
 
                    setIsPic(url);
                    setIsLoad(false);
-                   updateBook({BookPic: url});
+                   updateBookHandler({BookPic: url});
                 } catch (error) {
                     Alert.alert('An error occurred!', 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
                 }
@@ -113,16 +144,7 @@ const EditBookScreen = (props) => {
         storeImage(img.assets[0]);
     };
 
-    useEffect(() => {
-        if(book) {
-            setIsTitle(book[0]?._id?.BookName);
-            setIsDesc(book[0]?._id?.Description);
-            setIsPic(book[0]?._id?.BookPic);
-        }
-    }, [ book ]);
-
-    const updateBook = async (val) => {
-        console.log(val)
+    const updateBookHandler = async (val) => {
         if(isTitle === ''){
             setMsg({
                 id: 'title',
@@ -139,12 +161,31 @@ const EditBookScreen = (props) => {
         try {
             await dispatch(updateBook(bookID, val));
         } catch (error) {
-            console.log(error)
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
 
         load();
     };
+
+    const deleteBookDetail = async () => {
+        setOpen(!open);
+
+        try {
+            await dispatch(deleteBook(bookID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
+            await dispatch(deleteAllBookDetail(bookID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        
+        props.navigation.navigate('Write');
+    };
+    
 
     if(!book || !bookDetail || isLoad) {
         return (
@@ -183,7 +224,7 @@ const EditBookScreen = (props) => {
                             edit={isTitleEdit}
                             onEdit={() =>  setIsTitleEdit(!isTitleEdit)}
                             onSave={() => {
-                                updateBook({BookName: isTitle});
+                                updateBookHandler({BookName: isTitle});
                                 setIsTitleEdit(!isTitleEdit);
                             }}
                         />
@@ -200,7 +241,7 @@ const EditBookScreen = (props) => {
                             edit={isDescEdit}
                             onEdit={() => setIsDescEdit(!isDescEdit)}
                             onSave={() => {
-                                updateBook({Description: isDesc});
+                                updateBookHandler({Description: isDesc});
                                 setIsDescEdit(!isDescEdit);
                             }}
                         />
@@ -213,11 +254,15 @@ const EditBookScreen = (props) => {
                 <View>
                     <View style={styles.tableView}>
                         <Text style={styles.tableTxt}>TABLE OF CONTENT</Text>
-                        <IconM
+                        <IconMC
                             name='dots-vertical'
                             size={25}
                             color={Colors.fontColor}
-                            onPress={() => {}}
+                            onPress={() => {
+                                props.navigation.navigate('EditBookDetailN',{
+                                    bookID: bookID,
+                                });
+                            }}
                         />
                     </View>
                         {
@@ -260,9 +305,32 @@ const EditBookScreen = (props) => {
                         </TouchableOpacity>
                  </View>
             </KeyboardAwareScrollView>
-            <TouchableOpacity style={styles.triangleCorner}>
+            <TouchableOpacity
+                style={styles.triangleCorner}
+                onPress={() => updateBookHandler({Status: !book[0]._id.Status})}
+            >
                 <Text style={styles.statusTxt}>{book[0]._id.Status ? 'Ongoing' : 'Complete'}</Text>
             </TouchableOpacity>
+            <PicModal
+                onClose={() => setOpen(!open)}
+                visible={open}
+            >
+                <View style={styles.mainModalView}>
+                    <Text style={styles.deleteTitle}>Delete Book</Text>
+                    <Text style={styles.deleteTxt}>Note: If you delete book will also delete the story.{'\n'}All reads, review and rating for this book will be deleted.</Text>
+                    <Text style={styles.deleteTxt}>Are you sure you want to delete this book?</Text>
+                    <View style={styles.btnModalView}>
+                        <Text
+                            style={styles.modalBtnTxt}
+                            onPress={deleteBookDetail}
+                        >Yes</Text>
+                        <Text
+                            style={styles.modalBtnTxt}
+                            onPress={() => setOpen(!open)}
+                        >No</Text>
+                    </View>
+                </View>
+            </PicModal>
         </View>
     );
 };
@@ -403,6 +471,35 @@ const styles = StyleSheet.create({
         color: Colors.fontColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.045,
+    },
+    mainModalView: {
+        paddingVertical: wHeight * 0.03,
+        paddingHorizontal: wHeight * 0.03,
+    },
+    deleteTitle: {
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.05,
+    },
+    deleteTxt: {
+        marginTop: wHeight * 0.025,
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.04,
+        lineHeight: wHeight * 0.03
+    },
+    btnModalView: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'flex-end',
+        marginVertical: wHeight * 0.01,
+        paddingTop: wHeight * 0.05,
+    },
+    modalBtnTxt: {
+        marginHorizontal: wWidth * 0.05,
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.04,
     },
 });
 

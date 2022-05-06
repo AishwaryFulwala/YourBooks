@@ -188,7 +188,14 @@ const SearchScreen = (props) => {
 
         return (
             <View style={styles.body}>
-                <SearchList data={searchData.User} />
+                <SearchList
+                    data={searchData.User} 
+                    onClick={(id) => {
+                        props.navigation.navigate('ViewProfileN', {
+                            userID: id,
+                        });
+                    }}
+                />
             </View>
         );
     };

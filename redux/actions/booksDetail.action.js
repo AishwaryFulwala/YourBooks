@@ -80,3 +80,59 @@ export const addBookDetail = (no, title, desc, id) => {
         }
     }
 };
+
+export const updateBookDetail = (id, book) => {
+    return async () => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/updateBookDetail/${id}`, {
+                book
+            }, 'PATCH', {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                },
+            });
+
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            return await Promise.reject(error.response);
+        }
+    }
+};
+
+export const deleteBookDetail = (id) => {
+    return async () => {
+        const userData = await getAsyncData();
+
+        try {
+           const res = await Api(`/deleteBookDetail/${id}`, {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            }, 'DELETE');
+
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            return await Promise.reject(error.response);
+        }
+    }
+};
+
+export const deleteAllBookDetail = (id) => {
+    return async () => {
+        const userData = await getAsyncData();
+
+        try {
+           const res = await Api(`/deleteAllBookDetail/${id}`, {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            }, 'DELETE');
+
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            return await Promise.reject(error.response);
+        }
+    }
+};

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState,useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, TextInput, Alert, Keyboard } from 'react-native';
 
 import { firebase } from '@react-native-firebase/storage';
@@ -16,6 +16,7 @@ import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 import { addBook } from '../../redux/actions/Books.action';
+import { useIsFocused } from '@react-navigation/native';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
@@ -26,6 +27,7 @@ const AddBookScreen = (props) => {
     const [ isDesc, setIsDesc ] = useState('');
     const [ isPic, setIsPic ] = useState('');
     const isCate = props?.route?.params || '';
+    const isFocused = useIsFocused();
 
     const [ isKey, setIsKey ] = useState(false);
 
@@ -71,6 +73,10 @@ const AddBookScreen = (props) => {
             Alert.alert('', 'Can\'t access Library', [{text: okay}])
             return;
         }
+        if(img?.didCancel) {
+            setBookPic('');
+            return;
+        }
 
         if(img === undefined || img.assets === undefined){
             return;
@@ -89,7 +95,8 @@ const AddBookScreen = (props) => {
             try {
                 const res = await dispatch(addBook(isPic, isTitle, isDesc, isCate.cateID));
                 props.navigation.navigate('AddBookDetailN',{
-                    bookID: res._id
+                    bookID: res._id,
+                    add: 'add',
                 });
             } catch (error) {
                 Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
@@ -97,15 +104,37 @@ const AddBookScreen = (props) => {
         }
     };
 
-    useEffect(() => {
-        Keyboard.addListener('keyboardDidHide',() => {setIsKey(false)})
-        Keyboard.addListener('keyboardDidShow',() => {setIsKey(true)})
-    }, [ isDesc, isTitle ]);
+    useEffect(()=>{
+        const onDidShow = () => {
+          setIsKey(true);
+        }
+
+        const onDidHide = () => {
+          setIsKey(false);
+        }
+
+        let subsribe1;
+        let subscibe2;
+
+        if(isFocused){
+            subsribe1 = Keyboard.addListener('keyboardDidHide',onDidHide);
+            subscibe2 = Keyboard.addListener('keyboardDidShow',onDidShow);
+        } else{
+            subsribe1?.remove();
+            subscibe2?.remove();
+        }
+       
+        ()=>{
+            subsribe1?.remove();
+            subscibe2?.remove();
+        }
+    },[ isFocused ]);
 
     return (
         <View style={styles.body}>
             <KeyboardAwareScrollView  extraScrollHeight={100}>
                 <View>
+                    <Text style={styles.txtTitle}>Book</Text>
                     <TouchableOpacity
                         style={styles.btnImg}
                         onPress={launchImageLibraryHandler}
@@ -126,7 +155,7 @@ const AddBookScreen = (props) => {
                                 <View style={styles.btnView}>
                                     <View style={styles.imgView}>
                                         <Image
-                                            source={{uri: bookPic.uri}}
+                                            source={{uri: bookPic?.uri}}
                                             style={styles.img}
                                         />
                                     </View>
@@ -184,6 +213,13 @@ const styles = StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,
+    },
+    txtTitle: {
+        color: Colors.fontColor,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.05,
+        alignSelf: 'center',
+        marginVertical: wHeight * 0.01,
     },
     btnImg: {
         backgroundColor: Colors.drakGray,
