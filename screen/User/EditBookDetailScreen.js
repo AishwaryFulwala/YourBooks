@@ -56,7 +56,7 @@ const EditBookDetailScreen = (props) => {
 
     useEffect(() => {
         saveHandler(data);
-    }, [ id, bookDetail ])
+    }, [ id, open ])
 
     const saveHandler = async (data) => {
         const res = data.map((val, index) => {
@@ -74,8 +74,6 @@ const EditBookDetailScreen = (props) => {
     }
 
     const deleteHandler = async (id) => {
-        setOpen(!open);
-
         try {
             await dispatch(deleteBookDetail(id));
         } catch (error) {
@@ -83,6 +81,7 @@ const EditBookDetailScreen = (props) => {
         }
 
         await load();
+        setOpen(!open);
     }
 
     const renderItem = ({ item, index, drag }) => {

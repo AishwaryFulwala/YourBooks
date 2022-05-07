@@ -109,3 +109,26 @@ export const deleteReadingList = (id) => {
         }
     }
 };
+
+export const deleteReadingListByID = (id) => {
+    return async (dispatch) => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/deleteReadingListByID/${id}`, {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            }, 'DELETE');
+            
+            dispatch({
+                type: CHANGE,
+                list: {},
+            });
+
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            return await Promise.reject(error.response);
+        }
+    }
+};

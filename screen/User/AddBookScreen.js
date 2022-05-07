@@ -50,7 +50,8 @@ const AddBookScreen = (props) => {
         imgRef.putFile(val.uri)
             .then(async () => {
                 try {
-                    setIsPic(await imgRef.getDownloadURL());
+                    const url = await imgRef.getDownloadURL();
+                    setIsPic(url);
                 } catch (error) {
                     Alert.alert('An error occurred!', 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
                 }
@@ -73,25 +74,19 @@ const AddBookScreen = (props) => {
             Alert.alert('', 'Can\'t access Library', [{text: okay}])
             return;
         }
-        if(img?.didCancel) {
-            setBookPic('');
-            return;
-        }
 
         if(img === undefined || img.assets === undefined){
             return;
         }
 
         setBookPic(img.assets[0]);
+        storeImage(img.assets[0]);
     };
 
     const saveHandler = async () => {
         if(!isTitle || !isCate)
             Alert.alert('Insufficient Permission', 'Please must enter Category and Title.', [{text: 'okay'}])
-        else {
-            if(bookPic)
-                storeImage(bookPic);
-            
+        else {  
             try {
                 const res = await dispatch(addBook(isPic, isTitle, isDesc, isCate.cateID));
                 props.navigation.navigate('AddBookDetailN',{

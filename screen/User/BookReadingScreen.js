@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Alert, ActivityIndicator, ScrollView, FlatList } from 'react-native';
 
 import Slider from '@react-native-community/slider';
+import RenderHtml from 'react-native-render-html';
 
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -17,8 +18,9 @@ const BookReadingScreen = (props) => {
     const bookID = props.route.params.bookID;
     const books = useSelector((state) => state.booksDetail.getBooksDetailData);
 
-    const [sliderValue, setSliderValue] = useState(0);
-    const [ref, setRef] = useState(null);
+    const [ sliderValue, setSliderValue ] = useState(0);
+    const [ ref, setRef ] = useState(null);
+    const [ scrollPosition, setScrollPosition ] = useState(0);
 
     const dispatch = useDispatch();
 
@@ -34,58 +36,40 @@ const BookReadingScreen = (props) => {
         props.navigation.addListener('focus', load);
     }, []);
 
-    const wordsCount = (str) => {
-        let arr = str?.split(' ');
-        let subStr=arr[0];
-        let contain = [];
-
-        for(let i = 1; i < arr.length; i++){
-            let word = arr[i];
-            if(subStr.length + word.length + 1 <= 420)
-                subStr = subStr + ' ' + word;
-            else{
-                contain.push(subStr);
-                subStr = word;
-            }
+    const tagsStyles = {
+        div: {
+            color: Colors.fontColor,
+            fontFamily: Fonts.bodyFont,
+            fontSize: wWidth * 0.04,
+            marginTop: wHeight * 0.005,
+            textAlign: 'justify',
+        },
+        img: {
+            height: wHeight * 0.3,
+            width: wWidth * 0.6,
+            marginVertical: wHeight * 0.01,
         }
-
-        if(subStr.length)
-            contain.push(subStr);
-
-        return contain;
     };
 
-    const dispPart = (item, i, no ,pName) => {
-        return (
-            <View key={i}>
-                <Text
-                    ellipsizeMode='tail'
-                    numberOfLines={1}
-                    style={styles.txtPartNo}
-                >
-                    {no}. {pName}
-                </Text>
-                <View style={styles.dispView}>
-                    <Text style={styles.txtPartContain}>{item[i]}</Text>
-                </View>
-            </View>
-        )
-    }
-
-    const disp = (n, item, no ,pName) => {
-        return [...Array(n)].map((_, index) => {
-            return dispPart(item, index, no ,pName);
-        });
-    };
-
-    const displayContain = ({item, index}) => {
-        const contain = wordsCount(item.PartContain)
-
+    const displayContain = ({ item, index }) => {
         return (
             <View key={index} style={styles.flatView}>
-                {
-                    disp(contain.length, contain, item.PartNo ,item.PartName)
-                }
+                <View key={index}>
+                    <Text
+                        ellipsizeMode='tail'
+                        numberOfLines={1}
+                        style={styles.txtPartNo}
+                    >
+                        {item.PartNo}. {item.PartName}
+                    </Text>
+                    <View style={styles.dispView}>
+                        <RenderHtml
+                            contentWidth={wWidth}
+                            source={{html: item.PartContain}}
+                            tagsStyles={tagsStyles}
+                        />
+                    </View>
+                </View>
             </View>
         );
     };
@@ -97,7 +81,11 @@ const BookReadingScreen = (props) => {
             </View>
         );
     }
-
+const handleRelease = () => {
+    // setTimeout(() => {
+        // ref.scrollToOffset({ y: 3000 });
+    // }, 1000)
+}
     return(
         <View style={styles.body}>
             <Text
@@ -105,16 +93,18 @@ const BookReadingScreen = (props) => {
                 ellipsizeMode='tail'
                 numberOfLines={1}
             >{books[0].BookName}</Text>
-            <FlatList
+            {<FlatList
                 data={books}
                 renderItem={displayContain}
-                pagingEnabled
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
                 ref={(ref) => {
                     setRef(ref);
                 }}
-            />
+                // onResponderRelease={handleRelease}
+                onScroll={(event) => {
+                    setScrollPosition(event.nativeEvent.contentOffset.y)
+                }}
+                
+            />}
             <Slider
                 style={styles.slider}
                 minimumValue={0}
@@ -166,13 +156,7 @@ const styles = StyleSheet.create({
         marginBottom: wHeight * 0.01,
         marginHorizontal: wWidth * 0.05,
         width: wWidth * 0.9,
-        height: wHeight * 0.55,
         borderRadius: 10,
-        shadowColor: Colors.fontColor,
-        shadowOffset: {width: 4, height: 4},
-        shadowOpacity: 0.5,
-        shadowRadius: 5,
-        elevation: 20,
     },
     txtPartNo: {
         color: Colors.fontColor,

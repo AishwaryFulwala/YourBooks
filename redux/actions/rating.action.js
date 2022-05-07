@@ -83,3 +83,21 @@ export const getRatingByBook = (id) => {
         }
     }
 };
+
+export const deleteRatingByID = (id) => {
+    return async () => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/deleteRatingByID/${id}`, {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            }, 'DELETE');
+            
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            return await Promise.reject(error.response);
+        }
+    }
+};

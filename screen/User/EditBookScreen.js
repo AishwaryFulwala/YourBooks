@@ -17,6 +17,8 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { deleteBook, getBooksByID, updateBook } from '../../redux/actions/Books.action';
 import { deleteAllBookDetail, getPartsByID } from '../../redux/actions/BooksDetail.action';
+import { deleteReadingListByID } from '../../redux/actions/ReadingList.action';
+import { deleteRatingByID } from '../../redux/actions/Rating.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -182,10 +184,20 @@ const EditBookScreen = (props) => {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
 
-        
+        try {
+            await dispatch(deleteReadingListByID(bookID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
+            await dispatch(deleteRatingByID(bookID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
         props.navigation.navigate('Write');
     };
-    
 
     if(!book || !bookDetail || isLoad) {
         return (
