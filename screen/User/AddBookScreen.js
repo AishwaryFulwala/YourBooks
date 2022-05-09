@@ -1,22 +1,22 @@
-import React, { useEffect, useState,useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, TextInput, Alert, Keyboard } from 'react-native';
 
-import { firebase } from '@react-native-firebase/storage';
+import { useIsFocused } from '@react-navigation/native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import { useDispatch } from 'react-redux';
 
+import { firebase } from '@react-native-firebase/storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { launchImageLibrary } from 'react-native-image-picker';
-
-import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 import IconA from 'react-native-vector-icons/AntDesign';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
+
 import { addBook } from '../../redux/actions/Books.action';
-import { useIsFocused } from '@react-navigation/native';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
@@ -27,6 +27,7 @@ const AddBookScreen = (props) => {
     const [ isDesc, setIsDesc ] = useState('');
     const [ isPic, setIsPic ] = useState('');
     const isCate = props?.route?.params || '';
+
     const isFocused = useIsFocused();
 
     const [ isKey, setIsKey ] = useState(false);
@@ -114,16 +115,13 @@ const AddBookScreen = (props) => {
         if(isFocused){
             subsribe1 = Keyboard.addListener('keyboardDidHide',onDidHide);
             subscibe2 = Keyboard.addListener('keyboardDidShow',onDidShow);
-        } else{
-            subsribe1?.remove();
-            subscibe2?.remove();
         }
        
-        ()=>{
+        return () => {
             subsribe1?.remove();
             subscibe2?.remove();
         }
-    },[ isFocused ]);
+    }, [ isFocused ]);
 
     return (
         <View style={styles.body}>

@@ -7,6 +7,7 @@ import { StackActions } from '@react-navigation/native';
 import { getFollow, getID, getUser, updateUser } from '../../redux/actions/Users.action';
 
 import FollowList from '../../components/FollowList';
+
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 

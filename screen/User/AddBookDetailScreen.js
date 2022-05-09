@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { View, Text, StyleSheet, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback, Alert, ActivityIndicator } from 'react-native';
+import { View, Text, StyleSheet, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback, Alert, ActivityIndicator, Platform } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { StackActions } from "@react-navigation/native";
@@ -17,6 +17,7 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomHeaderButton from '../../components/CustomHeaderButton';
 
 import { addBookDetail, getPartsByID, updateBookDetail } from '../../redux/actions/BooksDetail.action';
+import { useKeyboard } from '../../hooks/keyboardHook';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -35,6 +36,8 @@ const AddBookDetailScreen = (props) => {
     const [ isDesc, setIsDesc ] = useState('');
     const [ isLoading, setIsLoading ] = useState();
 
+    const keyboardHeight = useKeyboard();
+    
     const RichText = useRef();
 
     const dispatch = useDispatch();
@@ -182,6 +185,7 @@ const AddBookDetailScreen = (props) => {
                         />
                     </View>
                     <RichEditor
+                        containerStyle={{ ...styles.containerInput, paddingBottom: Platform.OS === 'ios' ? keyboardHeight - 100 : 0}}
                         style={styles.descInput}
                         editorStyle={styles.editInput}
                         ref={RichText}
@@ -248,9 +252,11 @@ const styles = StyleSheet.create({
     },
     descInput: {
         flex: 1,
+        maxHeight: 500,
+    },
+    containerInput: {
         borderColor: Colors.fontColor,
         borderWidth: 1,
-        maxHeight: 500,
     },
     editInput:{
         backgroundColor: Colors.bodyColor,

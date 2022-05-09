@@ -7,6 +7,7 @@ import androidx.multidex.MultiDexApplication;
 
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
+import io.invertase.firebase.messaging.ReactNativeFirebaseMessagingPackage;
 import io.invertase.firebase.storage.ReactNativeFirebaseStoragePackage;
 import io.invertase.firebase.app.ReactNativeFirebaseAppPackage;
 import org.reactnative.maskedview.RNCMaskedViewPackage;
@@ -51,7 +52,7 @@ public class MainApplication extends MultiDexApplication implements ReactApplica
 
         @Override
         protected JSIModulePackage getJSIModulePackage() {
-          return new ReanimatedJSIModulePackage(); // <- add
+          return new ReanimatedJSIModulePackage();
         }
       };
 

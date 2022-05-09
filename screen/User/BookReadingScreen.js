@@ -1,5 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { View, Text, StyleSheet, Dimensions, Alert, ActivityIndicator, ScrollView, FlatList } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, StyleSheet, Dimensions, Alert, ActivityIndicator, FlatList } from 'react-native';
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Slider from '@react-native-community/slider';
 import RenderHtml from 'react-native-render-html';
@@ -14,29 +16,7 @@ import { getBooksDetailByID } from '../../redux/actions/BooksDetail.action';
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
-const BookReadingScreen = (props) => {
-    const bookID = props.route.params.bookID;
-    const books = useSelector((state) => state.booksDetail.getBooksDetailData);
-
-    const [ sliderValue, setSliderValue ] = useState(0);
-    const [ ref, setRef ] = useState(null);
-    const [ scrollPosition, setScrollPosition ] = useState(0);
-
-    const dispatch = useDispatch();
-
-    const load = async () => {
-        try {
-            await dispatch(getBooksDetailByID(bookID));
-        } catch (error) {
-            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-        }
-    };
-    
-    useEffect(() => {
-        props.navigation.addListener('focus', load);
-    }, []);
-
-    const tagsStyles = {
+const tagsStyles = {
         div: {
             color: Colors.fontColor,
             fontFamily: Fonts.bodyFont,
@@ -49,6 +29,48 @@ const BookReadingScreen = (props) => {
             width: wWidth * 0.6,
             marginVertical: wHeight * 0.01,
         }
+    };
+
+const BookReadingScreen = (props) => {
+    const bookID = props.route.params.bookID;
+    const books = useSelector((state) => state.booksDetail.getBooksDetailData);
+
+    const [ sliderValue, setSliderValue ] = useState(0);
+    const [ scrollMax, setScrollMax ] = useState(0);
+    const [ isLoad, setIsLoad ] = useState(true);
+
+    const ref = useRef();
+    const layoutHeight = useRef(null);
+    const contentHeight = useRef(null);
+    const isNotScrollEnabled= useRef(false)
+
+    const dispatch = useDispatch();
+
+    const load = async () => {
+        try {
+            await dispatch(getBooksDetailByID(bookID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        const val = JSON.parse(await AsyncStorage.getItem(`@bookScroll${bookID}`));
+
+        setTimeout(() => {
+            ref?.current?.scrollToOffset({ animated: true, offset: val?.scroll});
+            setSliderValue(val?.scroll);
+        }, 100);
+
+        setIsLoad(false)
+    };
+
+    useEffect(() => {
+        props.navigation.addListener('focus', load);
+    }, []);
+
+    const storeData = async (sliderValue) => {
+        await AsyncStorage.setItem(`@bookScroll${bookID}`, JSON.stringify({
+            scroll: sliderValue, 
+        }));
     };
 
     const displayContain = ({ item, index }) => {
@@ -74,18 +96,14 @@ const BookReadingScreen = (props) => {
         );
     };
 
-    if(!books || !books.length) {
+    if(!books || !books.length || isLoad) {
         return (
             <View style={styles.activity}>
                 <ActivityIndicator color={Colors.fontColor} />
             </View>
         );
     }
-const handleRelease = () => {
-    // setTimeout(() => {
-        // ref.scrollToOffset({ y: 3000 });
-    // }, 1000)
-}
+
     return(
         <View style={styles.body}>
             <Text
@@ -93,35 +111,50 @@ const handleRelease = () => {
                 ellipsizeMode='tail'
                 numberOfLines={1}
             >{books[0].BookName}</Text>
-            {<FlatList
-                data={books}
-                renderItem={displayContain}
-                ref={(ref) => {
-                    setRef(ref);
-                }}
-                // onResponderRelease={handleRelease}
-                onScroll={(event) => {
-                    setScrollPosition(event.nativeEvent.contentOffset.y)
-                }}
-                
-            />}
+            {
+                <FlatList
+                    data={books}
+                    renderItem={displayContain}
+                    ref={ref}
+                    onLayout={(event) => {
+                        layoutHeight.current = event.nativeEvent.layout.height;
+                        if(contentHeight.current){
+                            setScrollMax(contentHeight.current - layoutHeight.current);
+                        }
+                    }}
+                    onContentSizeChange={(_, height) => {
+                        contentHeight.current = height;
+                        if(layoutHeight.current){
+                            setScrollMax(contentHeight.current - layoutHeight.current);
+                        }
+                    }}
+                    onScroll={(event) => {
+                        storeData(event.nativeEvent.contentOffset.y);
+                        if(!isNotScrollEnabled.current) {
+                            setSliderValue(event.nativeEvent.contentOffset.y);
+                        }
+                    }}
+                    onMomentumScrollBegin={() => {
+                        isNotScrollEnabled.current = false;
+                    }}
+                />
+            }
             <Slider
                 style={styles.slider}
                 minimumValue={0}
-                maximumValue={books.length - 1}
-                minimumTrackTintColor={Colors.fontColor}
-                maximumTrackTintColor={Colors.lightGray}
-                thumbTintColor={Colors.fontColor}
+                maximumValue={scrollMax}
+                minimumTrackTintColor={Colors.bookColor}
+                maximumTrackTintColor={Colors.fontColor}
+                thumbTintColor={Colors.bookColor}
                 tapToSeek={true}
                 step={1}
                 value={sliderValue}
-                onValueChange={(sliderValue) => setSliderValue(sliderValue)}
-                onSlidingComplete={() => {
-                    ref.scrollToIndex({
-                        animated: true,
-                        index: sliderValue,
-                        viewPosition: 0
-                    })
+                onSlidingStart ={ () => {
+                    isNotScrollEnabled.current = true;
+                }}
+                onSlidingComplete={(value) => {
+                    ref.current.scrollToOffset({ animated: true, offset: value});
+                    setSliderValue(value);
                 }}
             />
         </View>

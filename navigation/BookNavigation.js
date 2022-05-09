@@ -21,11 +21,13 @@ import SignupScreen from '../screen/log/SignupScreen';
 import HomeScreen from '../screen/user/HomeScreen';
 import SearchScreen from '../screen/user/SearchScreen';
 import MyProfileScreen from '../screen/user/MyProfileScreen';
+import NotificationScreen from '../screen/user/NotificationScreen';
+
 import CategoryBooksScreen from '../screen/user/CategoryBooksScreen';
 import BookScreen from '../screen/user/BookScreen';
 import BookReadingScreen from '../screen/user/BookReadingScreen';
-import ViewProfileScreen from '../screen/user/ViewProfileScreen';
 
+import ViewProfileScreen from '../screen/user/ViewProfileScreen';
 import FollowersScreen from '../screen/user/FollowersScreen';
 import FollowingsScreen from '../screen/user/FollowingsScreen';
 
@@ -280,6 +282,19 @@ const LibraryNavigator = () => {
     );
 };
 
+const NotificationStack = createStackNavigator();
+const NotificationNavigator = () => {
+    return(
+        <NotificationStack.Navigator>
+            <NotificationStack.Screen 
+                name='NotificationN'
+                component={NotificationScreen}
+                options={options}
+            />
+        </NotificationStack.Navigator>
+    );
+};
+
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
     return (
@@ -302,6 +317,8 @@ const TabNavigator = () => {
                         return <IconI name={focused ? 'library' : 'library-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
                     else if(route.name === 'MyProfile') 
                         return <IconM name={focused ? 'account' : 'account-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
+                    else if(route.name === 'Notification') 
+                        return <IconM name={focused ? 'bell' : 'bell-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
                 },
                 
             })}
@@ -324,6 +341,11 @@ const TabNavigator = () => {
             <Tab.Screen 
                 name='MyProfile'
                 component={MyProfileNavigator}
+                options={options}
+            />
+            <Tab.Screen 
+                name='Notification'
+                component={NotificationNavigator}
                 options={options}
             />
         </Tab.Navigator>

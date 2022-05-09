@@ -1,4 +1,3 @@
-
 import { GET_SEARCH_DATA, GET_SEARCH_HISTORY } from '../actions/SearchHistory.action';
 import { stateInit } from '../states/InitState';
 

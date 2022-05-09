@@ -67,9 +67,11 @@ const styles = StyleSheet.create({
     },
     btn: {
         width: wWidth * 0.9,
+        height: wHeight * 0.09,
         borderRadius: 10,
         flexDirection: 'row',
-        paddingHorizontal: wWidth * 0.03
+        alignItems: 'center',
+        paddingHorizontal: wWidth * 0.03,
     },
     btnTxt: {
         color: Colors.fontColor,
