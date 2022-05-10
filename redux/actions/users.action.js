@@ -5,7 +5,6 @@ import Api from "../../services/Api";
 export const LOGOUT = 'LOGOUT';
 export const GET_USER = 'GET_USER';
 export const GET_FOLLOW = 'GET_FOLLOW';
-export const UPDATE_USER = 'UPDATE_USER';
 export const GET_ASYNC_DATA = 'GET_ASYNC_DATA'
 export const GET_ID = 'GET_ID';
 

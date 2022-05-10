@@ -2,6 +2,7 @@ import Api from "../../services/Api";
 import { getAsyncData } from "./Users.action";
 
 export const GET_READING_LIST_BY_ID = 'GET_READING_LIST_BY_ID';
+export const GET_READING_LIST_BY_BOOK_ID = 'GET_READING_LIST_BY_BOOK_ID';
 export const GET_READING_LIST_BY_USER_ID = 'GET_READING_LIST_BY_USER_ID';
 export const CHANGE = 'CHANGE';
 
@@ -26,6 +27,34 @@ export const getReadingListByID = (id) => {
             dispatch({
                 type: GET_READING_LIST_BY_ID,
                 list: {},
+            });
+
+            return await Promise.reject(error.response);
+        }
+    }
+};
+
+export const getReadingListByBookID = (id) => {
+    return async (dispatch) => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/getReadingListByBookID/${id}`, {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            }, 'GET');
+
+            dispatch({
+                type: GET_READING_LIST_BY_BOOK_ID,
+                list: res.data,
+            });
+            
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            dispatch({
+                type: GET_READING_LIST_BY_BOOK_ID,
+                list: [],
             });
 
             return await Promise.reject(error.response);

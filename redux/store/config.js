@@ -8,6 +8,7 @@ import RatingReducer from "../reducers/Rating.reducer";
 import ReadingListReducer from "../reducers/ReadingList.reducer";
 import BooksDetailReducer from "../reducers/BooksDetail.reducer";
 import SearchHistoryReducer from "../reducers/SearchHistory.reducer";
+import NotificationReducer from "../reducers/Notification.reducer";
 
 const rootReducer = combineReducers({
     users: UsersReducer,
@@ -17,6 +18,7 @@ const rootReducer = combineReducers({
     readingList: ReadingListReducer,
     booksDetail: BooksDetailReducer,
     searchHistory: SearchHistoryReducer,
+    notifications: NotificationReducer,
 });
 
 const store = createStore(rootReducer, applyMiddleware(ReduxThunk));

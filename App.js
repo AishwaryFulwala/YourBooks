@@ -20,16 +20,13 @@ const App = () => {
 
     useEffect(() => {
         checkPermission = async () => {
-            await messaging().requestPermission();
-            const check = await messaging().hasPermission();
+            const check = await messaging().requestPermission();
 
-            if(check) {
-                const unsubscribe = messaging().onMessage(async (remoteMessage) => {
-                    Alert.alert('A new FCM message arrived!');
-                    console.log('A new FCM message arrived!',JSON.stringify(remoteMessage));
-                });
-
-                return unsubscribe;
+            if(check === 1 ||  check === 2) {
+                return messaging().setBackgroundMessageHandler(() => {});
+            }
+            else {
+                Alert.alert('Alert', 'Please Provide Notification Permission', [{ text: 'Okay' }]);
             }
         }
 

@@ -291,6 +291,11 @@ const NotificationNavigator = () => {
                 component={NotificationScreen}
                 options={options}
             />
+            <NotificationStack.Screen 
+                name='BookReadingN'
+                component={BookReadingScreen}
+                options={options}
+            />
         </NotificationStack.Navigator>
     );
 };
@@ -315,10 +320,10 @@ const TabNavigator = () => {
                         return <IconI name={focused ? 'search' : 'search-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
                     else if(route.name === 'Library') 
                         return <IconI name={focused ? 'library' : 'library-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
-                    else if(route.name === 'MyProfile') 
-                        return <IconM name={focused ? 'account' : 'account-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
                     else if(route.name === 'Notification') 
                         return <IconM name={focused ? 'bell' : 'bell-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
+                    else if(route.name === 'MyProfile') 
+                        return <IconM name={focused ? 'account' : 'account-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
                 },
                 
             })}
@@ -339,13 +344,13 @@ const TabNavigator = () => {
                 options={options}
             />
             <Tab.Screen 
-                name='MyProfile'
-                component={MyProfileNavigator}
+                name='Notification'
+                component={NotificationNavigator}
                 options={options}
             />
             <Tab.Screen 
-                name='Notification'
-                component={NotificationNavigator}
+                name='MyProfile'
+                component={MyProfileNavigator}
                 options={options}
             />
         </Tab.Navigator>

@@ -18,7 +18,6 @@ const CategoriesReducer = (state = stateInit, action) => {
                 getCategoryData: {
                     ...state.getCategoryData,
                     getCategory: {
-                        ...state.getCategoryData.getCategory,
                         ...action.category,
                     }
                 }

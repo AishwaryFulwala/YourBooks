@@ -26,7 +26,7 @@ const ReadingListScreen = (props) => {
     const dispatch = useDispatch();
 
     const load = async () => {
-         try {
+        try {
             await dispatch(getReadingListByUserID());
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);

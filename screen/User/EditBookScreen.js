@@ -15,8 +15,9 @@ import CustomHeaderButton from '../../components/CustomHeaderButton';
 import IconA from 'react-native-vector-icons/AntDesign';
 import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import { deleteBook, getBooksByID, updateBook } from '../../redux/actions/Books.action';
 import { deleteAllBookDetail, getPartsByID } from '../../redux/actions/BooksDetail.action';
+import { deleteBook, deleteBooksPics, getBooksByID, updateBook } from '../../redux/actions/Books.action';
+import { deleteNotificationByID } from '../../redux/actions/Notification.action';
 import { deleteReadingListByID } from '../../redux/actions/ReadingList.action';
 import { deleteRatingByID } from '../../redux/actions/Rating.action';
 
@@ -192,6 +193,18 @@ const EditBookScreen = (props) => {
 
         try {
             await dispatch(deleteRatingByID(bookID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
+            await dispatch(deleteNotificationByID(bookID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
+            await dispatch(deleteBooksPics());
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }

@@ -1,4 +1,4 @@
-import { CHANGE, GET_READING_LIST_BY_ID, GET_READING_LIST_BY_USER_ID } from '../actions/ReadingList.action';
+import { CHANGE, GET_READING_LIST_BY_BOOK_ID, GET_READING_LIST_BY_ID, GET_READING_LIST_BY_USER_ID } from '../actions/ReadingList.action';
 import { stateInit } from '../states/InitState';
 
 const ReadingListReducer = (state = stateInit, action) => {
@@ -8,6 +8,13 @@ const ReadingListReducer = (state = stateInit, action) => {
                 getReadingListData: {
                     ...action.list,
                 }
+            }
+
+        case GET_READING_LIST_BY_BOOK_ID:
+            return {
+                getReadingListData: [
+                    ...action.list,
+                ]
             }
 
         case GET_READING_LIST_BY_USER_ID:

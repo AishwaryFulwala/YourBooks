@@ -25,17 +25,6 @@ const UsersReducer = (state = stateInit, action) => {
                     }
                 }
             }
-            
-        case UPDATE_USER:
-            return {
-                getUserData: {
-                    ...state.getUserData,
-                    getUser: {
-                        ...state.getUserData.getUser,
-                        ...action.user,
-                    }
-                }
-            }
 
         case GET_ASYNC_DATA:
             return {

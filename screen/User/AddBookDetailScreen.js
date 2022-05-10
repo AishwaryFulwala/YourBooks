@@ -8,6 +8,8 @@ import { firebase } from '@react-native-firebase/storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { launchImageLibrary } from 'react-native-image-picker';
 
+import messaging from '@react-native-firebase/messaging';
+
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor";
 
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
@@ -17,6 +19,10 @@ import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 import CustomHeaderButton from '../../components/CustomHeaderButton';
 
 import { addBookDetail, getPartsByID, updateBookDetail } from '../../redux/actions/BooksDetail.action';
+import { getReadingListByBookID } from '../../redux/actions/ReadingList.action';
+import { addNotification } from '../../redux/actions/Notification.action';
+import { deleteBooksPics, getBooksByID } from '../../redux/actions/Books.action';
+
 import { useKeyboard } from '../../hooks/keyboardHook';
 
 import Colors from '../../constnats/Colors';
@@ -30,6 +36,8 @@ const AddBookDetailScreen = (props) => {
     const partID = props.route.params?.partID;
     const add = props.route.params?.add;
     const part = useSelector((state) => state.booksDetail.getBooksDetailData);
+    const book = useSelector((state) => state.books.getBookData.getBooksByID);
+    const readingList = useSelector((state) => state.readingList.getReadingListData);
 
     const [ isPart , setIsPart ] = useState();
     const [ isTitle, setIsTitle ] = useState('');
@@ -45,6 +53,19 @@ const AddBookDetailScreen = (props) => {
     const load = async () => {
         try {
             await dispatch(getPartsByID(bookID));
+        } catch (error) {
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
+            await dispatch(getBooksByID(bookID));
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        }
+
+        try {
+            await dispatch(getReadingListByBookID(bookID));
         } catch (error) {
             if(error.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
@@ -133,6 +154,32 @@ const AddBookDetailScreen = (props) => {
         else {
             try {
                 await dispatch(addBookDetail(part.length + 1, isTitle, isDesc, bookID));
+
+                if(readingList.length) {
+                    const msg = `${book[0]._id.UserName} updated new part of ${book[0]._id.BookName}`;
+                    
+                    const res = readingList.map((val) => {
+                        return new Promise((resolve, reject) => {
+                            dispatch(addNotification('Update', msg, bookID, val.UserID))
+                            .then(resolve, reject);
+                        })
+                    })
+                    
+                    await Promise.all(res).then(() => {}).catch((error) => {
+                        Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+                    });
+
+                    await dispatch(deleteBooksPics());
+                    
+                    // await messaging().sendMessage({
+                    //     notification: {
+                    //         title: 'Update',
+                    //         body: msg,
+                    //     },
+                    //     data: {}
+                    // });
+                }
+
                 if(add) {
                     props.navigation.dispatch(
                         StackActions.pop(2)

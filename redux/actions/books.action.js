@@ -4,6 +4,8 @@ import { getAsyncData } from "./Users.action";
 export const GET_BOOKS_BY_CATEGORY = 'GET_BOOKS_BY_CATEGORY';
 export const GET_BOOKS_BY_ID = 'GET_BOOKS_BY_ID';
 export const GET_BOOKS_BY_USER = 'GET_BOOKS_BY_USER';
+export const GET_BOOKS_BY_BOOK_ID = 'GET_BOOKS_BY_BOOK_ID';
+export const DELETE_BOOKS_PICS = 'DELETE_BOOKS_PICS';
 
 export const getBooksByCategory = (id) => {
     return async (dispatch) => {
@@ -79,6 +81,29 @@ export const getBooksByUser = (id) => {
                 books: [],
             });
             
+            return await Promise.reject(error.response);
+        }
+    }
+};
+
+export const getBooksByBookID = (id) => {
+    return async (dispatch) => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/getBooksByBookID/${id}`, {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            }, 'GET');
+
+            dispatch({
+                type: GET_BOOKS_BY_BOOK_ID,
+                books: res.data,
+            });
+
+            return await Promise.resolve(res.data);
+        } catch (error) {         
             return await Promise.reject(error.response);
         }
     }
@@ -173,3 +198,10 @@ export const deleteBook = (id) => {
         }
     }
 };
+
+export const deleteBooksPics = () => {
+    return {
+        type: DELETE_BOOKS_PICS,
+        books: []
+    }
+}
