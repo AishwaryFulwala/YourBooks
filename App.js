@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { Platform, Alert } from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
 import SplashScreen from "react-native-splash-screen";
@@ -22,12 +21,10 @@ const App = () => {
         checkPermission = async () => {
             const check = await messaging().requestPermission();
 
-            if(check === 1 ||  check === 2) {
-                return messaging().setBackgroundMessageHandler(() => {});
-            }
-            else {
+            if(check === 1 ||  check === 2)
+                messaging().setBackgroundMessageHandler(async () => {});
+            else 
                 Alert.alert('Alert', 'Please Provide Notification Permission', [{ text: 'Okay' }]);
-            }
         }
 
         checkPermission();

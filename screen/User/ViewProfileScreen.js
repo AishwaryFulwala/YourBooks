@@ -21,8 +21,8 @@ const wWidth = Dimensions.get('window').width;
 
 const ViewProfileScreen = (props) => {
     const userID = props.route.params.userID;
-    const user = useSelector((state) => state.users.getUserData.getUser);
-    const books = useSelector((state) => state.books.getBookData.getBooksByUser);
+    const user = useSelector((state) => state?.users?.getUserData?.getUser);
+    const books = useSelector((state) => state?.books?.getBookData?.getBooksByUser);
 
     const [ userAsync, setUserAsync ] = useState(null);
     const [ isfollow, setIsFollow ] = useState(false);
@@ -63,7 +63,7 @@ const ViewProfileScreen = (props) => {
 
     const followHandler = async () => {
         try {
-            await dispatch(updateUser({Follow: user._id}));
+            await dispatch(updateUser({Follow: user?._id}));
             load();
         } catch (error) {
             if(error.request?.status === 404)
@@ -158,7 +158,7 @@ const ViewProfileScreen = (props) => {
             >
                 <View style={styles.touchView}>
                     <ImageBackground
-                        source={{uri: user.CoverPic}}
+                        source={{uri: user?.CoverPic}}
                         style={styles.imgCover}
                     >
                     </ImageBackground>
@@ -170,14 +170,14 @@ const ViewProfileScreen = (props) => {
                     >
                         <View style={styles.imgView}>
                             <Image
-                                source={{uri: user.ProfilePic}}
+                                source={{uri: user?.ProfilePic}}
                                 style={styles.img}
                             />
                         </View>
                     </LinearGradient>
                     <View style={styles.dispView}>
                         <View style={styles.txtView}>
-                            <Text style={styles.txtName}>{user.UserName}</Text>
+                            <Text style={styles.txtName}>{user?.UserName}</Text>
                         </View>
                         <View style={styles.followView}>
                             <View>
@@ -192,13 +192,13 @@ const ViewProfileScreen = (props) => {
                                             StackActions.push('Follow',{
                                                 screen: 'Followers',
                                                 params: {
-                                                    userID: user._id
+                                                    userID: user?._id
                                                 }
                                             })
                                         );
                                     }}
                                 >
-                                    <Text style={styles.txtNo}>{user.Followers ? user.Followers.length : 0}</Text>
+                                    <Text style={styles.txtNo}>{user?.Followers ? user?.Followers.length : 0}</Text>
                                     <Text style={styles.txtFollow}>Followers</Text>
                                 </TouchableOpacity>
                             </View>
@@ -210,13 +210,13 @@ const ViewProfileScreen = (props) => {
                                             StackActions.push('Follow',{
                                                 screen: 'Followings',
                                                 params: {
-                                                    userID: user._id
+                                                    userID: user?._id
                                                 }
                                             })
                                         );
                                     }}
                                 >
-                                    <Text style={styles.txtNo}>{user.Followings ? user.Followings.length : 0}</Text>
+                                    <Text style={styles.txtNo}>{user?.Followings ? user?.Followings.length : 0}</Text>
                                     <Text style={styles.txtFollow}>Following</Text>
                                 </TouchableOpacity>
                             </View>
@@ -224,7 +224,7 @@ const ViewProfileScreen = (props) => {
                         <ScrollView style={styles.scrollView}>
                             <View style={styles.aboutView}>
                                 <Text style={styles.userTxt}>About</Text>
-                                <Text style={styles.txtDescription}>{user.About}</Text>
+                                <Text style={styles.txtDescription}>{user?.About}</Text>
                             </View>
                             {
                                 books && 

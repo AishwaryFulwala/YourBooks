@@ -8,8 +8,6 @@ import { firebase } from '@react-native-firebase/storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { launchImageLibrary } from 'react-native-image-picker';
 
-import messaging from '@react-native-firebase/messaging';
-
 import { actions, RichEditor, RichToolbar } from "react-native-pell-rich-editor";
 
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
@@ -20,8 +18,8 @@ import CustomHeaderButton from '../../components/CustomHeaderButton';
 
 import { addBookDetail, getPartsByID, updateBookDetail } from '../../redux/actions/BooksDetail.action';
 import { getReadingListByBookID } from '../../redux/actions/ReadingList.action';
-import { addNotification } from '../../redux/actions/Notification.action';
-import { deleteBooksPics, getBooksByID } from '../../redux/actions/Books.action';
+import { addFirebaseNotification, addNotification } from '../../redux/actions/Notification.action';
+import { getBooksByID } from '../../redux/actions/Books.action';
 
 import { useKeyboard } from '../../hooks/keyboardHook';
 
@@ -35,9 +33,9 @@ const AddBookDetailScreen = (props) => {
     const bookID = props.route.params.bookID;
     const partID = props.route.params?.partID;
     const add = props.route.params?.add;
-    const part = useSelector((state) => state.booksDetail.getBooksDetailData);
-    const book = useSelector((state) => state.books.getBookData.getBooksByID);
-    const readingList = useSelector((state) => state.readingList.getReadingListData);
+    const part = useSelector((state) => state?.booksDetail?.getBooksDetailData);
+    const book = useSelector((state) => state?.books?.getBookData?.getBooksByID);
+    const readingList = useSelector((state) => state?.readingList?.getReadingListData);
 
     const [ isPart , setIsPart ] = useState();
     const [ isTitle, setIsTitle ] = useState('');
@@ -75,8 +73,8 @@ const AddBookDetailScreen = (props) => {
     useEffect(() => {
         props.navigation.addListener('focus', load);
 
-        if(part.length)
-            part.map((val) => {
+        if(part?.length)
+            part?.map((val) => {
                 if(val._id===partID)
                     setIsPart(val);
             });
@@ -141,56 +139,57 @@ const AddBookDetailScreen = (props) => {
     };
 
     const saveHandler = async () => {
-        if(isPart) {
-            try {
-                await dispatch(updateBookDetail(isPart?._id, { PartName: isTitle, PartContain: isDesc }));
-                props.navigation.navigate('EditBookN', {
-                    bookID: bookID
-                });
-            } catch (error) {
-                Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-            }
-        }
-        else {
-            try {
-                await dispatch(addBookDetail(part.length + 1, isTitle, isDesc, bookID));
-
-                if(readingList.length) {
-                    const msg = `${book[0]._id.UserName} updated new part of ${book[0]._id.BookName}`;
-                    
-                    const res = readingList.map((val) => {
-                        return new Promise((resolve, reject) => {
-                            dispatch(addNotification('Update', msg, bookID, val.UserID))
-                            .then(resolve, reject);
-                        })
-                    })
-                    
-                    await Promise.all(res).then(() => {}).catch((error) => {
-                        Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+        if(!isTitle || !isDesc)
+            Alert.alert('Insufficient Permission', 'Please must enter Title and Description.', [{text: 'okay'}])
+        else { 
+            if(isPart) {
+                try {
+                    await dispatch(updateBookDetail(isPart?._id, { PartName: isTitle, PartContain: isDesc }));
+                    props.navigation.navigate('EditBookN', {
+                        bookID: bookID
                     });
+                } catch (error) {
+                    Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+                }
+            }
+            else {
+                try {
+                    await dispatch(addBookDetail(part?.length + 1, isTitle, isDesc, bookID));
 
-                    await dispatch(deleteBooksPics());
+                    if(readingList?.length) {
+                        const msg = `${book[0]?._id?.UserName} updated new part of ${book[0]?._id?.BookName}`;
+                        
+                        try {
+                            await dispatch(addFirebaseNotification('Update', msg, bookID));
+                        } catch (error) {
+                             console.log('e',error)
+                            Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+                        }
+
+                        const res = readingList?.map((val) => {
+                            return new Promise((resolve, reject) => {
+                                dispatch(addNotification('Update', msg, bookID, val.UserID))
+                                .then(resolve, reject);
+                            })
+                        })
+                        
+                        await Promise.all(res).then(() => {}).catch((error) => {
+                            Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+                        });
+                    }
+
+                    if(add) {
+                        props.navigation.dispatch(
+                            StackActions.pop(2)
+                        );
+                    }
                     
-                    // await messaging().sendMessage({
-                    //     notification: {
-                    //         title: 'Update',
-                    //         body: msg,
-                    //     },
-                    //     data: {}
-                    // });
+                    props.navigation.navigate('EditBookN', {
+                        bookID: bookID
+                    });
+                } catch (error) {
+                    Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
                 }
-
-                if(add) {
-                    props.navigation.dispatch(
-                        StackActions.pop(2)
-                    );
-                }
-
-                props.navigation.navigate('EditBookN', {
-                    bookID: bookID
-                });
-            } catch (error) {
-                Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
             }
         }
     };
@@ -232,7 +231,7 @@ const AddBookDetailScreen = (props) => {
                         />
                     </View>
                     <RichEditor
-                        containerStyle={{ ...styles.containerInput, paddingBottom: Platform.OS === 'ios' ? keyboardHeight - 100 : 0}}
+                        containerStyle={{ paddingBottom: Platform.OS === 'ios' ? keyboardHeight - 100 : 0}}
                         style={styles.descInput}
                         editorStyle={styles.editInput}
                         ref={RichText}
@@ -300,10 +299,6 @@ const styles = StyleSheet.create({
     descInput: {
         flex: 1,
         maxHeight: 500,
-    },
-    containerInput: {
-        borderColor: Colors.fontColor,
-        borderWidth: 1,
     },
     editInput:{
         backgroundColor: Colors.bodyColor,

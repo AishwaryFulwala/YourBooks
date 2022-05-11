@@ -9,9 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { StackActions } from '@react-navigation/native';
 
 import { PERMISSIONS, request } from 'react-native-permissions';
-import * as ImagePicker from 'react-native-image-picker';
+import { launchCamera, launchImageLibrary }from 'react-native-image-picker';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+import messaging from '@react-native-firebase/messaging';
 
 import IconM from 'react-native-vector-icons/MaterialIcons';
 import IconI from 'react-native-vector-icons/Ionicons';
@@ -29,7 +31,7 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const MyProfileScreen = (props) => {
-    const user = useSelector((state) => state.users.getUserData.getUser);
+    const user = useSelector((state) => state?.users?.getUserData?.getUser);
     const [ isUser, setIsUser ] = useState(user ?? {});
 
     useEffect(() => {
@@ -87,7 +89,20 @@ const MyProfileScreen = (props) => {
         props.navigation.addListener('focus', load);
     }, []);
 
-    const logOut = () => {
+    const checkPermission = async () => {
+        const check = await messaging().requestPermission();
+
+        if(check === 1 ||  check === 2) {
+            const token = await messaging().getToken();
+            await dispatch(updateUser({Token: token, del: 1}));
+        }
+        else {
+            Alert.alert('Alert', 'Please Provide Notification Permission', [{ text: 'Okay' }]);
+        }
+    };
+
+    const logOut = async () => {
+        await checkPermission();
         dispatch(logout());
         props.navigation.dispatch(
             StackActions.replace('Sign')
@@ -112,7 +127,7 @@ const MyProfileScreen = (props) => {
 
         let img;
         try {
-            img = await ImagePicker.launchCamera()
+            img = await launchCamera()
         } catch (error) {
             Alert.alert('', 'Can\'t access Library', [{text: okay}])
             return;
@@ -137,7 +152,7 @@ const MyProfileScreen = (props) => {
 
         let img;
         try {
-            img = await ImagePicker.launchImageLibrary()
+            img = await launchImageLibrary()
         } catch (error) {
             Alert.alert('', 'Can\'t access Library', [{text: okay}])
             return;

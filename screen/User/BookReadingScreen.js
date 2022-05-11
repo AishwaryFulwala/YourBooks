@@ -33,7 +33,7 @@ const tagsStyles = {
 
 const BookReadingScreen = (props) => {
     const bookID = props.route.params.bookID;
-    const books = useSelector((state) => state.booksDetail.getBooksDetailData);
+    const books = useSelector((state) => state?.booksDetail?.getBooksDetailData);
 
     const [ sliderValue, setSliderValue ] = useState(0);
     const [ scrollMax, setScrollMax ] = useState(0);
@@ -50,7 +50,8 @@ const BookReadingScreen = (props) => {
         try {
             await dispatch(getBooksDetailByID(bookID));
         } catch (error) {
-            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
 
         const val = JSON.parse(await AsyncStorage.getItem(`@bookScroll${bookID}`));
@@ -96,7 +97,7 @@ const BookReadingScreen = (props) => {
         );
     };
 
-    if(!books || !books.length || isLoad) {
+    if(!books || isLoad) {
         return (
             <View style={styles.activity}>
                 <ActivityIndicator color={Colors.fontColor} />
@@ -110,53 +111,60 @@ const BookReadingScreen = (props) => {
                 style={styles.txtTitle}
                 ellipsizeMode='tail'
                 numberOfLines={1}
-            >{books[0].BookName}</Text>
+            >{books[0]?.BookName}</Text>
             {
-                <FlatList
-                    data={books}
-                    renderItem={displayContain}
-                    ref={ref}
-                    onLayout={(event) => {
-                        layoutHeight.current = event.nativeEvent.layout.height;
-                        if(contentHeight.current){
-                            setScrollMax(contentHeight.current - layoutHeight.current);
-                        }
-                    }}
-                    onContentSizeChange={(_, height) => {
-                        contentHeight.current = height;
-                        if(layoutHeight.current){
-                            setScrollMax(contentHeight.current - layoutHeight.current);
-                        }
-                    }}
-                    onScroll={(event) => {
-                        storeData(event.nativeEvent.contentOffset.y);
-                        if(!isNotScrollEnabled.current) {
-                            setSliderValue(event.nativeEvent.contentOffset.y);
-                        }
-                    }}
-                    onMomentumScrollBegin={() => {
-                        isNotScrollEnabled.current = false;
-                    }}
-                />
+                !books?.length ?
+                    <View style={styles.activity}>
+                        <Text style={styles.txtNoBook}>No Parts Found</Text>
+                    </View>
+                :
+                    <View>
+                        <FlatList
+                            data={books}
+                            renderItem={displayContain}
+                            ref={ref}
+                            onLayout={(event) => {
+                                layoutHeight.current = event.nativeEvent.layout.height;
+                                if(contentHeight.current){
+                                    setScrollMax(contentHeight.current - layoutHeight.current);
+                                }
+                            }}
+                            onContentSizeChange={(_, height) => {
+                                contentHeight.current = height;
+                                if(layoutHeight.current){
+                                    setScrollMax(contentHeight.current - layoutHeight.current);
+                                }
+                            }}
+                            onScroll={(event) => {
+                                storeData(event.nativeEvent.contentOffset.y);
+                                if(!isNotScrollEnabled.current) {
+                                    setSliderValue(event.nativeEvent.contentOffset.y);
+                                }
+                            }}
+                            onMomentumScrollBegin={() => {
+                                isNotScrollEnabled.current = false;
+                            }}
+                        />
+                        <Slider
+                            style={styles.slider}
+                            minimumValue={0}
+                            maximumValue={scrollMax}
+                            minimumTrackTintColor={Colors.bookColor}
+                            maximumTrackTintColor={Colors.fontColor}
+                            thumbTintColor={Colors.bookColor}
+                            tapToSeek={true}
+                            step={1}
+                            value={sliderValue}
+                            onSlidingStart ={ () => {
+                                isNotScrollEnabled.current = true;
+                            }}
+                            onSlidingComplete={(value) => {
+                                ref.current.scrollToOffset({ animated: true, offset: value});
+                                setSliderValue(value);
+                            }}
+                        />
+                    </View>
             }
-            <Slider
-                style={styles.slider}
-                minimumValue={0}
-                maximumValue={scrollMax}
-                minimumTrackTintColor={Colors.bookColor}
-                maximumTrackTintColor={Colors.fontColor}
-                thumbTintColor={Colors.bookColor}
-                tapToSeek={true}
-                step={1}
-                value={sliderValue}
-                onSlidingStart ={ () => {
-                    isNotScrollEnabled.current = true;
-                }}
-                onSlidingComplete={(value) => {
-                    ref.current.scrollToOffset({ animated: true, offset: value});
-                    setSliderValue(value);
-                }}
-            />
         </View>
     );
 };
@@ -180,8 +188,14 @@ const styles = StyleSheet.create({
         marginTop: wHeight * 0.03,
         marginHorizontal: wWidth * 0.04
     },
+    txtNoBook: {
+        color: Colors.lightGray,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.04,
+        textAlign: 'center',
+    },
     flatView: {
-        marginTop: wHeight * 0.05,
+        marginTop: wHeight * 0.03,
         flexDirection: 'row',
     },
     dispView: {

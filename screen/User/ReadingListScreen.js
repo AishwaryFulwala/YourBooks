@@ -16,7 +16,7 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const ReadingListScreen = (props) => {
-    const readingList = useSelector((state) => state.readingList.getReadingListData);
+    const readingList = useSelector((state) => state?.readingList?.getReadingListData);
 
     const [ open, setOpen ] = useState(false);
     const [ isID, setIsID ] = useState(null);
@@ -89,7 +89,7 @@ const ReadingListScreen = (props) => {
                     <View style={styles.dispView}>
                         <View style={styles.titleView}>
                             <Text style={styles.txtTitle}>Your List</Text>
-                            <Text style={styles.txtStories}>{readingList.length} Stories</Text>
+                            <Text style={styles.txtStories}>{readingList?.length} Stories</Text>
                         </View>
                         <View style={styles.dispView}>
                             <SliderModal 

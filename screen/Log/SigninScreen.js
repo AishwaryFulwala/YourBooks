@@ -1,13 +1,15 @@
 import React, { useState } from 'react';
 import { StyleSheet, View, Text, Dimensions, Alert, TouchableOpacity, ScrollView } from 'react-native';
 
+import messaging from '@react-native-firebase/messaging';
+
 import { StackActions } from "@react-navigation/native";
 
 import { useDispatch } from "react-redux";
 
 import IconI from 'react-native-vector-icons/Ionicons'
 
-import * as UsersActions from '../../redux/actions/Users.action';
+import { signin, updateUser } from '../../redux/actions/Users.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -32,6 +34,22 @@ const SigninScreen = (props) => {
 
     const pwdHandler = (txt) => {
         setPassword(txt);
+    };
+
+    const checkPermission = async () => {
+        const check = await messaging().requestPermission();
+
+        if(check === 1 ||  check === 2) {
+            const token = await messaging().getToken();
+            try {
+                await dispatch(updateUser({Token: token}));
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            }
+        }
+        else {
+            Alert.alert('Alert', 'Please Provide Notification Permission', [{ text: 'Okay' }]);
+        }
     };
 
     const signInHandler = async () => {
@@ -63,10 +81,10 @@ const SigninScreen = (props) => {
             });
 
         try {
-            const res = await dispatch(
-                UsersActions.signin(email, password)
-            );
+            await dispatch(signin(email, password));
             
+            checkPermission();
+
             props?.navigation?.dispatch(
                 StackActions.replace('Tab')
             );

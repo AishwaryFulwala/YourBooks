@@ -15,9 +15,9 @@ const wWidth = Dimensions.get('window').width;
 
 const FollowersScreen = (props) => {
     const userID = props?.route?.params?.userID;
-    const id = useSelector((state) => state.users.getUserData.getID);
-    const user = useSelector((state) => state.users.getUserData.getUser);
-    const follow = useSelector((state) => state.users.getUserData.getFollow);
+    const id = useSelector((state) => state?.users?.getUserData?.getID);
+    const user = useSelector((state) => state?.users?.getUserData?.getUser);
+    const follow = useSelector((state) => state?.users?.getUserData?.getFollow);
 
     const dispatch = useDispatch();
 

@@ -16,7 +16,7 @@ import IconA from 'react-native-vector-icons/AntDesign';
 import IconMC from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { deleteAllBookDetail, getPartsByID } from '../../redux/actions/BooksDetail.action';
-import { deleteBook, deleteBooksPics, getBooksByID, updateBook } from '../../redux/actions/Books.action';
+import { deleteBook, getBooksByID, updateBook } from '../../redux/actions/Books.action';
 import { deleteNotificationByID } from '../../redux/actions/Notification.action';
 import { deleteReadingListByID } from '../../redux/actions/ReadingList.action';
 import { deleteRatingByID } from '../../redux/actions/Rating.action';
@@ -32,8 +32,8 @@ const wWidth = Dimensions.get('window').width;
 
 const EditBookScreen = (props) => {
     const bookID = props.route.params.bookID;
-    const book = useSelector((state) => state.books.getBookData.getBooksByID);
-    const bookDetail = useSelector((state) => state.booksDetail.getBooksDetailData);
+    const book = useSelector((state) => state?.books?.getBookData?.getBooksByID);
+    const bookDetail = useSelector((state) => state?.booksDetail?.getBooksDetailData);
 
     const [ isTitle, setIsTitle ] = useState('');
     const [ isDesc, setIsDesc ] = useState('');
@@ -203,12 +203,6 @@ const EditBookScreen = (props) => {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
 
-        try {
-            await dispatch(deleteBooksPics());
-        } catch (error) {
-            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-        }
-
         props.navigation.navigate('Write');
     };
 
@@ -273,7 +267,7 @@ const EditBookScreen = (props) => {
                     </View>
                     <View style={styles.cateView}>
                         <Text style={styles.cateTxt}>Category</Text>
-                        <Text style={styles.cateInputTxt}>{book[0]._id.CategoryName}</Text>
+                        <Text style={styles.cateInputTxt}>{book[0]?._id?.CategoryName}</Text>
                     </View>
                 </View>
                 <View>
@@ -291,10 +285,10 @@ const EditBookScreen = (props) => {
                         />
                     </View>
                         {
-                            !!bookDetail.length &&
+                            !!bookDetail?.length &&
                             <View style={styles.detailView}>
                                 {
-                                    bookDetail.map((val, index) => {
+                                    bookDetail?.map((val, index) => {
                                         return (
                                             <TouchableOpacity
                                                 style={styles.detailBlock}
@@ -332,9 +326,9 @@ const EditBookScreen = (props) => {
             </KeyboardAwareScrollView>
             <TouchableOpacity
                 style={styles.triangleCorner}
-                onPress={() => updateBookHandler({Status: !book[0]._id.Status})}
+                onPress={() => updateBookHandler({Status: !book[0]?._id?.Status})}
             >
-                <Text style={styles.statusTxt}>{book[0]._id.Status ? 'Ongoing' : 'Complete'}</Text>
+                <Text style={styles.statusTxt}>{book[0]?._id?.Status ? 'Ongoing' : 'Complete'}</Text>
             </TouchableOpacity>
             <PicModal
                 onClose={() => setOpen(!open)}

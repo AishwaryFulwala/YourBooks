@@ -16,8 +16,8 @@ const wWidth = Dimensions.get('window').width;
 
 const CategoryBooksScreen = (props) => {
     const cateID = props.route.params.cateID;
-    const category = useSelector((state) => state.categories.getCategoryData.getCategory);
-    const books = useSelector((state) => state.books.getBookData.getBooksByCategory);
+    const category = useSelector((state) => state?.categories?.getCategoryData?.getCategory);
+    const books = useSelector((state) => state?.books?.getBookData?.getBooksByCategory);
 
     const [ isLoad, setIsLoad ] = useState(false)
 
@@ -50,7 +50,7 @@ const CategoryBooksScreen = (props) => {
             setIsLoad(false);
     }, [ books ])
 
-    if(isLoad) {
+    if(isLoad || !books) {
         return (
             <View style={styles.activity}>
                 <ActivityIndicator color={Colors.fontColor} />
@@ -62,7 +62,7 @@ const CategoryBooksScreen = (props) => {
         <View style={styles.body}>
             <Text style={styles.txtTitle}>{category?.CategoryName}</Text>
             {
-                (!books || !books.length)  ?
+                (!books?.length)  ?
                     <View style={styles.activity}>
                         <Text style={styles.txtNoBook}>No book Found</Text>
                     </View>

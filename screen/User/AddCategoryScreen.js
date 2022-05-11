@@ -19,7 +19,7 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const AddCategoryScreen = (props) => {
-    const categories = useSelector((state) => state.categories.getCategoryData.getCategories);
+    const categories = useSelector((state) => state?.categories?.getCategoryData?.getCategories);
 
     const [ isCate, setIsCate ] = useState();
 
@@ -67,7 +67,7 @@ const AddCategoryScreen = (props) => {
             <ScrollView>
                 {
                     categories && 
-                    categories.map((val, index) => {
+                    categories?.map((val, index) => {
                         return (
                             <View key={index}>
                                 <TouchableOpacity

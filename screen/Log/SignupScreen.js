@@ -9,7 +9,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import IconI from 'react-native-vector-icons/Ionicons';
 
-import * as UsersActions from '../../redux/actions/Users.action';
+import { signup } from '../../redux/actions/Users.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -102,7 +102,7 @@ const SignupScreen = (props) => {
             });
     
         dispatch(
-            UsersActions.signup(userName, contactNo, email, password)
+            signup(userName, contactNo, email, password)
         )
         .then((res) => {
             setMsg({});

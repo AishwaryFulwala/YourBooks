@@ -23,10 +23,10 @@ const wWidth = Dimensions.get('window').width;
 
 const BookScreen = (props) => {
     const bookID = props.route.params.bookID;
-    const book = useSelector((state) => state.books.getBookData.getBooksByID);
-    const avgRating = useSelector((state) => state.ratings.getRatingData.getAvgRating);
-    const rating = useSelector((state) => state.ratings.getRatingData.getRatingByBook);
-    const readingList = useSelector((state) => state.readingList.getReadingListData);
+    const book = useSelector((state) => state?.books?.getBookData?.getBooksByID);
+    const avgRating = useSelector((state) => state?.ratings?.getRatingData?.getAvgRating);
+    const rating = useSelector((state) => state?.ratings?.getRatingData?.getRatingByBook);
+    const readingList = useSelector((state) => state?.readingList?.getReadingListData);
 
     const [ open, setOpen ] = useState(false);
     const [ isLike, setIsLike ] = useState(false);
@@ -78,9 +78,9 @@ const BookScreen = (props) => {
     };
 
     const addToList = async (no) => {
-        if(readingList._id) {
+        if(readingList?._id) {
             try {
-                await dispatch(deleteReadingList(readingList._id));
+                await dispatch(deleteReadingList(readingList?._id));
             } catch (error) {
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
             }
@@ -160,7 +160,7 @@ const BookScreen = (props) => {
                 <SliderModal 
                     visible={open}
                     onClick={() => setOpen(!open)}
-                    op1Txt={!readingList.BookID ? 'Add to Reading List' : 'Remove From Reading List'}
+                    op1Txt={!readingList?.BookID ? 'Add to Reading List' : 'Remove From Reading List'}
                     op2Txt='Start Reading'
                     op1Icon='book-plus-multiple'
                     op2Icon='book-open-page-variant'
@@ -234,7 +234,7 @@ const BookScreen = (props) => {
                                     color={Colors.fontColor}
                                     style={styles.icon}
                                 />
-                                <Text style={styles.txtIcon}>{avgRating.length ? avgRating[index].avg.toFixed(1) : 0}</Text>
+                                <Text style={styles.txtIcon}>{avgRating?.length ? avgRating[index]?.avg.toFixed(1) : 0}</Text>
                             </View>
                         </View>
                         <View style={styles.descView}>
@@ -242,7 +242,7 @@ const BookScreen = (props) => {
                         </View>
                         <View style={styles.ratingDispView}>
                             {
-                                rating.map((val, index) => {
+                                rating?.map((val, index) => {
                                     val = val._id;
 
                                     return (

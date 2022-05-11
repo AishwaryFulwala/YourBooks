@@ -27,6 +27,29 @@ export const addNotification = (title, body, bid, uid) => {
     }
 };
 
+export const addFirebaseNotification = (title, body, bid) => {
+    return async () => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/addFirebaseNotification`, {
+                NotificationTitle: title,
+                NotificationBody: body,
+                BookID: bid
+            }, 'POST', {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            });
+            
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            console.log('err',error)
+            return await Promise.reject(error.response);
+        }
+    }
+};
+
 export const getNotificationByID = () => {
     return async (dispatch) => {
         const userData = await getAsyncData();

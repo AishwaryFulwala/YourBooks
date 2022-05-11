@@ -1,10 +1,10 @@
 export const stateInit = {
-    getUserData: {},
-    getCategoryData: {},
-    getBookData: {},
-    getRatingData: {},
-    getReadingListData: {},
-    getBooksDetailData: {},
-    getSearchHistoryData: {},
-    getNotificationData: {},
+    getUserData: null,
+    getCategoryData: null,
+    getBookData: null,
+    getRatingData: null,
+    getReadingListData: null,
+    getBooksDetailData: null,
+    getSearchHistoryData: null,
+    getNotificationData: null,
 };

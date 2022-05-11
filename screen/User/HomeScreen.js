@@ -13,8 +13,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const HomeScreen = (props) => {
-    const user = useSelector((state) => state.users.getUserData.getUser);
-    const categories = useSelector((state) => state.categories.getCategoryData.getCategories);
+    const user = useSelector((state) => state?.users?.getUserData?.getUser);
+    const categories = useSelector((state) => state?.categories?.getCategoryData?.getCategories);
 
     const dispatch = useDispatch();
 
@@ -43,7 +43,7 @@ const HomeScreen = (props) => {
                 <View style={styles.container}>
                     {
                         categories && 
-                        categories.map((val, index) => {
+                        categories?.map((val, index) => {
                             return (
                                 <TouchableOpacity
                                     style={styles.btnCat}

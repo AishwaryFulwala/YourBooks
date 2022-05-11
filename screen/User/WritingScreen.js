@@ -16,7 +16,7 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const WritingScreen = (props) => {
-    const books = useSelector((state) => state.books.getBookData.getBooksByUser);
+    const books = useSelector((state) => state?.books?.getBookData?.getBooksByUser);
 
     const dispatch = useDispatch();
 

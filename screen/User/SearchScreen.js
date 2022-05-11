@@ -20,6 +20,9 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const SearchScreen = (props) => {
+    const history = useSelector((state) => state?.searchHistory?.getSearchHistoryData?.getHistory);
+    const searchData = useSelector((state) => state?.searchHistory?.getSearchHistoryData?.getData);
+
     const [ isCross, setIsCross ] = useState(false);
     const [ isSearch, setIsSearch ] = useState('');
     const [ userAsync, setUserAsync ] = useState(null);
@@ -29,9 +32,6 @@ const SearchScreen = (props) => {
         { key: 'book', title: 'Book' },
         { key: 'user', title: 'User' },
     ]);
-
-    const history = useSelector((state) => state.searchHistory.getSearchHistoryData.getHistory);
-    const searchData = useSelector((state) => state.searchHistory.getSearchHistoryData.getData);
 
     const dispatch = useDispatch();
 
@@ -106,7 +106,7 @@ const SearchScreen = (props) => {
         if(isSearch) {
             if(history?.Data) {
                 history?.Data?.push(isSearch);
-                updateHistory(history.Data);
+                updateHistory(history?.Data);
             }
             else {
                 updateHistory([isSearch]);
@@ -158,7 +158,7 @@ const SearchScreen = (props) => {
         return (
             <View style={styles.body}>
                 <SearchList
-                    data={searchData.Book}
+                    data={searchData?.Book}
                     onClick={(id) => {
                         props.navigation.navigate('BookN', {
                             bookID: id,
@@ -189,7 +189,7 @@ const SearchScreen = (props) => {
         return (
             <View style={styles.body}>
                 <SearchList
-                    data={searchData.User} 
+                    data={searchData?.User} 
                     onClick={(id) => {
                         props.navigation.navigate('ViewProfileN', {
                             userID: id,
@@ -260,7 +260,7 @@ const SearchScreen = (props) => {
                                         </TouchableOpacity>
                                     </View>
                                     <FlatList 
-                                        data={history.Data}
+                                        data={history?.Data}
                                         renderItem={({item, index}) => {
                                             return (
                                                 <TouchableOpacity
@@ -278,7 +278,7 @@ const SearchScreen = (props) => {
                                                         color={Colors.fontColor}
                                                         size={15}
                                                         style={styles.crosssIcon}
-                                                        onPress={() => updateHistory(history.Data.filter((val, i) => i !== index))}
+                                                        onPress={() => updateHistory(history?.Data.filter((val, i) => i !== index))}
                                                     />
                                                 </TouchableOpacity>
                                             );

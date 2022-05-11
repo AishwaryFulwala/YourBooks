@@ -30,14 +30,8 @@ target 'YourBooks' do
   
   pod 'RNCMaskedView', :path => '../node_modules/@react-native-masked-view/masked-view'
 
-
-
-
-
   pod 'RNFBApp', :path => '../node_modules/@react-native-firebase/app'
-
   pod 'RNFBStorage', :path => '../node_modules/@react-native-firebase/storage'
-
   pod 'RNFBMessaging', :path => '../node_modules/@react-native-firebase/messaging'
 
   target 'YourBooksTests' do

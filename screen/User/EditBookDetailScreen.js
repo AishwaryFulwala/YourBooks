@@ -21,8 +21,8 @@ const wWidth = Dimensions.get('window').width;
 
 const EditBookDetailScreen = (props) => {
     const bookID = props.route.params.bookID;
-    const book = useSelector((state) => state.books.getBookData.getBooksByID);
-    const bookDetail = useSelector((state) => state.booksDetail.getBooksDetailData);
+    const book = useSelector((state) => state?.books?.getBookData?.getBooksByID);
+    const bookDetail = useSelector((state) => state?.booksDetail?.getBooksDetailData);
 
     const [data, setData] = useState(bookDetail);
     const [ open, setOpen ] = useState(false);
@@ -121,9 +121,9 @@ const EditBookDetailScreen = (props) => {
 
     return (
         <View style={styles.body}>
-            <Text style={styles.txtTitle}>{book[0]._id.BookName}</Text>
+            <Text style={styles.txtTitle}>{book[0]?._id.BookName}</Text>
             {
-                !bookDetail.length  ?
+                !bookDetail?.length  ?
                     <View style={styles.activity}>
                         <Text style={styles.txtNoBook}>No Parts Found</Text>
                     </View>
