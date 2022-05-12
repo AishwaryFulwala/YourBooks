@@ -5,8 +5,8 @@ import SplashScreen from "react-native-splash-screen";
 import { Provider } from "react-redux";
 import { LogBox } from 'react-native';
 
-import BookNavigation from './navigation/BookNavigation';
-import store from './redux/store/Config';
+import BookNavigation from './src/navigation/BookNavigation';
+import store from './src/redux/store/Config';
 
 const App = () => {
     LogBox.ignoreAllLogs();
