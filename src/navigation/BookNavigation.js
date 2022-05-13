@@ -38,6 +38,7 @@ import AddBookScreen from '../screen/user/AddBookScreen';
 import AddBookDetailScreen from '../screen/user/AddBookDetailScreen';
 import AddCategoryScreen from '../screen/user/AddCategoryScreen';
 import EditBookDetailScreen from '../screen/user/EditBookDetailScreen';
+import NotificationCount from '../components/NotificationCount';
 
 const options = {
     headerTitle: () => {
@@ -321,11 +322,10 @@ const TabNavigator = () => {
                     else if(route.name === 'Library') 
                         return <IconI name={focused ? 'library' : 'library-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
                     else if(route.name === 'Notification') 
-                        return <IconM name={focused ? 'bell' : 'bell-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }}/>
+                        return <NotificationCount focused={focused} color={color} />
                     else if(route.name === 'MyProfile') 
                         return <IconM name={focused ? 'account' : 'account-outline'} size={focused ? 30 : 25} color={color} style={{ marginTop: 4 }} />
-                },
-                
+                },                
             })}
         >
             <Tab.Screen 
@@ -358,9 +358,9 @@ const TabNavigator = () => {
 };
 
 const BookStack = createStackNavigator();
-const BookNavigator = () => {
+const BookNavigator = (props) => {
     return(
-        <NavigationContainer theme={DarkTheme}>
+        <NavigationContainer theme={DarkTheme} ref={props.navRef} onReady={props.onReady}>
             <BookStack.Navigator
                 screenOptions={{
                     headerShown: false

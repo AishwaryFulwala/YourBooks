@@ -36,10 +36,10 @@ const AddBookDetailScreen = (props) => {
     const book = useSelector((state) => state?.books?.getBookData?.getBooksByID);
     const readingList = useSelector((state) => state?.readingList?.getReadingListData);
 
-    const [ isPart , setIsPart ] = useState();
-    const [ isTitle, setIsTitle ] = useState('');
-    const [ isDesc, setIsDesc ] = useState('');
-    const [ isLoading, setIsLoading ] = useState();
+    const [ isPart , setIsPart ] = useState(null);
+    const [ title, setTitle ] = useState('');
+    const [ desc, setDesc ] = useState('');
+    const [ isLoading, setIsLoading ] = useState(false);
 
     const keyboardHeight = useKeyboard();
     
@@ -80,8 +80,8 @@ const AddBookDetailScreen = (props) => {
     }, []);
 
     useEffect(() => {
-        setIsTitle(isPart?.PartName);
-        setIsDesc(isPart?.PartContain);
+        setTitle(isPart?.PartName);
+        setDesc(isPart?.PartContain);
     }, [ isPart ]);
 
     const verifyPermission = async () => {
@@ -107,7 +107,7 @@ const AddBookDetailScreen = (props) => {
 
                     setIsLoading(false);
                     RichText.current?.insertImage(res);
-               } catch (error) {
+                } catch (error) {
                     Alert.alert('An error occurred!', 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
                 }
             })
@@ -138,56 +138,48 @@ const AddBookDetailScreen = (props) => {
     };
 
     const saveHandler = async () => {
-        if(!isTitle || !isDesc)
-            Alert.alert('Insufficient Permission', 'Please must enter Title and Description.', [{text: 'okay'}])
-        else { 
-            if(isPart) {
-                try {
-                    await dispatch(updateBookDetail(isPart?._id, { PartName: isTitle, PartContain: isDesc }));
-                    props.navigation.navigate('EditBookN', {
-                        bookID: bookID
-                    });
-                } catch (error) {
-                    Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-                }
+        if(isPart) {
+            try {
+                await dispatch(updateBookDetail(isPart?._id, { PartName: title, PartContain: desc }));
+                props.navigation.navigate('EditBookN', {
+                    bookID: bookID
+                });
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
             }
-            else {
-                try {
-                    await dispatch(addBookDetail(part?.length + 1, isTitle, isDesc, bookID));
+        }
+        else {
+            try {
+                await dispatch(addBookDetail(part?.length + 1, title, desc, bookID));
 
-                    if(readingList?.length) {
-                        const msg = `${book[0]?._id?.UserName} updated new part of ${book[0]?._id?.BookName}`;
-                        
-                        try {
-                            await dispatch(addFirebaseNotification('Update', msg, bookID));
-                        } catch (error) {
-                            Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-                        }
+                if(readingList?.length) {
+                    const msg = `${book[0]?._id?.UserName} updated new part of ${book[0]?._id?.BookName}`;
 
-                        const res = readingList?.map((val) => {
-                            return new Promise((resolve, reject) => {
-                                dispatch(addNotification('Update', msg, bookID, val.UserID))
-                                .then(resolve, reject);
-                            })
+                    await dispatch(addFirebaseNotification('Update', msg, bookID));
+
+                    const res = readingList?.map((val) => {
+                        return new Promise((resolve, reject) => {
+                            dispatch(addNotification('Update', msg, bookID, val.UserID))
+                            .then(resolve, reject);
                         })
-                        
-                        await Promise.all(res).then(() => {}).catch((error) => {
-                            Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-                        });
-                    }
+                    })
 
-                    if(add) {
-                        props.navigation.dispatch(
-                            StackActions.pop(2)
-                        );
-                    }
-                    
-                    props.navigation.navigate('EditBookN', {
-                        bookID: bookID
+                    await Promise.all(res).then(() => {}).catch((error) => {
+                        Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
                     });
-                } catch (error) {
-                    Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
                 }
+
+                if(add) {
+                    props.navigation.dispatch(
+                        StackActions.pop(2)
+                    );
+                }
+
+                props.navigation.navigate('EditBookN', {
+                    bookID: bookID
+                });
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
             }
         }
     };
@@ -195,20 +187,23 @@ const AddBookDetailScreen = (props) => {
     useEffect(() => {
         props.navigation.setOptions({
             headerRight: () => {
-                return (
-                    <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
-                        <Item
-                            title='Save'
-                            iconName='book-arrow-up-outline'
-                            IconComponent={IconMC}
-                            onPress={saveHandler}
-                            disabled={isLoading ? true : false}
-                        />
-                    </HeaderButtons>
-                );                
+                if(title &&  desc)
+                    return (
+                        <HeaderButtons HeaderButtonComponent={CustomHeaderButton}>
+                            <Item
+                                title='Save'
+                                iconName='book-arrow-up-outline'
+                                IconComponent={IconMC}
+                                onPress={saveHandler}
+                                disabled={isLoading ? true : false}
+                            />
+                        </HeaderButtons>
+                    );  
+                else
+                    return <View/>;
             },
         });
-    }, [ isTitle, isDesc ]);
+    }, [ title, desc, isLoading ]);
 
     return(
         <View style={styles.body}>
@@ -223,8 +218,8 @@ const AddBookDetailScreen = (props) => {
                         <Text style={styles.titleTxt}>Book title</Text>
                         <TextInput 
                             style={styles.titleInput}
-                            value={isTitle}
-                            onChangeText={(txt) => setIsTitle(txt)}
+                            value={title}
+                            onChangeText={(txt) => setTitle(txt)}
                             editable={isLoading ? false : true}
                         />
                     </View>
@@ -235,9 +230,9 @@ const AddBookDetailScreen = (props) => {
                         ref={RichText}
                         placeholder='Tap here to start writing'
                         useContainer
-                        onChange={(txt) => setIsDesc(txt)}
+                        onChange={(txt) => setDesc(txt)}
                         disabled={isLoading ? true : false}
-                        initialContentHTML={isDesc}
+                        initialContentHTML={desc}
                     />
                     <RichToolbar
                         style={styles.richTool}

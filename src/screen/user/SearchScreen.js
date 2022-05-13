@@ -24,11 +24,13 @@ const SearchScreen = (props) => {
     const searchData = useSelector((state) => state?.searchHistory?.getSearchHistoryData?.getData);
 
     const [ isCross, setIsCross ] = useState(false);
-    const [ isSearch, setIsSearch ] = useState('');
+    const [ search, setSearch ] = useState('');
     const [ userAsync, setUserAsync ] = useState(null);
 
+    const [ isLoad, setIsLoad ] = useState(true);
+
     const [index, setIndex] = React.useState(0);
-    const [routes] = React.useState([
+    const [ routes ] = useState([
         { key: 'book', title: 'Book' },
         { key: 'user', title: 'User' },
     ]);
@@ -62,26 +64,28 @@ const SearchScreen = (props) => {
     }, [ userAsync ]);
 
     const crossHandler = () => {
-        setIsSearch('');
+        setSearch('');
         setIndex(0)
         empty();
     }
 
     const debounce = (search, delay) => {
         let timer;
-        
         return (...args) => {
             clearTimeout(timer);
             timer = setTimeout(() => search(args), delay);
         }
     };
 
-    const search = async (txt) => {
+    const searchHandler = async (txt) => {
         try {
             await dispatch(getSearchData(txt));
+            setIsLoad(false);
         } catch (error) {
             if(error.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            else
+                setIsLoad(false)
         }
     }
 
@@ -96,24 +100,27 @@ const SearchScreen = (props) => {
     }
 
     const changeTxt = async (txt) => {
-        setIsSearch(txt);
+        if(!isCross)
+            setIsCross(true);
+
+        setSearch(txt);
+        setIsLoad(true);
 
         if(txt)
-            debounce(() => search(txt), 500)();
+            debounce(() => searchHandler(txt), 500)();
         else 
             empty()
     }
 
     const searchSubmit = () => {
-        if(isSearch) {
+        if(search) {
             if(history?.Data) {
-                history?.Data?.unshift(isSearch);
+                history?.Data?.unshift(search);
                 updateHistory(history?.Data);
             }
             else {
-                updateHistory([isSearch]);
+                updateHistory([search]);
             }
-            
         }        
     };
 
@@ -141,7 +148,7 @@ const SearchScreen = (props) => {
     };
 
     const bookTab = () => {
-        if(!searchData) {
+        if(isLoad) {
             return (
                 <View style={styles.activity}>
                     <PageLoader />
@@ -172,7 +179,7 @@ const SearchScreen = (props) => {
     };
 
     const userTab = () => {
-        if(!searchData) {
+        if(isLoad) {
             return (
                 <View style={styles.activity}>
                     <PageLoader />
@@ -223,9 +230,9 @@ const SearchScreen = (props) => {
                             returnKeyType='search'
                             autoCorrect={false}
                             autoCapitalize='none'
-                            value={isSearch}
+                            value={search}
+                            autoFocus={true}
                             onChangeText={changeTxt}
-                            onPressIn={() => setIsCross(true)}
                             onSubmitEditing={searchSubmit}
                         />
                         {
@@ -241,7 +248,7 @@ const SearchScreen = (props) => {
                     </View>            
                     <View style={styles.dispView}>
                         {
-                            isSearch ?
+                            search ?
                                 <TabView
                                     navigationState={{ index, routes }}
                                     renderScene={renderScene}

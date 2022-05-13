@@ -82,7 +82,7 @@ export const getReadingListByUserID = () => {
         } catch (error) {
             dispatch({
                 type: GET_READING_LIST_BY_USER_ID,
-                list: {},
+                list: [],
             });
 
             return await Promise.reject(error.response);
@@ -129,7 +129,7 @@ export const deleteReadingList = (id) => {
             
             dispatch({
                 type: CHANGE,
-                list: {},
+                list: null,
             });
 
             return await Promise.resolve(res.data);
@@ -152,7 +152,7 @@ export const deleteReadingListByID = (id) => {
             
             dispatch({
                 type: CHANGE,
-                list: {},
+                list: [],
             });
 
             return await Promise.resolve(res.data);

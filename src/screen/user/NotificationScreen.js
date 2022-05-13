@@ -4,7 +4,7 @@ import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, FlatList, 
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
-import { getNotificationByID } from '../../redux/actions/Notification.action';
+import { getNotificationByID, updateNotification } from '../../redux/actions/Notification.action';
 
 import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
@@ -16,7 +16,7 @@ const wWidth = Dimensions.get('window').width;
 
 const NotificationScreen = (props) => {
     const noti = useSelector((state) => state?.notifications?.getNotificationData);
-    
+
     const dispatch = useDispatch();
 
     const load = async () => {
@@ -32,29 +32,39 @@ const NotificationScreen = (props) => {
         props.navigation.addListener('focus', load);
     }, []);
 
+    const readHandler = async (id, read, bid) => {
+        if(read === true) {
+            try {
+                await dispatch(updateNotification(id));
+            } catch (error) {
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            }
+        }
+
+        props.navigation.navigate('BookReadingN', {
+            bookID: bid
+        });
+    };
+
     const displayContain = ({ item, index }) => {
         let date;
-        if(moment(new Date()).diff(item.NotificationDate, 'days') < 7)
-            date = moment(item._id.NotificationDate).from(new Date());
+        if(moment(new Date()).diff(item?._id?.NotificationDate, 'days') < 7)
+            date = moment(item?._id?.NotificationDate).from(new Date());
         else
-            date = moment(item._id.NotificationDate).format("MMM DD, YYYY [at] HH:mm");
+            date = moment(item?._id?.NotificationDate).format("MMM DD, YYYY [at] HH:mm");
 
         return (
             <TouchableOpacity
                 key={index}
                 style={styles.containView}
-                onPress={() => {
-                    props.navigation.navigate('BookReadingN', {
-                        bookID: item._id.BookID
-                    });
-                }}
+                onPress={() => readHandler(item?._id?.ID, item?._id?.Status, item._id.BookID)}
             >
                 <Image 
                     style={styles.imgBook}
                     source={{uri: item?._id?.BookPic}}
                 />
                 <View style={styles.txtView}>
-                    <Text style={styles.txtBody}>{item._id.NotificationBody}</Text>
+                    <Text style={{...styles.txtBody, color: item?._id?.Status ? Colors.titleColor : Colors.fontColor,}}>{item._id.NotificationBody}</Text>
                     <Text style={styles.txtDate}>{date}</Text>
                 </View>
             </TouchableOpacity>
@@ -126,12 +136,11 @@ const styles = StyleSheet.create({
         marginLeft: wWidth * 0.05,
     },
     txtBody: {
-        color: Colors.fontColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.04,
     },
     txtDate: {
-        color: Colors.fontColor,
+        color: Colors.lightGray,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.03,
         marginTop: wWidth * 0.015,

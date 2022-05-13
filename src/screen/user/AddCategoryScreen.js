@@ -21,7 +21,7 @@ const wWidth = Dimensions.get('window').width;
 const AddCategoryScreen = (props) => {
     const categories = useSelector((state) => state?.categories?.getCategoryData?.getCategories);
 
-    const [ isCate, setIsCate ] = useState();
+    const [ cate, setCate ] = useState(null);
 
     const dispatch = useDispatch();
 
@@ -52,13 +52,13 @@ const AddCategoryScreen = (props) => {
                 );                
             },
         });
-    }, [ isCate ]);
+    }, [ cate ]);
 
     const saveHandler = () => {
-        if(!isCate)
-            Alert.alert('An error occurred!', 'Please Select Category.', [{ text: 'Okay' }]);
+        if(!cate)
+            Alert.alert('', 'Please Select Category.', [{ text: 'Okay' }]);
         else
-            props.navigation.navigate('AddBookN', isCate);
+            props.navigation.navigate('AddBookN', cate);
     };
 
     return(
@@ -73,14 +73,14 @@ const AddCategoryScreen = (props) => {
                                 <TouchableOpacity
                                     style={styles.btnCat}
                                     onPress={() => {
-                                        setIsCate({ cateID: val._id, cateName: val.CategoryName})
+                                        setCate({ cateID: val._id, cateName: val.CategoryName})
                                     }}
                                 >
                                     <View style={styles.btnView}>
-                                        <Text style={{ ...styles.btnTxt, color: val._id === isCate?.cateID ? Colors.bookColor : Colors.fontColor }}>{val.CategoryName}</Text>
+                                        <Text style={{ ...styles.btnTxt, color: val._id === cate?.cateID ? Colors.bookColor : Colors.fontColor }}>{val.CategoryName}</Text>
                                         <IconM
-                                            name={val._id === isCate?.cateID ? 'radio-button-checked' : 'radio-button-unchecked'}
-                                            color={val._id === isCate?.cateID ? Colors.bookColor : Colors.fontColor}
+                                            name={val._id === cate?.cateID ? 'radio-button-checked' : 'radio-button-unchecked'}
+                                            color={val._id === cate?.cateID ? Colors.bookColor : Colors.fontColor}
                                             size={25}
                                         />
                                     </View>

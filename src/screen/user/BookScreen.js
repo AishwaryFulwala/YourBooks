@@ -34,6 +34,8 @@ const BookScreen = (props) => {
 
     const [ rate, setRate] = useState(5);
     const [ review, setReview ] = useState('');
+
+    const [ isLoad, setIsLoad ] = useState(true);
     
     const dispatch = useDispatch();
 
@@ -60,9 +62,12 @@ const BookScreen = (props) => {
 
         try {
             await dispatch(getReadingListByID(bookID));
+            setIsLoad(false);
         } catch (error) {
             if(error.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            else
+                setIsLoad(false);
         }
     };
     
@@ -144,7 +149,7 @@ const BookScreen = (props) => {
     const ratingIcon = (n) => <IconI name='star-sharp' color={Colors.fontColor} size={20} key={n}/>
     const starIcons = n => [...Array(n)].map((_, index) => ratingIcon(index));
 
-    if(!book || !book.length || !avgRating || !rating || !readingList) {
+    if(!book || !book.length || !avgRating || !rating || isLoad) {
         return (
             <View style={styles.activity}>
                 <PageLoader />

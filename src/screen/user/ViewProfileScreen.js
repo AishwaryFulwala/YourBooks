@@ -27,11 +27,13 @@ const ViewProfileScreen = (props) => {
 
     const [ userAsync, setUserAsync ] = useState(null);
     const [ isfollow, setIsFollow ] = useState(false);
+    const [ isLoad, setIsLoad ] = useState(true);
 
     const dispatch = useDispatch();
 
     const load = async () => {
         try {
+            setIsLoad(true);
             setUserAsync(await dispatch(getAsyncItem()));
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
@@ -45,6 +47,7 @@ const ViewProfileScreen = (props) => {
         
         try {
             await dispatch(getBooksByUser(userID));
+            setIsLoad(false);
         } catch (error) {
             if(error.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
@@ -67,13 +70,12 @@ const ViewProfileScreen = (props) => {
             await dispatch(updateUser({Follow: user?._id}));
             load();
         } catch (error) {
-            if(error.request?.status === 404)
-                return
-            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
     };
 
-    if (!user || !userAsync) {
+    if (isLoad) {
         return (
             <View style={styles.activity}>
                 <SkeletonPlaceholder 

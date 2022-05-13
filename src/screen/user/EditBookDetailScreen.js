@@ -27,7 +27,7 @@ const EditBookDetailScreen = (props) => {
 
     const [data, setData] = useState(bookDetail);
     const [ open, setOpen ] = useState(false);
-    const [ id, setID ] = useState();
+    const [ id, setID ] = useState('');
 
     const dispatch = useDispatch();
 

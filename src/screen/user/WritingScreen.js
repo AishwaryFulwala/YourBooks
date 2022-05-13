@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Alert, TouchableOpacity } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,11 +19,15 @@ const wWidth = Dimensions.get('window').width;
 const WritingScreen = (props) => {
     const books = useSelector((state) => state?.books?.getBookData?.getBooksByUser);
 
+    const [ isLoad, setIsLoad ] = useState(true);
+
     const dispatch = useDispatch();
 
     const load = async () => {
         try {
+            setIsLoad(true);
             await dispatch(getBookNameByUser());
+            setIsLoad(false);
         } catch (error) {
             if(error.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
@@ -34,7 +38,7 @@ const WritingScreen = (props) => {
         props.navigation.addListener('focus', load);
     }, []);
 
-    if(!books) {
+    if(isLoad) {
         return (
             <View style={styles.activity}>
                 <PageLoader />

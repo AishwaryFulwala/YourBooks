@@ -100,10 +100,8 @@ const SignupScreen = (props) => {
                 error: ''
             });
     
-        dispatch(
-            signup(userName, contactNo, email, password)
-        )
-        .then((res) => {
+        dispatch(signup(userName, contactNo, email, password))
+        .then(() => {
             setMsg({});
             setUserName('');
             setContactNo('');

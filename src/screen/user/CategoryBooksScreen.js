@@ -20,7 +20,7 @@ const CategoryBooksScreen = (props) => {
     const category = useSelector((state) => state?.categories?.getCategoryData?.getCategory);
     const books = useSelector((state) => state?.books?.getBookData?.getBooksByCategory);
 
-    const [ isLoad, setIsLoad ] = useState(false)
+    const [ isLoad, setIsLoad ] = useState(true);
 
     const dispatch = useDispatch();
 
@@ -34,24 +34,20 @@ const CategoryBooksScreen = (props) => {
 
         try {
             await dispatch(getBooksByCategory(cateID));
+            setIsLoad(false)
         } catch (error) {
             if(error.request?.status !== 404)
                 Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            else
+                setIsLoad(false)
         }
     };
 
     useEffect(() => {
         props.navigation.addListener('focus', load);
     }, []);
-
-    useEffect(() => {
-        if(!books)
-            setIsLoad(true)
-        else
-            setIsLoad(false);
-    }, [ books ])
-
-    if(isLoad || !books) {
+    
+    if(isLoad) {
         return (
             <View style={styles.activity}>
                 <PageLoader />
@@ -63,7 +59,7 @@ const CategoryBooksScreen = (props) => {
         <View style={styles.body}>
             <Text style={styles.txtTitle}>{category?.CategoryName}</Text>
             {
-                (!books?.length)  ?
+                !books?.length  ?
                     <View style={styles.activity}>
                         <Text style={styles.txtNoBook}>No book Found</Text>
                     </View>

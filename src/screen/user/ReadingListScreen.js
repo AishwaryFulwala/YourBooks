@@ -20,15 +20,17 @@ const ReadingListScreen = (props) => {
     const readingList = useSelector((state) => state?.readingList?.getReadingListData);
 
     const [ open, setOpen ] = useState(false);
-    const [ isID, setIsID ] = useState(null);
-    const [ isBookID, setIsBookID ] = useState(null);
-    const [ isReads, setIsReads ] = useState(null);
+    const [ ID, setID ] = useState(null);
+    const [ bookID, setBookID ] = useState(null);
+    const [ reads, setReads ] = useState(null);
+    const [ isLoad, setIsLoad ] = useState(true);
 
     const dispatch = useDispatch();
 
     const load = async () => {
         try {
             await dispatch(getReadingListByUserID());
+            setIsLoad(false);
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
@@ -62,7 +64,7 @@ const ReadingListScreen = (props) => {
         });
     };
 
-    if(!readingList) {
+    if(isLoad) {
         return (
             <View style={styles.activity}>
                 <PageLoader/>
@@ -100,15 +102,15 @@ const ReadingListScreen = (props) => {
                                 op2Txt='Remove From Reading List'
                                 op1Icon='book-plus-multiple'
                                 op2Icon='book-open-page-variant'
-                                op1Press={() => startReadingHandler(isBookID)}
-                                op2Press={() => deleteToList(isID, isBookID, isReads)}
+                                op1Press={() => startReadingHandler(bookID)}
+                                op2Press={() => deleteToList(ID, bookID, reads)}
                             />
                             <BookFlatList
                                 book={readingList}
                                 onList={(id, bid, no) => {
-                                    setIsID(id);
-                                    setIsBookID(bid);
-                                    setIsReads(no)
+                                    setID(id);
+                                    setBookID(bid);
+                                    setReads(no)
                                     setOpen(!open);
                                 }}
                             />

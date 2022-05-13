@@ -53,9 +53,8 @@ const FollowersScreen = (props) => {
             await dispatch(updateUser({Follow: val}));
             load();
         } catch (error) {
-            if(error.request?.status === 404)
-                return
-            Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
+            if(error.request?.status !== 404)
+                Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
     };
 

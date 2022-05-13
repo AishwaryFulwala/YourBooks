@@ -94,3 +94,23 @@ export const deleteNotificationByID = (id) => {
         }
     }
 };
+
+export const updateNotification = (id) => {
+    return async () => {
+        const userData = await getAsyncData();
+
+        try {
+            const res = await Api(`/updateNotification/${id}`, {
+                Status: false
+            }, 'PATCH', {
+                headers: {
+                    'Authorization' : 'Bearer ' + userData.token
+                }
+            });
+            
+            return await Promise.resolve(res.data);
+        } catch (error) {
+            return await Promise.reject(error.response);
+        }
+    }
+};
