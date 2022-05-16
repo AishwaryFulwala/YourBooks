@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, Alert, FlatList } from 'react-native';
 
+import { useTheme } from '@react-navigation/native';
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import Slider from '@react-native-community/slider';
@@ -10,7 +12,6 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getBooksDetailByID } from '../../redux/actions/BooksDetail.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import PageLoader from '../../components/PageLoader';
@@ -20,7 +21,6 @@ const wWidth = Dimensions.get('window').width;
 
 const tagsStyles = {
         div: {
-            color: Colors.fontColor,
             fontFamily: Fonts.bodyFont,
             fontSize: wWidth * 0.04,
             marginTop: wHeight * 0.005,
@@ -34,6 +34,8 @@ const tagsStyles = {
     };
 
 const BookReadingScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const bookID = props.route.params.bookID;
     const books = useSelector((state) => state?.booksDetail?.getBooksDetailData);
 
@@ -78,20 +80,20 @@ const BookReadingScreen = (props) => {
 
     const displayContain = ({ item, index }) => {
         return (
-            <View key={index} style={styles.flatView}>
+            <View key={index} style={styles(Colors).flatView}>
                 <View>
                     <Text
                         ellipsizeMode='tail'
                         numberOfLines={1}
-                        style={styles.txtPartNo}
+                        style={styles(Colors).txtPartNo}
                     >
                         {item.PartNo}. {item.PartName}
                     </Text>
-                    <View style={styles.dispView}>
+                    <View style={styles(Colors).dispView}>
                         <RenderHtml
                             contentWidth={wWidth}
                             source={{html: item.PartContain}}
-                            tagsStyles={tagsStyles}
+                            tagsStyles={{...tagsStyles,div:{...tagsStyles.div,color: Colors.fontColor,}}}
                         />
                     </View>
                 </View>
@@ -101,26 +103,26 @@ const BookReadingScreen = (props) => {
 
     if(!books || isLoad) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <PageLoader />
             </View>
         );
     }
 
     return(
-        <View style={styles.body}>
+        <View style={styles(Colors).body}>
             <Text
-                style={styles.txtTitle}
+                style={styles(Colors).txtTitle}
                 ellipsizeMode='tail'
                 numberOfLines={1}
             >{books[0]?.BookName}</Text>
             {
                 !books?.length ?
-                    <View style={styles.activity}>
-                        <Text style={styles.txtNoBook}>No Parts Found</Text>
+                    <View style={styles(Colors).activity}>
+                        <Text style={styles(Colors).txtNoBook}>No Parts Found</Text>
                     </View>
                 :
-                    <View style={styles.containView}>
+                    <View style={styles(Colors).containView}>
                         <FlatList
                             data={books}
                             renderItem={displayContain}
@@ -148,7 +150,7 @@ const BookReadingScreen = (props) => {
                             }}
                         />
                         <Slider
-                            style={styles.slider}
+                            style={styles(Colors).slider}
                             minimumValue={0}
                             maximumValue={scrollMax}
                             minimumTrackTintColor={Colors.bookColor}
@@ -171,7 +173,7 @@ const BookReadingScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
      activity: {
         flex: 1,
         justifyContent: 'center',

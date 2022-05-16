@@ -1,14 +1,16 @@
 import React from 'react';
 import { Modal, View, StyleSheet, Dimensions, TouchableWithoutFeedback } from 'react-native';
 
-import IconF from 'react-native-vector-icons/Feather';
+import { useTheme } from '@react-navigation/native';
 
-import Colors from '../constnats/Colors';
+import IconF from 'react-native-vector-icons/Feather';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const PicModal = (props) => {
+    const Colors = useTheme().colors;
+
     return (
         <Modal 
             visible={props.visible}
@@ -17,11 +19,11 @@ const PicModal = (props) => {
             <TouchableWithoutFeedback 
                 onPress={props.onClose}
             >
-                <View style={styles.modalView}>
-                    <View style={styles.borderView}>
-                        <View style={styles.modal}>
-                            <View style={styles.rotateTxt}>
-                                <View style={styles.iconCrossModal}>
+                <View style={styles(Colors).modalView}>
+                    <View style={styles(Colors).borderView}>
+                        <View style={styles(Colors).modal}>
+                            <View style={styles(Colors).rotateTxt}>
+                                <View style={styles(Colors).iconCrossModal}>
                                     <IconF
                                         name='x'
                                         size={20}
@@ -39,7 +41,7 @@ const PicModal = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     modalView: {
         flex: 1,
         justifyContent: 'center',

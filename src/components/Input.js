@@ -1,39 +1,31 @@
 import React from 'react';
-import { View, StyleSheet, TextInput, Dimensions, Text } from 'react-native';
+import { View, StyleSheet, TextInput, Dimensions } from 'react-native';
 
-import IconE from 'react-native-vector-icons/Entypo';
-import IconEV from 'react-native-vector-icons/EvilIcons';
+import { useTheme } from '@react-navigation/native';
+
 import IconS from 'react-native-vector-icons/SimpleLineIcons';
 
-import Colors from '../constnats/Colors';
 import Fonts from '../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const Input = (props) => {
-    let Icon;
+    const Colors = useTheme().colors;
 
-    if(props.iconCom === 'SimpleLineIcons')
-        Icon = IconS;
-    else if(props.iconCom === 'EvilIcons')
-        Icon = IconEV;
-    else if(props.iconCom === 'Entypo')
-        Icon = IconE;
-    
     return (
         <View>
-            <View style={styles.inputView}>
-                <Icon
+            <View style={styles(Colors).inputView}>
+                <IconS
                     name={props.iconName}
-                    color={Colors.bodyColor}
-                    size={props.size ? props.size : 20}
-                    style={styles.icon}
+                    color={Colors.fontColor}
+                    size={20}
+                    style={styles(Colors).icon}
                 />
                 <TextInput
                     placeholder={props.name}
-                    placeholderTextColor={Colors.bodyColor}
-                    style={styles.input}
+                    placeholderTextColor={Colors.fontColor}
+                    style={styles(Colors).input}
                     value={props.value}
                     onChangeText={props.onChangeText}
                     secureTextEntry={props.pwd ? props.pwd : false}
@@ -41,39 +33,32 @@ const Input = (props) => {
                 />
                 {props.children}
             </View>
-            {
-                !!props.msg &&
-                    <Text style={styles.msgError}>{props.msg}</Text>
-            }
         </View>
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     inputView: {
-        marginTop: wHeight * 0.03,
-        marginHorizontal: wWidth * 0.05,
-        paddingHorizontal: 10,
-        borderBottomColor: Colors.borderColor,
-        borderBottomWidth: 3,
+        marginTop: wHeight * 0.01,
+        paddingHorizontal: wWidth * 0.03,
+        borderColor: Colors.borderColor,
+        borderWidth: 3,
+        borderRadius: 10,
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: wHeight * 0.01,
-        paddingBottom: wHeight * 0.01
+        paddingBottom: wHeight * 0.005
     },
     icon: {
         textAlign: 'center',
     },
     input: {
-        marginLeft: 15,
+        marginLeft: wWidth * 0.05,
+        marginRight: wWidth * 0.03,
         fontFamily: Fonts.bodyFont,
-        width: wWidth * 0.55
-    },
-    msgError: {
-        marginHorizontal: wWidth * 0.08,
-        marginTop: wHeight * 0.01,
-        fontFamily: Fonts.bodyFont,
-        color: Colors.errorColor,
+        color: Colors.fontColor,
+        width: wWidth * 0.55,
+        paddingVertical: wHeight * 0.015
     },
 });
 

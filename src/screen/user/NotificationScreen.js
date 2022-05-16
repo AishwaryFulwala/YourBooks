@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, FlatList, Alert, } from 'react-native';
 
+import { useTheme } from '@react-navigation/native';
+
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment';
 
 import { getNotificationByID, updateNotification } from '../../redux/actions/Notification.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import PageLoader from '../../components/PageLoader';
@@ -15,6 +16,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const NotificationScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const noti = useSelector((state) => state?.notifications?.getNotificationData);
 
     const dispatch = useDispatch();
@@ -56,16 +59,16 @@ const NotificationScreen = (props) => {
         return (
             <TouchableOpacity
                 key={index}
-                style={styles.containView}
+                style={styles(Colors).containView}
                 onPress={() => readHandler(item?._id?.ID, item?._id?.Status, item._id.BookID)}
             >
                 <Image 
-                    style={styles.imgBook}
+                    style={styles(Colors).imgBook}
                     source={{uri: item?._id?.BookPic}}
                 />
-                <View style={styles.txtView}>
-                    <Text style={{...styles.txtBody, color: item?._id?.Status ? Colors.titleColor : Colors.fontColor,}}>{item._id.NotificationBody}</Text>
-                    <Text style={styles.txtDate}>{date}</Text>
+                <View style={styles(Colors).txtView}>
+                    <Text style={{...styles(Colors).txtBody, color: item?._id?.Status ? Colors.titleColor : Colors.fontColor,}}>{item._id.NotificationBody}</Text>
+                    <Text style={styles(Colors).txtDate}>{date}</Text>
                 </View>
             </TouchableOpacity>
         );
@@ -73,19 +76,19 @@ const NotificationScreen = (props) => {
 
     if(!noti) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <PageLoader />
             </View>
         );
     }
 
     return (
-        <View style={styles.body}>
-            <Text style={styles.txtTitle}>Notification</Text>
+        <View style={styles(Colors).body}>
+            <Text style={styles(Colors).txtTitle}>Notification</Text>
             {
                 !noti?.length ?
-                    <View style={styles.activity}>
-                        <Text style={styles.txtNoNoti}>No Notification Found</Text>
+                    <View style={styles(Colors).activity}>
+                        <Text style={styles(Colors).txtNoNoti}>No Notification Found</Text>
                     </View>
                 :
                 <FlatList
@@ -98,7 +101,7 @@ const NotificationScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     activity: {
         flex: 1,
         justifyContent: 'center',

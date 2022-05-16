@@ -1,13 +1,15 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, FlatList, Image} from 'react-native';
 
-import Colors from '../constnats/Colors';
+import { useTheme } from '@react-navigation/native';
+
 import Fonts from '../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const BookFlatList = (props) => {
+    const Colors = useTheme().colors;
     const book = props.book;
 
     return(        
@@ -15,26 +17,26 @@ const BookFlatList = (props) => {
             {
                 book && 
                 <FlatList 
-                    style={styles.btnBook}
+                    style={styles(Colors).btnBook}
                     numColumns={3}
                     data={book}
                     renderItem={({item, index}) => {;
                         return (
                             <TouchableOpacity
                                 key={index}
-                                style={styles.btnBook}
+                                style={styles(Colors).btnBook}
                                 onPress={() => {
                                     props.onList && props.onList(item._id.ID || item._id, item._id.BookID, item._id.NoOfReads)
                                     props.onBook && props.onBook(item._id.BookID || item._id)
                                 }}
                             >
-                                <View style={styles.bookShadow}>
+                                <View style={styles(Colors).bookShadow}>
                                     <Image 
                                         source={{uri: item._id.BookPic || item.BookPic}}
-                                        style={styles.bookImg}
+                                        style={styles(Colors).bookImg}
                                     />
                                 </View>
-                                <Text style={styles.txtName}>{item._id.BookName || item.BookName}</Text>
+                                <Text style={styles(Colors).txtName}>{item._id.BookName || item.BookName}</Text>
                             </TouchableOpacity>
                         );
                     }}
@@ -44,7 +46,7 @@ const BookFlatList = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     btnBook: {
         marginBottom: wHeight * 0.01,
     },

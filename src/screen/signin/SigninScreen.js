@@ -1,16 +1,18 @@
 import React, { useState } from 'react';
-import { StyleSheet, View, Text, Dimensions, Alert, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, Alert, TouchableOpacity } from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
 
-import { StackActions } from "@react-navigation/native";
+import Toast from 'react-native-toast-message';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
+import { StackActions, useTheme } from "@react-navigation/native";
 import { useDispatch } from "react-redux";
 
 import IconI from 'react-native-vector-icons/Ionicons'
 
 import { signin, updateUser } from '../../redux/actions/Users.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import Input from '../../components/Input';
@@ -19,11 +21,12 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const SigninScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const [ isPwd, setIsPwd ] = useState(true);
 
     const [ email, setemail ] = useState('');
     const [ password, setPassword ] = useState('');
-    const [ msg, setMsg ] = useState({});
 
     const dispatch = useDispatch();
 
@@ -54,30 +57,22 @@ const SigninScreen = (props) => {
     const signInHandler = async () => {
         const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/g;
         if(!email.match(emailRegex) || email === ''){
-            setMsg({
-                id: 'email',
-                error: 'Email is not valid.'
+            Toast.show({
+                type: 'errorToast',
+                text1: 'Email is not valid.',
+                position: 'bottom'
             });
             return
         }
-        else 
-            setMsg({
-                id: 'email',
-                error: ''
-            });
 
         if(password === ''){
-            setMsg({
-                id: 'password',
-                error: 'Password can\'t be empty.'
+            Toast.show({
+                type: 'errorToast',
+                text1: 'Password can\'t be empty.',
+                position: 'bottom'
             });
             return
         }
-        else 
-            setMsg({
-                id: 'password',
-                error: ''
-            });
 
         try {
             await dispatch(signin(email, password));
@@ -93,128 +88,121 @@ const SigninScreen = (props) => {
     };
 
     return (
-        <ScrollView style={styles.scrollColor}>
-            <View style={styles.body}>
-                <Text style={styles.title}>Sign in</Text>
-                <View style={styles.box}>
+        <KeyboardAwareScrollView extraScrollHeight={100}>
+            <View style={styles(Colors).body}>
+                <Text style={styles(Colors).helloTitle}>Hello Again!</Text>
+                <Text style={styles(Colors).welTitle}>Welcome Back you've been missed!</Text>
+                <View>
                     <Input
                         name='Email'
-                        iconCom = 'Entypo'
-                        iconName = 'email'
+                        iconName = 'envelope'
                         value={email}
                         onChangeText={emailHandler}
-                        msg={msg.id === 'email' && msg.error !== '' && msg.error}
                         emailCap={'none'}
                     />
                     <Input
                         name='Password'
-                        iconCom = 'EvilIcons'
                         iconName = 'lock'
-                        size={30}
                         value={password}
                         onChangeText={pwdHandler}
                         pwd={isPwd}
-                        msg={msg.id === 'password' && msg.error !== '' && msg.error}
                     >
                         {
                             isPwd ?
                                 <IconI
                                     name='eye-outline'
-                                    color={Colors.bodyColor}
+                                    color={Colors.fontColor}
                                     size={20}
-                                    onPress={() => {
-                                        setIsPwd(!isPwd);
-                                    }}
+                                    onPress={() => setIsPwd(!isPwd)}
                                 />
                             :
                                 <IconI
                                     name='eye-off-outline'
-                                    color={Colors.bodyColor}
+                                    color={Colors.fontColor}
                                     size={20}
-                                    onPress={() => {
-                                        setIsPwd(!isPwd);
-                                    }}
+                                    onPress={() => setIsPwd(!isPwd)}
                                 />
                         }
                     </Input>
-                    <TouchableOpacity
-                        style={styles.btn}
-                        onPress={signInHandler}
-                    >
-                        <Text style={styles.btnTxt}>Sign In</Text>
-                    </TouchableOpacity>
-                    
                 </View>
-                <Text style={styles.txtAc}>Don't have an account?
-                    <Text
-                        style={styles.txtSign}
-                        onPress={() => {
-                            props?.navigation?.dispatch(
-                                StackActions.replace('Signup')
-                            );
-                        }}
-                    >{' '}Sign Up</Text>
-                </Text>
+                <TouchableOpacity
+                    style={styles(Colors).btn}
+                    onPress={signInHandler}
+                >
+                    <Text style={styles(Colors).btnTxt}>Sign In</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={styles(Colors).btnAc}
+                    onPress={() => {
+                        props?.navigation?.dispatch(
+                            StackActions.replace('Signup')
+                        );
+                    }}
+                >
+                    <Text style={styles(Colors).txtAc}>Don't have an account?{' '}
+                        <Text style={styles(Colors).txtSign}>Sign Up</Text>
+                    </Text>
+                </TouchableOpacity>
             </View>
-        </ScrollView>
+        </KeyboardAwareScrollView>
     );
 };
 
-const styles = StyleSheet.create({
-    scrollColor: {
-        backgroundColor: Colors.bodyColor
-    },
+const styles = (Colors) => StyleSheet.create({
     body: {
         flex: 1,
+        justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: Colors.bodyColor
+        backgroundColor: Colors.bodyColor,
     },
-    title: {
+    helloTitle: {
+        alignSelf: 'flex-start',
         color: Colors.fontColor,
-        fontFamily: Fonts.bodyFont,
-        fontSize: wWidth * 0.07,
-        marginVertical: wHeight * 0.05
+        fontFamily: Fonts.titleFont,
+        fontSize: wWidth * 0.08,
+        marginTop: wHeight * 0.03,
+        marginLeft: wWidth * 0.1,
     },
-    box: {
-        borderWidth: 1,
-        borderRadius: 10,
-        borderColor: Colors.fontColor,
-        shadowColor: Colors.fontColor,
-        shadowOpacity: 0.8,
-        shadowOffset: { width: 5, height: 5 },
-        shadowRadius: 8,
-        elevation: 50,
-        backgroundColor: Colors.fontColor,
-        width: wWidth * 0.9,
-        marginTop: wHeight * 0.05,
+    welTitle: {
+        alignSelf: 'flex-start',
+        color: Colors.lightGray,
+        fontFamily: Fonts.bodyFont,
+        fontSize: wWidth * 0.05,
+        marginTop: wHeight * 0.01,
+        marginBottom: wHeight * 0.05,
+        marginLeft: wWidth * 0.1,
+        lineHeight: wHeight * 0.03,
     },
     btn: {
-        width: wWidth * 0.75,
+        width: wWidth * 0.8,
         height: wHeight * 0.05,
-        borderColor: Colors.titleColor,
-        borderWidth: 1,
-        borderRadius: 50,
+        borderRadius: 10,
         backgroundColor: Colors.titleColor,
         marginHorizontal:  wWidth * 0.07,
-        marginTop: wHeight * 0.06,
-        marginBottom: wHeight * 0.03,
+        marginTop: wHeight * 0.05,
         justifyContent: 'center',
     },
     btnTxt: {
-        color: Colors.btnFontColor,
+        color: Colors.bodyColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.045,
         textAlign: 'center',
+    },
+    btnAc: {
+        width: wWidth * 0.9,
+        marginTop: wHeight * 0.05,
     },
     txtAc: {
         color: Colors.bookColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.045,
         textAlign: 'center',
-        marginTop: wHeight * 0.08,
+        paddingVertical: wHeight * 0.01,
     },
     txtSign: {
         fontStyle: 'italic',
+        textDecorationLine: 'underline',
+        textDecorationColor: Colors.bookColor,
     },
 });
 

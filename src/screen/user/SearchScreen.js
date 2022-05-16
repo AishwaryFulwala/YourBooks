@@ -4,13 +4,14 @@ import { View, Text, StyleSheet, TextInput, Dimensions, FlatList, Alert, Touchab
 import { TabView, SceneMap, TabBar } from 'react-native-tab-view';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useTheme } from '@react-navigation/native';
+
 import IconI from 'react-native-vector-icons/Ionicons';
 import IconF from 'react-native-vector-icons/Feather';
 
 import { updateSearchHistory, getEmpty, getSearchData, getSearchHistoryByID } from '../../redux/actions/SearchHistory.action';
 import { getAsyncItem } from '../../redux/actions/Users.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import SearchList from '../../components/SearchList';
@@ -20,6 +21,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const SearchScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const history = useSelector((state) => state?.searchHistory?.getSearchHistoryData?.getHistory);
     const searchData = useSelector((state) => state?.searchHistory?.getSearchHistoryData?.getData);
 
@@ -138,9 +141,9 @@ const SearchScreen = (props) => {
         return (
             <TabBar 
                 {...props}
-                style={styles.tabBarView}
-                labelStyle={styles.lableStyle}
-                indicatorStyle={styles.indicatorStyle}
+                style={styles(Colors).tabBarView}
+                labelStyle={styles(Colors).lableStyle}
+                indicatorStyle={styles(Colors).indicatorStyle}
                 activeColor={Colors.bookColor}
                 inactiveColor={Colors.fontColor}
             />
@@ -150,7 +153,7 @@ const SearchScreen = (props) => {
     const bookTab = () => {
         if(isLoad) {
             return (
-                <View style={styles.activity}>
+                <View style={styles(Colors).activity}>
                     <PageLoader />
                 </View>
             );
@@ -158,14 +161,14 @@ const SearchScreen = (props) => {
 
         if(!searchData?.Book?.length) {
             return (
-                <View style={styles.activity}>
-                    <Text style={styles.txtNoFound}>No Book Found</Text>
+                <View style={styles(Colors).activity}>
+                    <Text style={styles(Colors).txtNoFound}>No Book Found</Text>
                 </View>
             );
         }
 
         return (
-            <View style={styles.body}>
+            <View style={styles(Colors).body}>
                 <SearchList
                     data={searchData?.Book}
                     onClick={(id) => {
@@ -181,7 +184,7 @@ const SearchScreen = (props) => {
     const userTab = () => {
         if(isLoad) {
             return (
-                <View style={styles.activity}>
+                <View style={styles(Colors).activity}>
                     <PageLoader />
                 </View>
             );
@@ -189,14 +192,14 @@ const SearchScreen = (props) => {
 
         if(!searchData?.User?.length) {
             return (
-                <View style={styles.activity}>
-                    <Text style={styles.txtNoFound}>No User Found</Text>
+                <View style={styles(Colors).activity}>
+                    <Text style={styles(Colors).txtNoFound}>No User Found</Text>
                 </View>
             );
         }
 
         return (
-            <View style={styles.body}>
+            <View style={styles(Colors).body}>
                 <SearchList
                     data={searchData?.User} 
                     onClick={(id) => {
@@ -215,18 +218,18 @@ const SearchScreen = (props) => {
     });
 
     return(
-        <View style={styles.body}>
+        <View style={styles(Colors).body}>
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <View style={styles.body}>
-                    <View style={styles.serachView}>
+                <View style={styles(Colors).body}>
+                    <View style={styles(Colors).serachView}>
                         <IconI
                             name='search-outline'
                             color={Colors.fontColor}
                             size={25}
-                            style={styles.searchIcon}
+                            style={styles(Colors).searchIcon}
                         />
                         <TextInput 
-                            style={styles.txtSerach}
+                            style={styles(Colors).txtSerach}
                             returnKeyType='search'
                             autoCorrect={false}
                             autoCapitalize='none'
@@ -241,31 +244,31 @@ const SearchScreen = (props) => {
                                 name='x'
                                 color={Colors.fontColor}
                                 size={15}
-                                style={styles.searchIcon}
+                                style={styles(Colors).searchIcon}
                                 onPress={crossHandler}
                             />
                         }
                     </View>            
-                    <View style={styles.dispView}>
+                    <View style={styles(Colors).dispView}>
                         {
                             search ?
                                 <TabView
                                     navigationState={{ index, routes }}
                                     renderScene={renderScene}
                                     onIndexChange={setIndex}
-                                    style={styles.tabView}
+                                    style={styles(Colors).tabView}
                                     renderTabBar={tabs}
                                     keyboardDismissMode='none'
                                 />
                             :
                                 (history?.Data && !!history?.Data?.length) &&
-                                <View style={styles.historyView}>
-                                    <View style={styles.recentView}>
-                                        <Text style={styles.txtRecent}>Recent</Text>
+                                <View style={styles(Colors).historyView}>
+                                    <View style={styles(Colors).recentView}>
+                                        <Text style={styles(Colors).txtRecent}>Recent</Text>
                                         <TouchableOpacity
                                             onPress={() => updateHistory([])}
                                         >
-                                            <Text style={styles.iconClearAll}>Clear All</Text>
+                                            <Text style={styles(Colors).iconClearAll}>Clear All</Text>
                                         </TouchableOpacity>
                                     </View>
                                     <FlatList 
@@ -273,12 +276,12 @@ const SearchScreen = (props) => {
                                         renderItem={({item, index}) => {
                                             return (
                                                 <TouchableOpacity
-                                                    style={styles.flatView}
+                                                    style={styles(Colors).flatView}
                                                     key={index}
                                                     onPress={() => changeTxt(item)}
                                                 >
                                                     <Text
-                                                        style={styles.txtData}
+                                                        style={styles(Colors).txtData}
                                                         numberOfLines={1}
                                                         ellipsizeMode='tail'
                                                     >{item}</Text>
@@ -286,7 +289,7 @@ const SearchScreen = (props) => {
                                                         name='x'
                                                         color={Colors.fontColor}
                                                         size={15}
-                                                        style={styles.crosssIcon}
+                                                        style={styles(Colors).crosssIcon}
                                                         onPress={() => updateHistory(history?.Data.filter((val, i) => i !== index))}
                                                     />
                                                 </TouchableOpacity>
@@ -302,7 +305,7 @@ const SearchScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     activity: {
         flex: 1,
         justifyContent: 'center',
@@ -380,7 +383,7 @@ const styles = StyleSheet.create({
         fontSize: wWidth * 0.05,
     },
     iconClearAll: {
-        color: Colors.titleColor,
+        color: Colors.errorColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.03,
     },

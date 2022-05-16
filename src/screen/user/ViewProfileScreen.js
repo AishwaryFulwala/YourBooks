@@ -7,12 +7,11 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import IconF from 'react-native-vector-icons/FontAwesome5';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { StackActions } from '@react-navigation/native';
+import { StackActions, useTheme } from '@react-navigation/native';
 
 import { getBooksByUser } from '../../redux/actions/Books.action';
 import { getAsyncItem, getUser, updateUser } from '../../redux/actions/Users.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import BookList from '../../components/BookList';
@@ -21,6 +20,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const ViewProfileScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const userID = props.route.params.userID;
     const user = useSelector((state) => state?.users?.getUserData?.getUser);
     const books = useSelector((state) => state?.books?.getBookData?.getBooksByUser);
@@ -77,7 +78,7 @@ const ViewProfileScreen = (props) => {
 
     if (isLoad) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <SkeletonPlaceholder 
                     highlightColor={Colors.btnGray}
                     backgroundColor={Colors.drakGray}
@@ -94,7 +95,6 @@ const ViewProfileScreen = (props) => {
                         width={100}
                         height={100}
                         borderRadius={100}
-                        borderWidth={5}
                         alignSelf="center"
                         position='relative'
                         marginTop={100}
@@ -154,40 +154,40 @@ const ViewProfileScreen = (props) => {
     }
     
     return(
-        <View style={styles.body}>
+        <View style={styles(Colors).body}>
             <LinearGradient
                 colors={[Colors.gradientB1, Colors.gradientB2]}
-                style={styles.liner}
+                style={styles(Colors).liner}
             >
-                <View style={styles.touchView}>
+                <View style={styles(Colors).touchView}>
                     <ImageBackground
                         source={{uri: user?.CoverPic}}
-                        style={styles.imgCover}
+                        style={styles(Colors).imgCover}
                     >
                     </ImageBackground>
                 </View>
-                <View style={styles.detailView}>
+                <View style={styles(Colors).detailView}>
                     <LinearGradient
                         colors={[Colors.gradient1, Colors.gradient2, Colors.gradient3, Colors.gradient4, Colors.gradient5]}
-                        style={styles.imglinear}                        
+                        style={styles(Colors).imglinear}
                     >
-                        <View style={styles.imgView}>
+                        <View style={styles(Colors).imgView}>
                             <Image
                                 source={{uri: user?.ProfilePic}}
-                                style={styles.img}
+                                style={styles(Colors).img}
                             />
                         </View>
                     </LinearGradient>
-                    <View style={styles.dispView}>
-                        <View style={styles.txtView}>
-                            <Text style={styles.txtName}>{user?.UserName}</Text>
+                    <View style={styles(Colors).dispView}>
+                        <View style={styles(Colors).txtView}>
+                            <Text style={styles(Colors).txtName}>{user?.UserName}</Text>
                         </View>
-                        <View style={styles.followView}>
+                        <View style={styles(Colors).followView}>
                             <View>
-                                <Text style={styles.txtNo}>{books?.length}</Text>
-                                <Text style={styles.txtFollow}>Works</Text>
+                                <Text style={styles(Colors).txtNo}>{books?.length}</Text>
+                                <Text style={styles(Colors).txtFollow}>Works</Text>
                             </View>
-                            <View style={styles.pipeView}></View>
+                            <View style={styles(Colors).pipeView}></View>
                             <View>
                                 <TouchableOpacity
                                     onPress={() => {
@@ -201,11 +201,11 @@ const ViewProfileScreen = (props) => {
                                         );
                                     }}
                                 >
-                                    <Text style={styles.txtNo}>{user?.Followers ? user?.Followers.length : 0}</Text>
-                                    <Text style={styles.txtFollow}>Followers</Text>
+                                    <Text style={styles(Colors).txtNo}>{user?.Followers ? user?.Followers.length : 0}</Text>
+                                    <Text style={styles(Colors).txtFollow}>Followers</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={styles.pipeView}></View>
+                            <View style={styles(Colors).pipeView}></View>
                             <View>
                                 <TouchableOpacity
                                     onPress={() => {
@@ -219,22 +219,22 @@ const ViewProfileScreen = (props) => {
                                         );
                                     }}
                                 >
-                                    <Text style={styles.txtNo}>{user?.Followings ? user?.Followings.length : 0}</Text>
-                                    <Text style={styles.txtFollow}>Following</Text>
+                                    <Text style={styles(Colors).txtNo}>{user?.Followings ? user?.Followings.length : 0}</Text>
+                                    <Text style={styles(Colors).txtFollow}>Following</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
-                        <ScrollView style={styles.scrollView}>
+                        <ScrollView style={styles(Colors).scrollView}>
                             {
                                 !!user?.About &&
-                                <View style={styles.aboutView}>
-                                    <Text style={styles.userTxt}>About</Text>
-                                    <Text style={styles.txtDescription}>{user?.About}</Text>
+                                <View style={styles(Colors).aboutView}>
+                                    <Text style={styles(Colors).userTxt}>About</Text>
+                                    <Text style={styles(Colors).txtDescription}>{user?.About}</Text>
                                 </View>
                             }
                             {
                                 books && 
-                                <View style={styles.bookView}>
+                                <View style={styles(Colors).bookView}>
                                     <BookList 
                                         book={books}
                                         onClick={(id) => {
@@ -253,10 +253,10 @@ const ViewProfileScreen = (props) => {
                         userAsync.id === userID ?
                             null
                         :
-                            <View style={styles.followRoundView}>
+                            <View style={styles(Colors).followRoundView}>
                                 <TouchableOpacity
                                     onPress={followHandler}
-                                    style={styles.followBtn}
+                                    style={styles(Colors).followBtn}
                                 >
                                     {
                                         isfollow ?
@@ -273,7 +273,7 @@ const ViewProfileScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     activity: {
         flex: 1,
         backgroundColor: Colors.bodyColor,
@@ -284,7 +284,7 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: Colors.bodyColor,
     },
-        liner: {
+    liner: {
         flex: 1
     },
     touchView: {
@@ -323,8 +323,8 @@ const styles = StyleSheet.create({
         alignContent: 'space-between',
     },
     img: {
-        height: wHeight * 0.1,
-        width: wHeight * 0.1,
+        height: wHeight * 0.105,
+        width: wHeight * 0.105,
         borderRadius: 50,
     },
     dispView: {

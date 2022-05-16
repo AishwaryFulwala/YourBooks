@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Image, Alert } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Image, Alert, ColorPropType } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 
-import Colors from '../../constnats/Colors';
+import { useTheme } from '@react-navigation/native';
+
 import Fonts from '../../constnats/Fonts';
 
 import { getCategories } from '../../redux/actions/Categories.action';
@@ -13,6 +14,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const HomeScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const user = useSelector((state) => state?.users?.getUserData?.getUser);
     const categories = useSelector((state) => state?.categories?.getCategoryData?.getCategories);
 
@@ -37,16 +40,16 @@ const HomeScreen = (props) => {
     }, []);
     
     return(
-        <View style={styles.body}>
-            <Text style={styles.txtTitle}>Welcome, {user?.UserName}</Text>
+        <View style={styles(Colors).body}>
+            <Text style={styles(Colors).txtTitle}>Welcome, {user?.UserName}</Text>
             <ScrollView>
-                <View style={styles.container}>
+                <View style={styles(Colors).container}>
                     {
                         categories && 
                         categories?.map((val, index) => {
                             return (
                                 <TouchableOpacity
-                                    style={styles.btnCat}
+                                    style={styles(Colors).btnCat}
                                     key={index}
                                     onPress={() => {
                                         props.navigation.navigate('CategoryN', {
@@ -54,11 +57,11 @@ const HomeScreen = (props) => {
                                         });
                                     }}
                                 >
-                                    <View style={{...styles.btnView, backgroundColor: Colors.colorArr[index]}}>
-                                        <Text style={styles.btnTxt}>{val.CategoryName}</Text>
+                                    <View style={{...styles(Colors).btnView, backgroundColor: Colors.colorArr[index]}}>
+                                        <Text style={styles(Colors).btnTxt}>{val.CategoryName}</Text>
                                         <Image
                                             source={{uri: val.CategoryPic}}
-                                            style={styles.img}
+                                            style={styles(Colors).img}
                                         />
                                     </View>
                                 </TouchableOpacity>
@@ -71,7 +74,7 @@ const HomeScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,

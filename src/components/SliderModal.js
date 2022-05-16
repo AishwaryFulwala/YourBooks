@@ -1,6 +1,8 @@
 import React from 'react';
 import { Modal, View, StyleSheet, Dimensions, TouchableOpacity, Text, TouchableWithoutFeedback } from 'react-native';
 
+import { useTheme } from '@react-navigation/native';
+
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Colors from '../constnats/Colors';
@@ -10,6 +12,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const SliderModal = (props) => {
+    const Colors = useTheme().colors;
+   
     return (
         <Modal
             animationType="slide"
@@ -19,10 +23,10 @@ const SliderModal = (props) => {
             <TouchableWithoutFeedback 
                 onPress={props.onClick}
             >
-                <View style={styles.mainView}>
-                    <View style={styles.modalView}>
+                <View style={styles(Colors).mainView}>
+                    <View style={styles(Colors).modalView}>
                         <TouchableOpacity
-                            style={styles.btn}
+                            style={styles(Colors).btn}
                             onPress={props.op1Press}
                         >
                             <IconM 
@@ -30,11 +34,11 @@ const SliderModal = (props) => {
                                 color={Colors.fontColor}
                                 name={props.op1Icon}
                             />
-                            <Text style={styles.btnTxt}>{props.op1Txt}</Text>
+                            <Text style={styles(Colors).btnTxt}>{props.op1Txt}</Text>
                         </TouchableOpacity>
-                        <View style={styles.horizontalView}></View>
+                        <View style={styles(Colors).horizontalView}></View>
                         <TouchableOpacity
-                            style={styles.btn}
+                            style={styles(Colors).btn}
                             onPress={props.op2Press}
                         >
                             <IconM 
@@ -42,7 +46,7 @@ const SliderModal = (props) => {
                                 color={Colors.fontColor}
                                 name={props.op2Icon}
                             />
-                            <Text style={styles.btnTxt}>{props.op2Txt}</Text>
+                            <Text style={styles(Colors).btnTxt}>{props.op2Txt}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -51,7 +55,7 @@ const SliderModal = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     mainView: {
         flex: 1,
         justifyContent: 'flex-end'

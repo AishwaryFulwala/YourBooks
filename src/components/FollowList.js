@@ -1,41 +1,45 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image, TouchableOpacity, Dimensions } from 'react-native';
 
-import Colors from '../constnats/Colors';
+import { useTheme } from '@react-navigation/native';
+
 import Fonts from '../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const FollowList = (props) => {
+    const Colors = useTheme().colors;
+
     const follow = props.follow
     const user = props.user
 
     return follow.map((val, index) => {
-        const found = user.Followings.find((id) => id === val._id )
+        const found = user.Followings.find((id) => id === val._id);
+
         return (
             <TouchableOpacity key={index}
                 onPress={() => props.onUser(val._id)}
             >
-                <View style={styles.dispView}>
-                    <View style={styles.imgView}>
+                <View style={styles(Colors).dispView}>
+                    <View style={styles(Colors).imgView}>
                         <Image 
                             source={{ uri: val.ProfilePic }}
-                            style={styles.imgProfile}
+                            style={styles(Colors).imgProfile}
                         />
                     </View>
                     <Text
-                        style={styles.txtName}
+                        style={styles(Colors).txtName}
                         numberOfLines={1}
                         ellipsizeMode='tail'
                     >{val.UserName}</Text>
                     {
                         val._id === user._id ? <View></View> :
                             <TouchableOpacity
-                                style={styles.btn}
+                                style={styles(Colors).btn}
                                 onPress={() => props.onFollow(val._id)}
                             >
-                                <Text style={styles.btnTxt}>{found ?  'Unfollow' : 'Follow'}</Text>
+                                <Text style={styles(Colors).btnTxt}>{found ?  'Unfollow' : 'Follow'}</Text>
                             </TouchableOpacity>
                     }
                 </View>
@@ -44,7 +48,7 @@ const FollowList = (props) => {
     });
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     dispView: {
         paddingHorizontal: wWidth * 0.03,
         paddingVertical: wHeight * 0.015,
@@ -79,13 +83,14 @@ const styles = StyleSheet.create({
         width: wWidth * 0.25,
         borderWidth: 1,
         borderRadius: 5,
+        backgroundColor: Colors.titleColor,
         borderColor: Colors.titleColor,
         marginHorizontal: wWidth * 0.04,
         paddingVertical: wHeight * 0.01,
         paddingHorizontal: wWidth * 0.05,
     },
     btnTxt: {
-        color: Colors.titleColor,
+        color: Colors.bodyColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.03,
     },

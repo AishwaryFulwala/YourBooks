@@ -1,13 +1,16 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions, TouchableOpacity, Image } from 'react-native';
 
-import Colors from '../constnats/Colors';
+import { useTheme } from '@react-navigation/native';
+
 import Fonts from '../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const SearchList = (props) => {
+    const Colors = useTheme().colors;
+
     const data = props.data;
 
     return data.map((val, index) => {
@@ -16,15 +19,15 @@ const SearchList = (props) => {
                 onPress={() => props.onClick(val._id)}
                 key={index}
             >
-                <View style={styles.searchListView}>
-                    <View style={styles.imgView}>
+                <View style={styles(Colors).searchListView}>
+                    <View style={styles(Colors).imgView}>
                         <Image 
                             source={{ uri: val.ProfilePic || val.BookPic }}
-                            style={styles.imgProfile}
+                            style={styles(Colors).imgProfile}
                         />
                     </View>
                     <Text
-                        style={styles.txtName}
+                        style={styles(Colors).txtName}
                         numberOfLines={1}
                         ellipsizeMode='tail'
                     >{val.UserName || val.BookName}</Text>
@@ -34,7 +37,7 @@ const SearchList = (props) => {
     });
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     searchListView: {
         paddingHorizontal: wWidth * 0.03,
         paddingVertical: wHeight * 0.015,

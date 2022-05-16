@@ -1,7 +1,7 @@
 import React from 'react';
-import { Image, Platform } from 'react-native';
+import { Image, Platform, useColorScheme } from 'react-native';
 
-import { NavigationContainer, DarkTheme } from '@react-navigation/native';
+import { NavigationContainer, DarkTheme, useTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
@@ -11,6 +11,8 @@ import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Colors from '../constnats/Colors';
 import Fonts from '../constnats/Fonts';
+import LightColors from '../constnats/LightColors';
+import DarkColors from '../constnats/DarkColors';
 
 import AuthScreen from '../screen/AuthScreen';
 
@@ -40,7 +42,22 @@ import AddCategoryScreen from '../screen/user/AddCategoryScreen';
 import EditBookDetailScreen from '../screen/user/EditBookDetailScreen';
 import NotificationCount from '../components/NotificationCount';
 
-const options = {
+const lightTheme = {
+    colors: {
+        background: LightColors.bodyColor,
+        ...LightColors
+    }
+}
+
+const darkTheme = {
+    dark: true,
+    colors: {
+        background: DarkColors.bodyColor,
+        ...Colors
+    }
+}
+
+const options = (Colors) => ({
     headerTitle: () => {
         return (
             <Image 
@@ -56,9 +73,9 @@ const options = {
     headerTintColor: Colors.fontColor,
     headerBackTitle: ' ',
     headerTitleAlign: 'center',
-};
+});
 
-const tabOptions = {
+const tabOptions = (Colors) => ({
     tabBarLabelStyle: {
         fontFamily: Fonts.bodyFont,
         fontSize: 13,
@@ -71,26 +88,28 @@ const tabOptions = {
     },
     tabBarInactiveTintColor: Colors.fontColor,
     tabBarActiveTintColor: Colors.bookColor,
-};
+});
 
 const SigninStack = createStackNavigator();
-const SigninNavigator = () => {
+const SigninNavigator = () => {    
+    const Colors = useTheme().colors;
+
     return(
         <SigninStack.Navigator>
             <SigninStack.Screen 
                 name='SigninHome'
                 component={SigninHomeScreen}
-                options={options}
+                options={options(Colors)}
             />
             <SigninStack.Screen 
                 name='Signup'
                 component={SignupScreen}
-                options={options}
+                options={options(Colors)}
             />
             <SigninStack.Screen 
                 name='Signin'
                 component={SigninScreen}
-                options={options}
+               options={options(Colors)}
             />
         </SigninStack.Navigator>
     );
@@ -98,19 +117,21 @@ const SigninNavigator = () => {
 
 const FollowTab = createMaterialTopTabNavigator();
 const FollowTabNavigator = () => {
+    const Colors = useTheme().colors;
+
     return (
         <FollowTab.Navigator
-            screenOptions={tabOptions}
+            screenOptions={tabOptions(Colors)}
         >
             <FollowTab.Screen 
                 name='Followers'
                 component={FollowersScreen}
-                options={options}
+                options={options(Colors)}
             />
             <FollowTab.Screen 
                 name='Followings'
                 component={FollowingsScreen}
-                options={options}
+                options={options(Colors)}
             />
         </FollowTab.Navigator>
     );
@@ -118,37 +139,39 @@ const FollowTabNavigator = () => {
 
 const HomeStack = createStackNavigator();
 const HomeNavigator = () => {
+    const Colors = useTheme().colors;
+
     return(
         <HomeStack.Navigator>
             <HomeStack.Screen 
                 name='HomeN'
                 component={HomeScreen}
-                options={options}
+                options={options(Colors)}
             />
             <HomeStack.Screen 
                 name='CategoryN'
                 component={CategoryBooksScreen}
-                options={options}
+                options={options(Colors)}
             />
             <HomeStack.Screen 
                 name='BookN'
                 component={BookScreen}
-                options={options}
+                options={options(Colors)}
             />
             <HomeStack.Screen 
                 name='BookReadingN'
                 component={BookReadingScreen}
-                options={options}
+                options={options(Colors)}
             />
             <HomeStack.Screen
                 name='ViewProfileN'
                 component={ViewProfileScreen}
-                options={options}
+                options={options(Colors)}
             />
             <HomeStack.Screen
                 name='Follow'
                 component={FollowTabNavigator}
-                options={options}
+                options={options(Colors)}
             />
         </HomeStack.Navigator>
     );
@@ -156,32 +179,34 @@ const HomeNavigator = () => {
 
 const SearchStack = createStackNavigator();
 const SearchNavigator = () => {
+    const Colors = useTheme().colors;
+
     return(
         <SearchStack.Navigator>
             <SearchStack.Screen 
                 name='SearchN'
                 component={SearchScreen}
-                options={options}
+                options={options(Colors)}
             />
             <SearchStack.Screen 
                 name='BookN'
                 component={BookScreen}
-                options={options}
+                options={options(Colors)}
             />
             <SearchStack.Screen 
                 name='BookReadingN'
                 component={BookReadingScreen}
-                options={options}
+                options={options(Colors)}
             />
             <SearchStack.Screen
                 name='ViewProfileN'
                 component={ViewProfileScreen}
-                options={options}
+                options={options(Colors)}
             />
             <SearchStack.Screen
                 name='Follow'
                 component={FollowTabNavigator}
-                options={options}
+                options={options(Colors)}
             />
         </SearchStack.Navigator>
     );
@@ -189,32 +214,34 @@ const SearchNavigator = () => {
 
 const MyProfileStack = createStackNavigator();
 const MyProfileNavigator = () => {
+    const Colors = useTheme().colors;
+
     return(
         <MyProfileStack.Navigator>
             <MyProfileStack.Screen 
                 name='MyProfileN'
                 component={MyProfileScreen}
-                options={options}
+                options={options(Colors)}
             />
             <MyProfileStack.Screen
                 name='Follow'
                 component={FollowTabNavigator}
-                options={options}
+                options={options(Colors)}
             />
             <MyProfileStack.Screen
                 name='ViewProfileN'
                 component={ViewProfileScreen}
-                options={options}
+                options={options(Colors)}
             />
             <SearchStack.Screen 
                 name='BookN'
                 component={BookScreen}
-                options={options}
+                options={options(Colors)}
             />
             <SearchStack.Screen 
                 name='BookReadingN'
                 component={BookReadingScreen}
-                options={options}
+                options={options(Colors)}
             />
         </MyProfileStack.Navigator>
     );
@@ -222,19 +249,21 @@ const MyProfileNavigator = () => {
 
 const LibraryTab = createMaterialTopTabNavigator();
 const LibraryTabNavigator = () => {
+    const Colors = useTheme().colors;
+
     return (
         <LibraryTab.Navigator
-            screenOptions={tabOptions}
+            screenOptions={tabOptions(Colors)}
         >
             <LibraryTab.Screen 
                 name='Read'
                 component={ReadingListScreen}
-                options={options}
+                options={options(Colors)}
             />
             <LibraryTab.Screen 
                 name='Write'
                 component={WritingScreen}
-                options={options}
+                options={options(Colors)}
             />
         </LibraryTab.Navigator>
     );
@@ -242,42 +271,44 @@ const LibraryTabNavigator = () => {
 
 const LibraryStack = createStackNavigator();
 const LibraryNavigator = () => {
+    const Colors = useTheme().colors;
+
     return(
         <LibraryStack.Navigator>
             <LibraryStack.Screen 
                 name='LibraryTab'
                 component={LibraryTabNavigator}
-                options={options}
+                options={options(Colors)}
             />
             <LibraryStack.Screen 
                 name='BookReadingN'
                 component={BookReadingScreen}
-                options={options}
+                options={options(Colors)}
             />
             <LibraryStack.Screen 
                 name='EditBookN'
                 component={EditBookScreen}
-                options={options}
+                options={options(Colors)}
             />
             <LibraryStack.Screen 
                 name='AddBookN'
                 component={AddBookScreen}
-                options={options}
+                options={options(Colors)}
             />
             <LibraryStack.Screen 
                 name='AddCategoryN'
                 component={AddCategoryScreen}
-                options={options}
+                options={options(Colors)}
             />
             <LibraryStack.Screen 
                 name='AddBookDetailN'
                 component={AddBookDetailScreen}
-                options={options}
+                options={options(Colors)}
             />
             <LibraryStack.Screen 
                 name='EditBookDetailN'
                 component={EditBookDetailScreen}
-                options={options}
+                options={options(Colors)}
             />
         </LibraryStack.Navigator>
     );
@@ -285,17 +316,19 @@ const LibraryNavigator = () => {
 
 const NotificationStack = createStackNavigator();
 const NotificationNavigator = () => {
+    const Colors = useTheme().colors;
+
     return(
         <NotificationStack.Navigator>
             <NotificationStack.Screen 
                 name='NotificationN'
                 component={NotificationScreen}
-                options={options}
+                options={options(Colors)}
             />
             <NotificationStack.Screen 
                 name='BookReadingN'
                 component={BookReadingScreen}
-                options={options}
+                options={options(Colors)}
             />
         </NotificationStack.Navigator>
     );
@@ -303,6 +336,8 @@ const NotificationNavigator = () => {
 
 const Tab = createBottomTabNavigator();
 const TabNavigator = () => {
+    const Colors = useTheme().colors;
+
     return (
         <Tab.Navigator
             screenOptions={({ route }) => ({ 
@@ -331,27 +366,27 @@ const TabNavigator = () => {
             <Tab.Screen 
                 name='Home'
                 component={HomeNavigator}
-                options={options}
+                options={options(Colors)}
             />
             <Tab.Screen 
                 name='Search'
                 component={SearchNavigator}
-                options={options}
+                options={options(Colors)}
             />
             <Tab.Screen 
                 name='Library'
                 component={LibraryNavigator}
-                options={options}
+                options={options(Colors)}
             />
             <Tab.Screen 
                 name='Notification'
                 component={NotificationNavigator}
-                options={options}
+                options={options(Colors)}
             />
             <Tab.Screen 
                 name='MyProfile'
                 component={MyProfileNavigator}
-                options={options}
+                options={options(Colors)}
             />
         </Tab.Navigator>
     );
@@ -359,8 +394,11 @@ const TabNavigator = () => {
 
 const BookStack = createStackNavigator();
 const BookNavigator = (props) => {
+    const theme = useColorScheme();
+    const Colors = useTheme().colors;
+
     return(
-        <NavigationContainer theme={DarkTheme} ref={props.navRef} onReady={props.onReady}>
+        <NavigationContainer theme={theme === 'light' ? lightTheme : darkTheme} ref={props.navRef} onReady={props.onReady}>
             <BookStack.Navigator
                 screenOptions={{
                     headerShown: false
@@ -369,17 +407,17 @@ const BookNavigator = (props) => {
                 <BookStack.Screen 
                     name='Auth'
                     component={AuthScreen}
-                    options={options}
+                    options={options(Colors)}
                 />
                 <BookStack.Screen 
                     name='Sign'
                     component={SigninNavigator}
-                    options={options}
+                    options={options(Colors)}
                 />
                 <BookStack.Screen
                     name='Tab'
                     component={TabNavigator}
-                    options={options}
+                    options={options(Colors)}
                 />
             </BookStack.Navigator>
         </NavigationContainer>

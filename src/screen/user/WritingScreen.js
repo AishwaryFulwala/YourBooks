@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Alert, TouchableOpacity } from 'react-native';
 
+import { useTheme } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import { getBookNameByUser } from '../../redux/actions/Books.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import BookFlatList from '../../components/BookFlatLIst';
@@ -17,6 +17,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const WritingScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const books = useSelector((state) => state?.books?.getBookData?.getBooksByUser);
 
     const [ isLoad, setIsLoad ] = useState(true);
@@ -40,17 +42,17 @@ const WritingScreen = (props) => {
 
     if(isLoad) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <PageLoader />
             </View>
         );
     }
 
     return(
-        <View style={styles.body}>
+        <View style={styles(Colors).body}>
             <View>
                 <TouchableOpacity
-                    style={styles.btnCreate}
+                    style={styles(Colors).btnCreate}
                     onPress={() => {
                         props.navigation.navigate('AddBookN');
                     }}
@@ -60,7 +62,7 @@ const WritingScreen = (props) => {
                         color={Colors.fontColor}
                         size={27}
                     />
-                    <Text style={styles.txtData}>Create a new story</Text>
+                    <Text style={styles(Colors).txtData}>Create a new story</Text>
                 </TouchableOpacity>
             </View>
             <View>
@@ -77,7 +79,7 @@ const WritingScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     activity: {
         flex: 1,
         justifyContent: 'center',

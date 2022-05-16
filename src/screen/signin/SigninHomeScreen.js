@@ -1,50 +1,55 @@
 import React from 'react';
-import { StyleSheet, View, Text, Image, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
+import { StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView } from 'react-native';
 
 import LottieView from 'lottie-react-native';
 
-import Colors from '../../constnats/Colors';
+import { useTheme } from '@react-navigation/native';
+
 import Fonts from '../../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const SigninHomeScreen = (props) => {
+    const Colors = useTheme().colors;
+
     return (
-        <ScrollView style={styles.scrollColor}>
-            <View style={styles.body}>
+        <ScrollView contentContainerStyle={styles(Colors).scrollColor}>
+            <View style={styles(Colors).body}>
                 <LottieView
                     source={require('../../assets/image/homeCover.json')}
-                    style={styles.lottie}
+                    style={styles(Colors).lottie}
                     autoPlay
                     loop
                 />
-                <Text style={styles.txtWelcome} numberOfLines={2}>Welcome to, {'\n'}Your Books</Text>
-                <Text style={styles.txtRead}>Read and write stories in every category</Text>
+                <Text style={styles(Colors).txtWelcome} numberOfLines={2}>Welcome to, {'\n'}Your Books</Text>
+                <Text style={styles(Colors).txtRead}>Read and write stories in every category</Text>
                 <TouchableOpacity
-                    style={styles.btn}
+                    style={styles(Colors).btn}
                     onPress={() => {
                         props.navigation.navigate('Signup');
                     }}
                 >
-                    <Text style={styles.btnTxt}>Sign Up</Text>
+                    <Text style={styles(Colors).btnTxt}>Join for free</Text>
                 </TouchableOpacity>
-                <Text style={styles.txtAc}>Already have an account?
-                    <Text
-                        style={styles.txtSign}
-                        onPress={() => {
-                            props.navigation.navigate('Signin');
-                        }}
-                    >{' '}Sign In</Text>
-                </Text>
+                <TouchableOpacity
+                    onPress={() => {
+                        props.navigation.navigate('Signin');
+                    }}
+                >
+                    <Text style={styles(Colors).txtAc}>Already have an account?{' '}
+                        <Text style={styles(Colors).txtSign}>Sign In</Text>
+                    </Text>
+                </TouchableOpacity>
             </View>
         </ScrollView>
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     scrollColor: {
-        backgroundColor: Colors.bodyColor
+        backgroundColor: Colors.bodyColor,
+        flex: 1,
     },
     lottie: {
         alignSelf: 'center',
@@ -53,6 +58,7 @@ const styles = StyleSheet.create({
     },
     body: {
         flex: 1,
+        justifyContent: 'center',
         backgroundColor: Colors.bodyColor
     },
     img: {
@@ -76,8 +82,6 @@ const styles = StyleSheet.create({
     btn: {
         width: wWidth * 0.85,
         height: wHeight * 0.06,
-        borderColor: Colors.titleColor,
-        borderWidth: 1,
         borderRadius: 50,
         backgroundColor: Colors.titleColor,
         marginHorizontal:  wWidth * 0.07,
@@ -85,7 +89,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     btnTxt: {
-        color: Colors.btnFontColor,
+        color: Colors.bodyColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.045,
         textAlign: 'center',
@@ -94,12 +98,14 @@ const styles = StyleSheet.create({
         color: Colors.bookColor,
         fontFamily: Fonts.bodyFont,
         fontSize: wWidth * 0.045,
-        marginLeft : wWidth * 0.09,
-        marginTop: wHeight * 0.05,
-        
+        textAlign: 'center',
+        marginTop: wHeight * 0.03,
+        paddingVertical: wHeight * 0.01,
     },
     txtSign: {
         fontStyle: 'italic',
+        textDecorationLine: 'underline',
+        textDecorationColor: Colors.bookColor,
     },
 });
 

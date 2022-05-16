@@ -3,10 +3,11 @@ import { View, Text, StyleSheet, Dimensions, TouchableOpacity , Alert } from 're
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useTheme } from '@react-navigation/native';
+
 import { deleteReadingList, getReadingListByUserID } from '../../redux/actions/ReadingList.action';
 import { updateBook } from '../../redux/actions/Books.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import SliderModal from '../../components/SliderModal';
@@ -17,6 +18,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const ReadingListScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const readingList = useSelector((state) => state?.readingList?.getReadingListData);
 
     const [ open, setOpen ] = useState(false);
@@ -66,35 +69,35 @@ const ReadingListScreen = (props) => {
 
     if(isLoad) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <PageLoader/>
             </View>
         );
     }
 
     return(
-        <View style={styles.body}>
+        <View style={styles(Colors).body}>
             { 
                 !readingList?.length ?
-                    <View style={styles.activity}>
-                        <Text style={styles.txtNoBook}>You don't have any book in </Text>
-                        <Text style={styles.txtNoBook}> your reading list.</Text>
+                    <View style={styles(Colors).activity}>
+                        <Text style={styles(Colors).txtNoBook}>You don't have any book in </Text>
+                        <Text style={styles(Colors).txtNoBook}> your reading list.</Text>
                         <TouchableOpacity
-                            style={styles.btnAdd}
+                            style={styles(Colors).btnAdd}
                             onPress={() => {
                                 props.navigation.navigate('Home');
                             }}
                         >
-                            <Text style={styles.btnAddTxt}>ADD BOOKS NOW</Text>
+                            <Text style={styles(Colors).btnAddTxt}>ADD BOOKS NOW</Text>
                         </TouchableOpacity>
                     </View>
                 :
-                    <View style={styles.dispView}>
-                        <View style={styles.titleView}>
-                            <Text style={styles.txtTitle}>Your List</Text>
-                            <Text style={styles.txtStories}>{readingList?.length} Stories</Text>
+                    <View style={styles(Colors).dispView}>
+                        <View style={styles(Colors).titleView}>
+                            <Text style={styles(Colors).txtTitle}>Your List</Text>
+                            <Text style={styles(Colors).txtStories}>{readingList?.length} Stories</Text>
                         </View>
-                        <View style={styles.dispView}>
+                        <View style={styles(Colors).dispView}>
                             <SliderModal 
                                 visible={open}
                                 onClick={() => setOpen(!open)}
@@ -121,7 +124,7 @@ const ReadingListScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     activity: {
         flex: 1,
         justifyContent: 'center',

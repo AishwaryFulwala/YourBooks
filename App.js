@@ -1,11 +1,13 @@
-import React, { useEffect, useRef,useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { LogBox, Platform } from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
 import SplashScreen from "react-native-splash-screen";
+
 import { Provider } from "react-redux";
-import { LogBox, Platform } from 'react-native';
 
 import BookNavigation from './src/navigation/BookNavigation';
+import CustomErrorToast from './src/components/CustomErrorToast';
 import store from './src/redux/store/Config';
 
 const App = () => {
@@ -58,6 +60,7 @@ const App = () => {
                     setNavigationReady(true);
                 }}
             />
+            <CustomErrorToast />
         </Provider>
     );
 };

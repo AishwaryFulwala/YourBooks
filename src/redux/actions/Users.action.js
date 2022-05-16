@@ -26,12 +26,11 @@ export const getAsyncItem = () => {
     }    
 };
 
-export const signup = (userName, contactNo, email, password) => {
+export const signup = (userName, email, password) => {
     return async () => {
         try {
             await Api('/signup', {
                 UserName: userName,
-                ContactNo : contactNo,
                 Email: email,
                 Password: password,
             }, 'POST');

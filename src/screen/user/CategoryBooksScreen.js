@@ -3,19 +3,22 @@ import { View, Text, StyleSheet, Dimensions, Alert, ScrollView } from 'react-nat
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useTheme } from '@react-navigation/native';
+
 import { getCategoryByID } from '../../redux/actions/Categories.action';
 import { getBooksByCategory } from '../../redux/actions/Books.action';
 
 import BookList from '../../components/BookList';
 import PageLoader from '../../components/PageLoader';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const CategoryBooksScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const cateID = props.route.params.cateID;
     const category = useSelector((state) => state?.categories?.getCategoryData?.getCategory);
     const books = useSelector((state) => state?.books?.getBookData?.getBooksByCategory);
@@ -49,19 +52,19 @@ const CategoryBooksScreen = (props) => {
     
     if(isLoad) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <PageLoader />
             </View>
         );
     }
 
     return (
-        <View style={styles.body}>
-            <Text style={styles.txtTitle}>{category?.CategoryName}</Text>
+        <View style={styles(Colors).body}>
+            <Text style={styles(Colors).txtTitle}>{category?.CategoryName}</Text>
             {
                 !books?.length  ?
-                    <View style={styles.activity}>
-                        <Text style={styles.txtNoBook}>No book Found</Text>
+                    <View style={styles(Colors).activity}>
+                        <Text style={styles(Colors).txtNoBook}>No book Found</Text>
                     </View>
                 :
                     <ScrollView>
@@ -79,7 +82,7 @@ const CategoryBooksScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     activity: {
         flex: 1,
         justifyContent: 'center',

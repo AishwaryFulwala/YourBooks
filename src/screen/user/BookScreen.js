@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, ImageBackground, Image, ScrollView, TouchableOpacity, Alert, TextInput } from 'react-native';
 
+import { useTheme } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import IconFA from 'react-native-vector-icons/FontAwesome';
@@ -12,7 +13,6 @@ import { getBooksByID, updateBook } from '../../redux/actions/Books.action';
 import { addRating, getAvgRating, getRatingByBook } from '../../redux/actions/Rating.action';
 import { addReadingList, deleteReadingList, getReadingListByID } from '../../redux/actions/ReadingList.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import SliderModal from '../../components/SliderModal';
@@ -23,6 +23,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const BookScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const bookID = props.route.params.bookID;
     const book = useSelector((state) => state?.books?.getBookData?.getBooksByID);
     const avgRating = useSelector((state) => state?.ratings?.getRatingData?.getAvgRating);
@@ -151,7 +153,7 @@ const BookScreen = (props) => {
 
     if(!book || !book.length || !avgRating || !rating || isLoad) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <PageLoader />
             </View>
         );
@@ -162,7 +164,7 @@ const BookScreen = (props) => {
         val = val._id;
 
         return (
-            <View style={styles.body} key={index}>
+            <View style={styles(Colors).body} key={index}>
                 <SliderModal 
                     visible={open}
                     onClick={() => setOpen(!open)}
@@ -174,15 +176,15 @@ const BookScreen = (props) => {
                     op2Press={startReadingHandler}
                 />            
                 <ImageBackground
-                    style={styles.imgCover}
+                    style={styles(Colors).imgCover}
                     source={{uri: val.BookPic}}
                     blurRadius={50}
                 >
                     <Image
-                        style={styles.img}
+                        style={styles(Colors).img}
                         source={{uri: val.BookPic}}
                     />
-                    <Text style={styles.txtTitle}>{val.BookName}</Text>
+                    <Text style={styles(Colors).txtTitle}>{val.BookName}</Text>
                     <TouchableOpacity
                         onPress={() => {
                             props.navigation.navigate('ViewProfileN', {
@@ -190,86 +192,86 @@ const BookScreen = (props) => {
                             });
                         }}
                     >
-                        <Text style={styles.txtAuthor}>{val.UserName}</Text>
+                        <Text style={styles(Colors).txtAuthor}>{val.UserName}</Text>
                     </TouchableOpacity>
                 </ImageBackground>
-                <ScrollView style={styles.scrollView}>
-                    <View style={styles.containView}>
+                <ScrollView style={styles(Colors).scrollView}>
+                    <View style={styles(Colors).containView}>
                         <TouchableOpacity
-                            style={styles.btnRead}
+                            style={styles(Colors).btnRead}
                             onPress={() => {
                                 setOpen(!open);
                             }}
                         >
-                            <Text style={styles.btnReadTxt}>Read</Text>
+                            <Text style={styles(Colors).btnReadTxt}>Read</Text>
                         </TouchableOpacity>
-                        <View style={styles.statusView}>
-                            <View style={styles.txtBgView}>
-                                <Text style={styles.txtStatus}>{val.Status ? 'Ongoing' : 'Complete'}</Text>
+                        <View style={styles(Colors).statusView}>
+                            <View style={styles(Colors).txtBgView}>
+                                <Text style={styles(Colors).txtStatus}>{val.Status ? 'Ongoing' : 'Complete'}</Text>
                             </View>
-                            <View style={styles.txtBgView}>
-                                <Text style={styles.txtStatus}>{val.CategoryName}</Text>
+                            <View style={styles(Colors).txtBgView}>
+                                <Text style={styles(Colors).txtStatus}>{val.CategoryName}</Text>
                             </View>
                             
                         </View>
-                        <View style={styles.txtIconView}>
-                            <View style={styles.iconView}>
+                        <View style={styles(Colors).txtIconView}>
+                            <View style={styles(Colors).iconView}>
                                 <IconFA
                                     name='eye'
                                     size={17} 
                                     color={Colors.fontColor}
-                                    style={styles.icon}
+                                    style={styles(Colors).icon}
                                 />
-                                <Text style={styles.txtIcon}>{val.NoOfReads}</Text>
+                                <Text style={styles(Colors).txtIcon}>{val.NoOfReads}</Text>
                             </View>
-                            <View style={styles.borderVertical}></View>
-                            <View style={styles.iconView}>
+                            <View style={styles(Colors).borderVertical}></View>
+                            <View style={styles(Colors).iconView}>
                                 <IconO
                                     name='list-unordered'
                                     size={17} 
                                     color={Colors.fontColor}
-                                    style={styles.icon}
+                                    style={styles(Colors).icon}
                                 />
-                                <Text style={styles.txtIcon}>{parts}</Text>
+                                <Text style={styles(Colors).txtIcon}>{parts}</Text>
                             </View>
-                            <View style={styles.borderVertical}></View>
-                            <View style={styles.iconView}>
+                            <View style={styles(Colors).borderVertical}></View>
+                            <View style={styles(Colors).iconView}>
                                 <IconI
                                     name='star-sharp'
                                     size={17} 
                                     color={Colors.fontColor}
-                                    style={styles.icon}
+                                    style={styles(Colors).icon}
                                 />
-                                <Text style={styles.txtIcon}>{avgRating?.length ? avgRating[index]?.avg.toFixed(1) : 0}</Text>
+                                <Text style={styles(Colors).txtIcon}>{avgRating?.length ? avgRating[index]?.avg.toFixed(1) : 0}</Text>
                             </View>
                         </View>
                         {
                             !!val.Description && 
-                            <View style={styles.descView}>
-                                <Text style={styles.txtDesc}>{val.Description}</Text>
+                            <View style={styles(Colors).descView}>
+                                <Text style={styles(Colors).txtDesc}>{val.Description}</Text>
                             </View>
                         }
-                        <View style={styles.ratingDispView}>
+                        <View style={styles(Colors).ratingDispView}>
                             {
                                 rating?.map((val, index) => {
                                     val = val._id;
 
                                     return (
-                                        <View style={styles.ratingDispBlock} key={index}>
-                                            <View style={styles.ratingUser}>
-                                                <View style={styles.ratingUserImgView}>
+                                        <View style={styles(Colors).ratingDispBlock} key={index}>
+                                            <View style={styles(Colors).ratingUser}>
+                                                <View style={styles(Colors).ratingUserImgView}>
                                                     <Image
                                                         source={{uri: val.ProfilePic}}
-                                                        style={styles.ratingUserImg}
+                                                        style={styles(Colors).ratingUserImg}
                                                     />
                                                 </View>
-                                                <View style={styles.ratingUserDate}>
-                                                    <Text style={styles.txtRatingUser}>{val.UserName}</Text>
-                                                    <Text style={styles.txtRatingDate}>{new Date(val.ReviewDate).toLocaleDateString()}</Text>
-                                                    <View style={styles.ratingStar}>
+                                                <View style={styles(Colors).ratingUserDate}>
+                                                    <Text style={styles(Colors).txtRatingUser}>{val.UserName}</Text>
+                                                    <Text style={styles(Colors).txtRatingDate}>{new Date(val.ReviewDate).toLocaleDateString()}</Text>
+                                                    <View style={styles(Colors).ratingStar}>
                                                         {starIcons(val.Rating)}
                                                     </View>
-                                                    <Text style={styles.txtReview}>{val.Review}</Text>
+                                                    <Text style={styles(Colors).txtReview}>{val.Review}</Text>
                                                 </View>
                                             </View>
                                         </View>
@@ -279,10 +281,10 @@ const BookScreen = (props) => {
                         </View>
                     </View>
                 </ScrollView>   
-                <View style={styles.starView}>
+                <View style={styles(Colors).starView}>
                     <TouchableOpacity
                         onPress={() => setIsLike(!isLike)}
-                        style={styles.starBtn}
+                        style={styles(Colors).starBtn}
                     >
                         <IconO name='heart-fill' size={25} color={Colors.fontColor} />
                     </TouchableOpacity>
@@ -290,11 +292,11 @@ const BookScreen = (props) => {
                         onClose={() => setIsLike(!isLike)}
                         visible={isLike}
                     >
-                        <View style={styles.mainView}>
-                            <Text style={styles.ratingTitle}>Your opinion matter to us</Text>
-                            <View style={styles.horizontalView}></View>
-                            <Text style={styles.ratingTxt}>Share your feedback.</Text>
-                            <View style={styles.ratingIconView}>
+                        <View style={styles(Colors).mainView}>
+                            <Text style={styles(Colors).ratingTitle}>Your opinion matter to us</Text>
+                            <View style={styles(Colors).horizontalView}></View>
+                            <Text style={styles(Colors).ratingTxt}>Share your feedback.</Text>
+                            <View style={styles(Colors).ratingIconView}>
                                 <IconM
                                     name={rate === 1 ? 'emoticon-dead' : 'emoticon-dead-outline'}
                                     size={rate === 1 ? 40 : 35}
@@ -327,7 +329,7 @@ const BookScreen = (props) => {
                                 />
                             </View>
                             <TextInput 
-                                style={styles.reviewInput}
+                                style={styles(Colors).reviewInput}
                                 multiline
                                 placeholder="Leave a message, if you want"
                                 placeholderTextColor={Colors.fontColor}
@@ -335,10 +337,10 @@ const BookScreen = (props) => {
                                 onChangeText={(txt) => setReview(txt)}
                             />
                             <TouchableOpacity
-                                style={styles.ratingBtn}
+                                style={styles(Colors).ratingBtn}
                                 onPress={rateNowHandler}
                             >
-                                <Text style={styles.ratingBtnTxt}>Rate Now</Text>
+                                <Text style={styles(Colors).ratingBtnTxt}>Rate Now</Text>
                             </TouchableOpacity>
                         </View>
                     </PicModal>
@@ -348,7 +350,7 @@ const BookScreen = (props) => {
     });
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) =>StyleSheet.create({
     activity: {
         flex: 1,
         backgroundColor: Colors.bodyColor,

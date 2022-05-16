@@ -2,19 +2,20 @@ import React, { useEffect } from 'react';
 import { View, Text, StyleSheet, ScrollView, Dimensions, Alert } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { StackActions } from '@react-navigation/native';
+import { StackActions, useTheme } from '@react-navigation/native';
 
 import { getFollow, getID, getUser, updateUser } from '../../redux/actions/Users.action';
 
 import FollowList from '../../components/FollowList';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const FollowersScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const userID = props?.route?.params?.userID;
     const id = useSelector((state) => state?.users?.getUserData?.getID);
     const user = useSelector((state) => state?.users?.getUserData?.getUser);
@@ -59,11 +60,11 @@ const FollowersScreen = (props) => {
     };
 
     return(
-        <View style={styles.body}>
+        <View style={styles(Colors).body}>
             {
                 !(follow?.Followers?.length) ?
-                    <View style={styles.activity}>
-                        <Text style={styles.txtNoFollow}>No Followers</Text>
+                    <View style={styles(Colors).activity}>
+                        <Text style={styles(Colors).txtNoFollow}>No Followers</Text>
                     </View>
                 :
                 <ScrollView>
@@ -87,7 +88,7 @@ const FollowersScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,
