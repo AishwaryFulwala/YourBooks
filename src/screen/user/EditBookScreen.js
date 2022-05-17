@@ -2,6 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, Alert } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
+import { useTheme } from '@react-navigation/native';
+
+import Toast from 'react-native-toast-message';
 
 import { firebase } from '@react-native-firebase/storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
@@ -19,7 +22,6 @@ import { deleteNotificationByID } from '../../redux/actions/Notification.action'
 import { deleteReadingListByID } from '../../redux/actions/ReadingList.action';
 import { deleteRatingByID } from '../../redux/actions/Rating.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import CustomHeaderButton from '../../components/CustomHeaderButton';
@@ -31,6 +33,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const EditBookScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const bookID = props.route.params.bookID;
     const book = useSelector((state) => state?.books?.getBookData?.getBooksByID);
     const bookDetail = useSelector((state) => state?.booksDetail?.getBooksDetailData);
@@ -41,8 +45,6 @@ const EditBookScreen = (props) => {
 
     const [ isTitleEdit, setIsTitleEdit ] = useState(true);
     const [ isDescEdit, setIsDescEdit ] = useState(true);
-
-    const [ msg, setMsg ] = useState({});
 
     const [ isLoad, setIsLoad ] = useState(false);
     const [ open, setOpen ] = useState(false);
@@ -149,17 +151,13 @@ const EditBookScreen = (props) => {
 
     const updateBookHandler = async (val) => {
         if(isTitle === ''){
-            setMsg({
-                id: 'title',
-                error: 'Title can\'t be empty.'
+            Toast.show({
+                type: 'errorToast',
+                text1: 'Title can\'t be empty.',
+                position: 'bottom'
             });
-            return
+            return;
         }
-        else 
-            setMsg({
-                id: 'opassword',
-                error: ''
-            });
 
         try {
             await dispatch(updateBook(bookID, val));
@@ -167,6 +165,7 @@ const EditBookScreen = (props) => {
             Alert.alert('An error occurred!', (error && error.data?.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
 
+        setIsTitleEdit(!isTitleEdit);
         load();
     };
 
@@ -208,34 +207,34 @@ const EditBookScreen = (props) => {
 
     if(!book || !bookDetail || isLoad) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <PageLoader />
             </View>
         );
     }
 
     return(        
-        <View style={styles.body}>
+        <View style={styles(Colors).body}>
             <KeyboardAwareScrollView  extraScrollHeight={100}>
                 <View>
                     <TouchableOpacity
-                        style={styles.btnImg}
+                        style={styles(Colors).btnImg}
                         onPress={launchImageLibraryHandler}
                     >
-                        <View style={styles.btnView}>
-                            <View style={styles.imgView}>
+                        <View style={styles(Colors).btnView}>
+                            <View style={styles(Colors).imgView}>
                                 {   
                                     !!isPic &&
                                     <Image
                                         source={{uri: isPic}}
-                                        style={styles.img}
+                                        style={styles(Colors).img}
                                     />
                                 }
                             </View>
-                            <Text style={styles.txtImg}>Edit Book Cover</Text>
+                            <Text style={styles(Colors).txtImg}>Edit Book Cover</Text>
                         </View>
                     </TouchableOpacity>
-                    <View style={styles.containView}>
+                    <View style={styles(Colors).containView}>
                         <EditInput
                             txt='Book Title'
                             value={isTitle}
@@ -244,14 +243,9 @@ const EditBookScreen = (props) => {
                             onEdit={() =>  setIsTitleEdit(!isTitleEdit)}
                             onSave={() => {
                                 updateBookHandler({BookName: isTitle});
-                                setIsTitleEdit(!isTitleEdit);
                             }}
                         />
-                        {
-                            msg.id === 'title' && msg.error !== '' && 
-                            <Text style={styles.msgError}>{msg.error}</Text>
-                        }
-                        <View style={styles.horizontalView}></View>
+                        <View style={styles(Colors).horizontalView}></View>
                         <EditInput
                             txt='Book Description'
                             value={isDesc}
@@ -265,14 +259,14 @@ const EditBookScreen = (props) => {
                             }}
                         />
                     </View>
-                    <View style={styles.cateView}>
-                        <Text style={styles.cateTxt}>Category</Text>
-                        <Text style={styles.cateInputTxt}>{book[0]?._id?.CategoryName}</Text>
+                    <View style={styles(Colors).cateView}>
+                        <Text style={styles(Colors).cateTxt}>Category</Text>
+                        <Text style={styles(Colors).cateInputTxt}>{book[0]?._id?.CategoryName}</Text>
                     </View>
                 </View>
                 <View>
-                    <View style={styles.tableView}>
-                        <Text style={styles.tableTxt}>TABLE OF CONTENT</Text>
+                    <View style={styles(Colors).tableView}>
+                        <Text style={styles(Colors).tableTxt}>TABLE OF CONTENT</Text>
                         <IconMC
                             name='dots-vertical'
                             size={25}
@@ -286,12 +280,12 @@ const EditBookScreen = (props) => {
                     </View>
                         {
                             !!bookDetail?.length &&
-                            <View style={styles.detailView}>
+                            <View style={styles(Colors).detailView}>
                                 {
                                     bookDetail?.map((val, index) => {
                                         return (
                                             <TouchableOpacity
-                                                style={styles.detailBlock}
+                                                style={styles(Colors).detailBlock}
                                                 key={index}
                                                 onPress={() => {
                                                     props.navigation.navigate('AddBookDetailN',{
@@ -300,7 +294,7 @@ const EditBookScreen = (props) => {
                                                     });
                                                 }}
                                             >
-                                                <Text style={styles.detailTxt}>{val.PartNo}. {val.PartName}</Text>
+                                                <Text style={styles(Colors).detailTxt}>{val.PartNo}. {val.PartName}</Text>
                                             </TouchableOpacity>
                                         );
                                     })
@@ -308,7 +302,7 @@ const EditBookScreen = (props) => {
                             </View>
                         }
                         <TouchableOpacity
-                            style={styles.addView}
+                            style={styles(Colors).addView}
                             onPress={() => {
                                 props.navigation.navigate('AddBookDetailN',{
                                     bookID: bookID
@@ -320,31 +314,31 @@ const EditBookScreen = (props) => {
                                 color={Colors.lightGray}
                                 size={30}
                             />
-                            <Text style={styles.addTxt}>Add New Part</Text>
+                            <Text style={styles(Colors).addTxt}>Add New Part</Text>
                         </TouchableOpacity>
                  </View>
             </KeyboardAwareScrollView>
             <TouchableOpacity
-                style={styles.triangleCorner}
+                style={styles(Colors).triangleCorner}
                 onPress={() => updateBookHandler({Status: !book[0]?._id?.Status})}
             >
-                <Text style={styles.statusTxt}>{book[0]?._id?.Status ? 'Ongoing' : 'Complete'}</Text>
+                <Text style={styles(Colors).statusTxt}>{book[0]?._id?.Status ? 'Ongoing' : 'Complete'}</Text>
             </TouchableOpacity>
             <PicModal
                 onClose={() => setOpen(!open)}
                 visible={open}
             >
-                <View style={styles.mainModalView}>
-                    <Text style={styles.deleteTitle}>Delete Book</Text>
-                    <Text style={styles.deleteTxt}>Note: If you delete book will also delete the story.{'\n'}All reads, review and rating for this book will be deleted.</Text>
-                    <Text style={styles.deleteTxt}>Are you sure you want to delete this book?</Text>
-                    <View style={styles.btnModalView}>
+                <View style={styles(Colors).mainModalView}>
+                    <Text style={styles(Colors).deleteTitle}>Delete Book</Text>
+                    <Text style={styles(Colors).deleteTxt}>Note: If you delete book will also delete the story.{'\n'}All reads, review and rating for this book will be deleted.</Text>
+                    <Text style={styles(Colors).deleteTxt}>Are you sure you want to delete this book?</Text>
+                    <View style={styles(Colors).btnModalView}>
                         <Text
-                            style={styles.modalBtnTxt}
+                            style={styles(Colors).modalBtnTxt}
                             onPress={deleteBookDetail}
                         >Yes</Text>
                         <Text
-                            style={styles.modalBtnTxt}
+                            style={styles(Colors).modalBtnTxt}
                             onPress={() => setOpen(!open)}
                         >No</Text>
                     </View>
@@ -354,7 +348,7 @@ const EditBookScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     activity: {
         flex: 1,
         justifyContent: 'center',

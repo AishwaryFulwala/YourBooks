@@ -5,7 +5,6 @@ import { useTheme } from '@react-navigation/native';
 
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Colors from '../constnats/Colors';
 import Fonts from '../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;

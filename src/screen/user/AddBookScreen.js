@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, Dimensions, Image, TouchableOpacity, TextInput, Alert, Keyboard } from 'react-native';
 
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useTheme } from '@react-navigation/native';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
+import Toast from 'react-native-toast-message';
 import { useDispatch } from 'react-redux';
 
 import { firebase } from '@react-native-firebase/storage';
@@ -13,7 +14,6 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import IconA from 'react-native-vector-icons/AntDesign';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import { addBook } from '../../redux/actions/Books.action';
@@ -22,6 +22,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const AddBookScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const [ bookPic, setBookPic ] = useState('');
     const [ isTitle, setIsTitle ] = useState('');
     const [ isDesc, setIsDesc ] = useState('');
@@ -85,18 +87,32 @@ const AddBookScreen = (props) => {
     };
 
     const saveHandler = async () => {
-        if(!isTitle || !isCate)
-            Alert.alert('Insufficient Permission', 'Please must enter Category and Title.', [{text: 'okay'}])
-        else {  
-            try {
-                const res = await dispatch(addBook(isPic, isTitle, isDesc, isCate.cateID));
-                props.navigation.navigate('AddBookDetailN',{
-                    bookID: res._id,
-                    add: 'add',
-                });
-            } catch (error) {
-                Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
-            }
+        if(!isTitle) {
+            Toast.show({
+                type: 'errorToast',
+                text1: 'Please enter Title.',
+                position: 'bottom'
+            });
+            return;
+        }
+
+        if(!isCate) {
+            Toast.show({
+                type: 'errorToast',
+                text1: 'Please enter Category.',
+                position: 'bottom'
+            });
+            return;
+        }
+              
+        try {
+            const res = await dispatch(addBook(isPic, isTitle, isDesc, isCate.cateID));
+            props.navigation.navigate('AddBookDetailN',{
+                bookID: res._id,
+                add: 'add',
+            });
+        } catch (error) {
+            Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
         }
     };
 
@@ -124,71 +140,72 @@ const AddBookScreen = (props) => {
     }, [ isFocused ]);
 
     return (
-        <View style={styles.body}>
+        <View style={styles(Colors).body}>
             <KeyboardAwareScrollView  extraScrollHeight={100}>
                 <View>
-                    <Text style={styles.txtTitle}>Book</Text>
+                    <Text style={styles(Colors).txtTitle}>Book</Text>
                     <TouchableOpacity
-                        style={styles.btnImg}
+                        style={styles(Colors).btnImg}
                         onPress={launchImageLibraryHandler}
                     >
                         {
                             !bookPic ?
-                                <View style={styles.btnView}>
-                                    <View style={styles.imgView}>
+                                <View style={styles(Colors).btnView}>
+                                    <View style={styles(Colors).imgView}>
                                         <IconA
                                             name='plus'
                                             color={Colors.fontColor}
                                             size={50}
                                         />
                                     </View>
-                                    <Text style={styles.txtImg}>Add Book Cover</Text>
+                                    <Text style={styles(Colors).txtImg}>Add Book Cover</Text>
                                 </View>
                             :
-                                <View style={styles.btnView}>
-                                    <View style={styles.imgView}>
+                                <View style={styles(Colors).btnView}>
+                                    <View style={styles(Colors).imgView}>
                                         <Image
                                             source={{uri: bookPic?.uri}}
-                                            style={styles.img}
+                                            style={styles(Colors).img}
                                         />
                                     </View>
-                                    <Text style={styles.txtImg}>Edit Book Cover</Text>
+                                    <Text style={styles(Colors).txtImg}>Edit Book Cover</Text>
                                 </View>
                         }
                     </TouchableOpacity>
-                    <View style={styles.inputView}>
-                        <Text style={styles.titleTxt}>Book title</Text>
+                    <View style={styles(Colors).inputView}>
+                        <Text style={styles(Colors).titleTxt}>Book title</Text>
                         <TextInput 
-                            style={styles.titleInput}
+                            style={styles(Colors).titleInput}
                             value={isTitle}
                             onChangeText={(txt) => setIsTitle(txt)}
                         />
                     </View>
-                    <View style={styles.inputView}>
-                        <Text style={styles.titleTxt}>Book Decription</Text>
+                    <View style={styles(Colors).inputView}>
+                        <Text style={styles(Colors).titleTxt}>Book Decription</Text>
                         <TextInput 
-                            style={styles.titleInput}
+                            style={styles(Colors).titleInput}
                             multiline
                             value={isDesc}
                             onChangeText={(txt) => setIsDesc(txt)}
                         />
                     </View>
-                    <View style={styles.inputView}>
+                    <View style={styles(Colors).inputView}>
                         <TouchableOpacity
                             onPress={() => props.navigation.navigate('AddCategoryN') }
+                            style={styles(Colors).btnCate}
                         >
-                            <Text style={styles.titleTxt}>Category</Text>
-                            <Text style={styles.categoryTxt}>{isCate.cateName || ''}</Text>
+                            <Text style={styles(Colors).titleTxt}>Category</Text>
+                            <Text style={styles(Colors).categoryTxt}>{isCate.cateName || ''}</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
             </KeyboardAwareScrollView>
             {
                 !isKey &&
-                <View style={styles.saveView}>
+                <View style={styles(Colors).saveView}>
                     <TouchableOpacity
                         onPress={saveHandler}
-                        style={styles.saveBtn}
+                        style={styles(Colors).saveBtn}
                     >
                         <IconM
                             name='content-save-check'
@@ -202,7 +219,7 @@ const AddBookScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,
@@ -218,7 +235,7 @@ const styles = StyleSheet.create({
         backgroundColor: Colors.drakGray,
         height: wHeight * 0.2,
         justifyContent: 'center',
-        marginVertical: wHeight * 0.02
+        marginVertical: wHeight * 0.02,
     },
     btnView: {
         flexDirection: 'row',
@@ -263,6 +280,11 @@ const styles = StyleSheet.create({
         borderBottomWidth: 1,
         width: wWidth * 0.9,
         paddingVertical: wHeight * 0.01,
+    },
+    btnCate: {
+        borderBottomColor: Colors.fontColor,
+        borderBottomWidth: 1,
+        width: wWidth * 0.9,
     },
     categoryTxt: {
         paddingVertical: wHeight * 0.01,

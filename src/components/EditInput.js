@@ -1,26 +1,29 @@
 import React from 'react';
 import { StyleSheet, View, Text, Dimensions, TextInput } from 'react-native';
 
+import { useTheme } from '@react-navigation/native';
+
 import IconM from 'react-native-vector-icons/MaterialIcons';
 
-import Colors from '../constnats/Colors';
 import Fonts from '../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const EditInput = (props) => {
+    const Colors = useTheme().colors;
+
     return (
-        <View style={styles.dispView}>
-            <Text style={styles.userTxt}>{props.txt}</Text>
-            <View style={styles.btnView}>
+        <View style={styles(Colors).dispView}>
+            <Text style={styles(Colors).userTxt}>{props.txt}</Text>
+            <View style={styles(Colors).btnView}>
             {
                 props.edit ?
-                    <Text style={styles.userInputTxt}>{props.value}</Text>
+                    <Text style={styles(Colors).userInputTxt}>{props.value}</Text>
                 :
                     <TextInput 
                         value={props.value}
-                        style={styles.userInput}
+                        style={styles(Colors).userInput}
                         {...props}
                         onChangeText={props.onChangeText}
                     />
@@ -30,16 +33,16 @@ const EditInput = (props) => {
                     <IconM 
                         name='edit'
                         size={27}
-                        color='white'
-                        style={styles.btnEdit}
+                        color={Colors.fontColor}
+                        style={styles(Colors).btnEdit}
                         onPress={props.onEdit}
                     />
                 :
                     <IconM 
                         name='check'
                         size={27}
-                        color='white'
-                        style={styles.btnEdit}
+                        color={Colors.fontColor}
+                        style={styles(Colors).btnEdit}
                         onPress={props.onSave}
                     />
             }
@@ -48,7 +51,7 @@ const EditInput = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     dispView: {
         paddingVertical: wHeight * 0.03,
     },

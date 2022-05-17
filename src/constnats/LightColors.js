@@ -8,7 +8,7 @@ export default {
     errorColor: '#FF0000',
 
     gradientB1: '#FFFFFF',
-    gradientB2: '#f5ebeb',
+    gradientB2: '#FCFCFC',
 
     gradient1: '#405DE6',
     gradient2: '#833AB4',
@@ -16,13 +16,13 @@ export default {
     gradient4: '#F56040',
     gradient5: '#FCAF45',
 
-    drakGray: '#c8c9cc',
-    btnGray: '#e4e4f0',
-    lightGray: '#9999ad',
+    drakGray: '#f5f5f5',
+    btnGray: '#FEFDFC',
+    lightGray: '#888891',
 
     shadowColor: '#3C4846',
-    borderColor: '#cccccc',
-    richColor: '#c6c3b3',
+    borderColor: '#CCCCCC',
+    richColor: '#757572',
 
-    colorArr: ['#c28285', '#2f619c', '#7a6350', '#964B00', '#008080', '#78828B', '#B87333', '#d13847', '#048054', '#D4AF37'],
+    colorArr: ['#C28285', '#2F619C', '#7A6350', '#964B00', '#008080', '#78828B', '#B87333', '#D13847', '#048054', '#D4AF37'],
 }

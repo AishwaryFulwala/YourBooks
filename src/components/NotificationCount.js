@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { View } from 'react-native';
+import { View, Alert } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { View, Text, StyleSheet, Dimensions, TextInput, Keyboard, TouchableWithoutFeedback, Alert, ActivityIndicator, Platform } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { StackActions } from "@react-navigation/native";
+import { StackActions, useTheme } from "@react-navigation/native";
 
 import { firebase } from '@react-native-firebase/storage';
 import { PERMISSIONS, request } from 'react-native-permissions';
@@ -22,13 +22,14 @@ import { getBooksByID } from '../../redux/actions/Books.action';
 import CustomHeaderButton from '../../components/CustomHeaderButton';
 import { useKeyboard } from '../../hooks/keyboardHook';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const AddBookDetailScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const bookID = props.route.params.bookID;
     const partID = props.route.params?.partID;
     const add = props.route.params?.add;
@@ -206,18 +207,18 @@ const AddBookDetailScreen = (props) => {
     }, [ title, desc, isLoading ]);
 
     return(
-        <View style={styles.body}>
+        <View style={styles(Colors).body}>
             {
                 isLoading &&
                 <ActivityIndicator color={Colors.fontColor} />
             }
             <TouchableWithoutFeedback onPress={Keyboard.dismiss} disabled={isLoading ? true : false}>
-                <View style={styles.body}>
-                    <Text style={styles.txtTitle}>Book Detail</Text>
-                    <View style={styles.inputView}>
-                        <Text style={styles.titleTxt}>Book title</Text>
+                <View style={styles(Colors).body}>
+                    <Text style={styles(Colors).txtTitle}>Book Detail</Text>
+                    <View style={styles(Colors).inputView}>
+                        <Text style={styles(Colors).titleTxt}>Book title</Text>
                         <TextInput 
-                            style={styles.titleInput}
+                            style={styles(Colors).titleInput}
                             value={title}
                             onChangeText={(txt) => setTitle(txt)}
                             editable={isLoading ? false : true}
@@ -225,8 +226,8 @@ const AddBookDetailScreen = (props) => {
                     </View>
                     <RichEditor
                         containerStyle={{ paddingBottom: Platform.OS === 'ios' ? keyboardHeight - 100 : 0}}
-                        style={styles.descInput}
-                        editorStyle={styles.editInput}
+                        style={styles(Colors).descInput}
+                        editorStyle={styles(Colors).editInput}
                         ref={RichText}
                         placeholder='Tap here to start writing'
                         useContainer
@@ -235,7 +236,7 @@ const AddBookDetailScreen = (props) => {
                         initialContentHTML={desc}
                     />
                     <RichToolbar
-                        style={styles.richTool}
+                        style={styles(Colors).richTool}
                         editor={RichText}
                         iconTint={Colors.btnGray}
                         selectedIconTint={Colors.fontColor}
@@ -257,7 +258,7 @@ const AddBookDetailScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,
@@ -294,7 +295,7 @@ const styles = StyleSheet.create({
         maxHeight: 500,
     },
     editInput:{
-        backgroundColor: Colors.bodyColor,
+        backgroundColor: Colors.drakGray,
         color: Colors.fontColor,
         placeholderColor: Colors.fontColor,
         contentCSSText: `

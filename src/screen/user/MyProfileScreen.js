@@ -6,12 +6,13 @@ import SkeletonPlaceholder from 'react-native-skeleton-placeholder';
 import { firebase } from '@react-native-firebase/storage';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { StackActions } from '@react-navigation/native';
+import { StackActions, useTheme } from '@react-navigation/native';
 
 import { PERMISSIONS, request } from 'react-native-permissions';
 import { launchCamera, launchImageLibrary }from 'react-native-image-picker';
 
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import Toast from 'react-native-toast-message';
 
 import messaging from '@react-native-firebase/messaging';
 
@@ -20,7 +21,6 @@ import IconI from 'react-native-vector-icons/Ionicons';
 
 import { logout, getUser, updateUser } from '../../redux/actions/Users.action';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 import EditInput from '../../components/EditInput';
@@ -31,6 +31,8 @@ const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const MyProfileScreen = (props) => {
+    const Colors = useTheme().colors;
+    
     const user = useSelector((state) => state?.users?.getUserData?.getUser);
     const [ isUser, setIsUser ] = useState(user ?? {});
 
@@ -59,8 +61,6 @@ const MyProfileScreen = (props) => {
     const [ isOPwdShow, setIsOPwdShow ] = useState(true);
     const [ isNPwdShow, setIsNPwdShow ] = useState(true);
     const [ isNCPwdShow, setIsNCPwdShow ] = useState(true);
-
-    const [ msg, setMsg ] = useState({});
 
     const [ isNameEdit, setIsNameEdit ] = useState(true);
     const [ isContactNoEdit, setIsContactNoEdit ] = useState(true);
@@ -201,62 +201,62 @@ const MyProfileScreen = (props) => {
     };
 
     const updateUserHandler = async (value) => {
+        if(value.UserName === ''){
+            Toast.show({
+                type: 'errorToast',
+                text1: 'User Name can\'t be empty.',
+                position: 'bottom'
+            });
+            return
+        }
+
         const cnoRegex = /^[6-9]\d{9}$/g;
         if(('ContactNo' in value) && (!value.ContactNo.match(cnoRegex) || value.ContactNo === '')){
-            setMsg({
-                id: 'contactNo',
-                error: 'Contact No is not valid.'
+            Toast.show({
+                type: 'errorToast',
+                text1: 'Contact No is not valid.',
+                position: 'bottom'
             });
-            return
+            return;
         }
-        else 
-            setMsg({
-                id: 'contactNo',
-                error: ''
-            });
 
-         if(isPwdEdit && isOPwd === ''){
-            setMsg({
-                id: 'opassword',
-                error: 'Password can\'t be empty.'
+        if(isPwdEdit && isOPwd === ''){
+            Toast.show({
+                type: 'errorToast',
+                text1: 'Password can\'t be empty.',
+                position: 'bottom'
             });
             return
         }
-        else 
-            setMsg({
-                id: 'opassword',
-                error: ''
-            });
 
         const pwdRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/g;
         if(isPwdEdit && (!isNPwd.match(pwdRegex) || isNPwd === '')){
-            setMsg({
-                id: 'npassword',
-                error: 'Password must contain at least eight characters, at least one number and both lower and uppercase letters.'
+            Toast.show({
+                type: 'errorToast',
+                text1: 'Password must contain at least eight characters, at least one number and both lower and uppercase letters.',
+                position: 'bottom'
             });
             return
         }
-        else 
-            setMsg({
-                id: 'npassword',
-                error: ''
-            });
 
         if(isPwdEdit &&  !isNCPwd.match(isNPwd)){
-            setMsg({
-                id: 'cpassword',
-                error: 'Confirm Password must be same as password.'
+            Toast.show({
+                type: 'errorToast',
+                text1: 'Confirm Password must be same as password.',
+                position: 'bottom'
             });
             return
         }
-        else 
-            setMsg({
-                id: 'cpassword',
-                error: ''
-            });
 
         try {
             await dispatch(updateUser(value));
+
+            if(!isNameEdit)
+                setIsNameEdit(!isNameEdit);
+
+            if(!isContactNoEdit)
+                setIsContactNoEdit(!isContactNoEdit);
+
             load();
         } catch (error) {
             Alert.alert('An error occurred!', (error && error.data.error) || 'Couldn\'t connect to server.', [{ text: 'Okay' }]);
@@ -269,13 +269,13 @@ const MyProfileScreen = (props) => {
                 onClose={() => setIsPwdEdit(!isPwdEdit)}
                 visible={isPwdEdit}
             >
-                <View style={styles.chnagePwdView}>
-                    <Text style={styles.changePwdTitle}>Change Password</Text>
+                <View style={styles(Colors).chnagePwdView}>
+                    <Text style={styles(Colors).changePwdTitle}>Change Password</Text>
                     <View>
-                        <Text style={styles.changePwdTxt}>Old Password</Text>
-                        <View style={styles.changePwdView}>
+                        <Text style={styles(Colors).changePwdTxt}>Old Password</Text>
+                        <View style={styles(Colors).changePwdView}>
                             <TextInput
-                                style={styles.changePwdInput}
+                                style={styles(Colors).changePwdInput}
                                 value={isOPwd}
                                 onChangeText={(txt) => setIsOPwd(txt)}
                                 secureTextEntry={isOPwdShow}
@@ -289,7 +289,7 @@ const MyProfileScreen = (props) => {
                                         onPress={() => {
                                             setIsOPwdShow(!isOPwdShow);
                                         }}
-                                        style={styles.changePwdIcon}
+                                        style={styles(Colors).changePwdIcon}
                                     />
                                 :
                                     <IconI
@@ -299,20 +299,16 @@ const MyProfileScreen = (props) => {
                                         onPress={() => {
                                             setIsOPwdShow(!isOPwdShow);
                                         }}
-                                        style={styles.changePwdIcon}
+                                        style={styles(Colors).changePwdIcon}
                                     />
                             }
                         </View>
-                        {
-                            msg.id === 'opassword' && msg.error !== '' && 
-                                <Text style={styles.msgError}>{msg.error}</Text>
-                        }
                     </View>
                     <View>
-                        <Text style={styles.changePwdTxt}>New Password</Text>
-                        <View style={styles.changePwdView}>
+                        <Text style={styles(Colors).changePwdTxt}>New Password</Text>
+                        <View style={styles(Colors).changePwdView}>
                             <TextInput
-                                style={styles.changePwdInput}
+                                style={styles(Colors).changePwdInput}
                                 value={isNPwd}
                                 onChangeText={(txt) => setIsNPwd(txt)}
                                 secureTextEntry={isNPwdShow}
@@ -326,7 +322,7 @@ const MyProfileScreen = (props) => {
                                         onPress={() => {
                                             setIsNPwdShow(!isNPwdShow);
                                         }}
-                                        style={styles.changePwdIcon}
+                                        style={styles(Colors).changePwdIcon}
                                     />
                                 :
                                     <IconI
@@ -336,20 +332,16 @@ const MyProfileScreen = (props) => {
                                         onPress={() => {
                                             setIsNPwdShow(!isNPwdShow);
                                         }}
-                                        style={styles.changePwdIcon}
+                                        style={styles(Colors).changePwdIcon}
                                     />
                             }
                         </View>
-                        {
-                            msg.id === 'npassword' && msg.error !== '' && 
-                                <Text style={styles.msgError}>{msg.error}</Text>
-                        }
                     </View>
                     <View>
-                        <Text style={styles.changePwdTxt}>Confirm New Password</Text>
-                        <View style={styles.changePwdView}>
+                        <Text style={styles(Colors).changePwdTxt}>Confirm New Password</Text>
+                        <View style={styles(Colors).changePwdView}>
                             <TextInput
-                                style={styles.changePwdInput}
+                                style={styles(Colors).changePwdInput}
                                 value={isNCPwd}
                                 onChangeText={(txt) => setIsNCPwd(txt)}
                                 secureTextEntry={isNCPwdShow}
@@ -363,7 +355,7 @@ const MyProfileScreen = (props) => {
                                         onPress={() => {
                                             setIsNCPwdShow(!isNCPwdShow);
                                         }}
-                                        style={styles.changePwdIcon}
+                                        style={styles(Colors).changePwdIcon}
                                     />
                                 :
                                     <IconI
@@ -373,22 +365,18 @@ const MyProfileScreen = (props) => {
                                         onPress={() => {
                                             setIsNCPwdShow(!isNCPwdShow);
                                         }}
-                                        style={styles.changePwdIcon}
+                                        style={styles(Colors).changePwdIcon}
                                     />
                             }
                         </View>
-                        {
-                            msg.id === 'cpassword' && msg.error !== '' && 
-                                <Text style={styles.msgError}>{msg.error}</Text>
-                        }
                     </View>
                     <TouchableOpacity
-                        style={styles.changePwdBtn}
+                        style={styles(Colors).changePwdBtn}
                         onPress={() => {
                             updateUserHandler({ OldPwd: isOPwd, Password: isNPwd });
                         }}
                     >
-                        <Text style={styles.changePwdBtnTxt}>Save</Text>
+                        <Text style={styles(Colors).changePwdBtnTxt}>Save</Text>
                     </TouchableOpacity>
                 </View>
             </PicModal>          
@@ -397,7 +385,7 @@ const MyProfileScreen = (props) => {
 
     if (isLoad) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <SkeletonPlaceholder 
                     highlightColor={Colors.btnGray}
                     backgroundColor={Colors.drakGray}
@@ -414,7 +402,6 @@ const MyProfileScreen = (props) => {
                         width={100}
                         height={100}
                         borderRadius={100}
-                        borderWidth={5}
                         alignSelf="center"
                         position='relative'
                         marginTop={100}
@@ -475,7 +462,7 @@ const MyProfileScreen = (props) => {
 
     return(
         <KeyboardAwareScrollView extraScrollHeight={100}>
-            <View style={styles.body}>
+            <View style={styles(Colors).body}>
                 <SliderModal 
                     op1Txt='Take Photo'
                     op2Txt='Chooce from Library'
@@ -491,51 +478,51 @@ const MyProfileScreen = (props) => {
                 }
                 <LinearGradient
                     colors={[Colors.gradientB1, Colors.gradientB2]}
-                    style={styles.liner}
+                    style={styles(Colors).liner}
                 >
-                    <View style={styles.touchView}>
+                    <View style={styles(Colors).touchView}>
                         <TouchableOpacity
                             onPress={() => {
                                 setIsOpenModal(!isOpenModal);
                                 setPickCover(!pickCover);
                             }}
-                            style={styles.imgCover}
+                            style={styles(Colors).imgCover}
                         >
                             <ImageBackground
                                 source={imgCover}
-                                style={styles.imgCover}
+                                style={styles(Colors).imgCover}
                             >
                             </ImageBackground>
                         </TouchableOpacity>
                     </View>
-                    <View style={styles.detailView}>
+                    <View style={styles(Colors).detailView}>
                         <LinearGradient
                             colors={[Colors.gradient1, Colors.gradient2, Colors.gradient3, Colors.gradient4, Colors.gradient5]}
-                            style={styles.imglinear}                        
+                            style={styles(Colors).imglinear}                        
                         >
-                            <View style={styles.imgView}>
+                            <View style={styles(Colors).imgView}>
                                 <TouchableOpacity
                                     onPress={() => {
                                         setIsOpenModal(!isOpenModal);
                                         setPickPic(!pickPic);
                                     }}
-                                    style={styles.img}
+                                    style={styles(Colors).img}
                                 >
                                     <Image
                                         source={imgProfile}
-                                        style={styles.img}
+                                        style={styles(Colors).img}
                                     />
                                 </TouchableOpacity>
                             </View>
                         </LinearGradient>
-                        <View style={styles.dispView}>
-                            <View style={styles.txtView}>
+                        <View style={styles(Colors).dispView}>
+                            <View style={styles(Colors).txtView}>
                                 {
                                     isNameEdit ?
-                                        <Text style={styles.txtName}>{isUser.UserName}</Text>
+                                        <Text style={styles(Colors).txtName}>{isUser.UserName}</Text>
                                     :
                                         <TextInput
-                                            style={styles.txtNameInput}
+                                            style={styles(Colors).txtNameInput}
                                             value={isUser.UserName}
                                             onChangeText={(txt) => {
                                                 setIsUser({ ...isUser, UserName: txt })
@@ -557,12 +544,11 @@ const MyProfileScreen = (props) => {
                                             color={Colors.fontColor}
                                             onPress={() => {
                                                 updateUserHandler({UserName: isUser.UserName});
-                                                setIsNameEdit(!isNameEdit);
                                             }}
                                         />
                                 }
                             </View>
-                            <View style={styles.followView}>
+                            <View style={styles(Colors).followView}>
                                 <View>
                                     <TouchableOpacity
                                         onPress={() => {
@@ -576,11 +562,11 @@ const MyProfileScreen = (props) => {
                                             );
                                         }}
                                     >
-                                        <Text style={styles.txtNo}>{isUser.Followers}</Text>
-                                        <Text style={styles.txtFollow}>Followers</Text>
+                                        <Text style={styles(Colors).txtNo}>{isUser.Followers}</Text>
+                                        <Text style={styles(Colors).txtFollow}>Followers</Text>
                                     </TouchableOpacity>
                                 </View>
-                                <View style={styles.pipeView}></View>
+                                <View style={styles(Colors).pipeView}></View>
                                 <View>
                                     <TouchableOpacity
                                         onPress={() => {
@@ -594,18 +580,18 @@ const MyProfileScreen = (props) => {
                                             );
                                         }}
                                     >
-                                        <Text style={styles.txtNo}>{isUser.Followings}</Text>
-                                        <Text style={styles.txtFollow}>Following</Text>
+                                        <Text style={styles(Colors).txtNo}>{isUser.Followings}</Text>
+                                        <Text style={styles(Colors).txtFollow}>Following</Text>
                                     </TouchableOpacity>
                                 </View>
                             </View>
                         </View>
-                        <View style={styles.linerView}>
-                            <View style={styles.emailView}>
-                                <Text style={styles.emailTxt}>Email</Text>
-                                <Text style={styles.emailInputTxt}>{isUser.Email}</Text>
+                        <View style={styles(Colors).linerView}>
+                            <View style={styles(Colors).emailView}>
+                                <Text style={styles(Colors).emailTxt}>Email</Text>
+                                <Text style={styles(Colors).emailInputTxt}>{isUser.Email}</Text>
                             </View>
-                            <View style={styles.userView}>
+                            <View style={styles(Colors).userView}>
                                 <EditInput
                                     txt='Contact No'
                                     value={isUser.ContactNo}
@@ -614,14 +600,9 @@ const MyProfileScreen = (props) => {
                                     onEdit={() => setIsContactNoEdit(!isContactNoEdit)}
                                     onSave={() => {                                            
                                         updateUserHandler({ContactNo: isUser.ContactNo});
-                                        setIsContactNoEdit(!isContactNoEdit);
                                     }}
                                 />
-                                {
-                                    msg.id === 'contactNo' && msg.error !== '' && 
-                                    <Text style={styles.msgError}>{msg.error}</Text>
-                                }
-                                <View style={styles.horizontalView}></View>
+                                <View style={styles(Colors).horizontalView}></View>
                                 <EditInput
                                     txt='About'
                                     value={isUser.About}
@@ -635,17 +616,17 @@ const MyProfileScreen = (props) => {
                                     }}
                                 />
                             </View>
-                            <View style={styles.logoutView}>
+                            <View style={styles(Colors).logoutView}>
                                 <TouchableOpacity
-                                    style={styles.logoutBtn}
+                                    style={styles(Colors).logoutBtn}
                                     onPress={() => setIsPwdEdit(!isPwdEdit) }
                                 >
-                                    <Text style={styles.logoutBtnTxt}>Change Password</Text>
+                                    <Text style={styles(Colors).logoutBtnTxt}>Change Password</Text>
                                 </TouchableOpacity>
                             </View>
-                            <View style={styles.logoutView}>
-                                <TouchableOpacity style={styles.logoutBtn} onPress={logOut}>
-                                    <Text style={styles.logoutBtnTxt}>Log Out</Text>
+                            <View style={styles(Colors).logoutView}>
+                                <TouchableOpacity style={styles(Colors).logoutBtn} onPress={logOut}>
+                                    <Text style={styles(Colors).logoutBtnTxt}>Log Out</Text>
                                 </TouchableOpacity>
                             </View>
                         </View>
@@ -656,7 +637,7 @@ const MyProfileScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     activity: {
         flex: 1,
         backgroundColor: Colors.bodyColor,

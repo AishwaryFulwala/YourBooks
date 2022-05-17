@@ -9,7 +9,6 @@ import { createMaterialTopTabNavigator } from '@react-navigation/material-top-ta
 import IconI from 'react-native-vector-icons/Ionicons';
 import IconM from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Colors from '../constnats/Colors';
 import Fonts from '../constnats/Fonts';
 import LightColors from '../constnats/LightColors';
 import DarkColors from '../constnats/DarkColors';
@@ -53,7 +52,7 @@ const darkTheme = {
     dark: true,
     colors: {
         background: DarkColors.bodyColor,
-        ...Colors
+        ...DarkColors
     }
 }
 

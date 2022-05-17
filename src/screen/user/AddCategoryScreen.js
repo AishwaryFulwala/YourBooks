@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, Dimensions, ScrollView, Alert } from 'react-native';
 
 import { HeaderButtons, Item } from 'react-navigation-header-buttons';
-
+import { useTheme } from '@react-navigation/native';
 import { useDispatch, useSelector } from 'react-redux';
 
 import IconM from 'react-native-vector-icons/MaterialIcons';
@@ -12,13 +12,14 @@ import { getCategories } from '../../redux/actions/Categories.action';
 
 import CustomHeaderButton from '../../components/CustomHeaderButton';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const AddCategoryScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const categories = useSelector((state) => state?.categories?.getCategoryData?.getCategories);
 
     const [ cate, setCate ] = useState(null);
@@ -62,8 +63,8 @@ const AddCategoryScreen = (props) => {
     };
 
     return(
-        <View style={styles.body}>
-            <Text style={styles.txtTitle}>Categories</Text>
+        <View style={styles(Colors).body}>
+            <Text style={styles(Colors).txtTitle}>Categories</Text>
             <ScrollView>
                 {
                     categories && 
@@ -71,13 +72,13 @@ const AddCategoryScreen = (props) => {
                         return (
                             <View key={index}>
                                 <TouchableOpacity
-                                    style={styles.btnCat}
+                                    style={styles(Colors).btnCat}
                                     onPress={() => {
                                         setCate({ cateID: val._id, cateName: val.CategoryName})
                                     }}
                                 >
-                                    <View style={styles.btnView}>
-                                        <Text style={{ ...styles.btnTxt, color: val._id === cate?.cateID ? Colors.bookColor : Colors.fontColor }}>{val.CategoryName}</Text>
+                                    <View style={styles(Colors).btnView}>
+                                        <Text style={{ ...styles(Colors).btnTxt, color: val._id === cate?.cateID ? Colors.bookColor : Colors.fontColor }}>{val.CategoryName}</Text>
                                         <IconM
                                             name={val._id === cate?.cateID ? 'radio-button-checked' : 'radio-button-unchecked'}
                                             color={val._id === cate?.cateID ? Colors.bookColor : Colors.fontColor}
@@ -85,7 +86,7 @@ const AddCategoryScreen = (props) => {
                                         />
                                     </View>
                                 </TouchableOpacity>
-                                <View style={styles.horizontalView}></View>
+                                <View style={styles(Colors).horizontalView}></View>
                             </View>
                         )
                     })
@@ -95,7 +96,7 @@ const AddCategoryScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     body: {
         flex: 1,
         backgroundColor: Colors.bodyColor,

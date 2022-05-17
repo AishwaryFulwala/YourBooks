@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const Api = async (url, data, method, config = '') => {
-    const urlFull = 'http://192.168.200.96:7000' + url;
+    const urlFull = 'http://192.168.200.98:7000' + url;
 
     switch (method) {
         case 'POST':

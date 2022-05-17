@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, Dimensions, Alert } from 'react-native';
 
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useTheme } from '@react-navigation/native';
 import DraggableFlatList from 'react-native-draggable-flatlist';
 
 import IconI from 'react-native-vector-icons/Ionicons';
@@ -14,13 +15,14 @@ import { getBooksByID } from '../../redux/actions/Books.action';
 import PicModal from '../../components/PicModal';
 import PageLoader from '../../components/PageLoader';
 
-import Colors from '../../constnats/Colors';
 import Fonts from '../../constnats/Fonts';
 
 const wHeight = Dimensions.get('window').height;
 const wWidth = Dimensions.get('window').width;
 
 const EditBookDetailScreen = (props) => {
+    const Colors = useTheme().colors;
+
     const bookID = props.route.params.bookID;
     const book = useSelector((state) => state?.books?.getBookData?.getBooksByID);
     const bookDetail = useSelector((state) => state?.booksDetail?.getBooksDetailData);
@@ -86,7 +88,7 @@ const EditBookDetailScreen = (props) => {
 
     const renderItem = ({ item, index, drag }) => {
         return (
-            <View key={index} style={styles.containView}>
+            <View key={index} style={styles(Colors).containView}>
                 <IconI
                     name='menu-outline'
                     size={25}
@@ -94,7 +96,7 @@ const EditBookDetailScreen = (props) => {
                     onLongPress={drag}
                 />
                 <Text
-                    style={styles.btnTxt}
+                    style={styles(Colors).btnTxt}
                     numberOfLines={2}
                     ellipsizeMode='tail'
                     onLongPress={drag}
@@ -114,19 +116,19 @@ const EditBookDetailScreen = (props) => {
 
     if(!bookDetail) {
         return (
-            <View style={styles.activity}>
+            <View style={styles(Colors).activity}>
                 <PageLoader />
             </View>
         );
     }
 
     return (
-        <View style={styles.body}>
-            <Text style={styles.txtTitle}>{book[0]?._id.BookName}</Text>
+        <View style={styles(Colors).body}>
+            <Text style={styles(Colors).txtTitle}>{book[0]?._id.BookName}</Text>
             {
                 !bookDetail?.length  ?
-                    <View style={styles.activity}>
-                        <Text style={styles.txtNoBook}>No Parts Found</Text>
+                    <View style={styles(Colors).activity}>
+                        <Text style={styles(Colors).txtNoBook}>No Parts Found</Text>
                     </View>
                 :
                     <DraggableFlatList
@@ -144,16 +146,16 @@ const EditBookDetailScreen = (props) => {
                 onClose={() => setOpen(!open)}
                 visible={open}
             >
-                <View style={styles.mainModalView}>
-                    <Text style={styles.deleteTitle}>Delete Part</Text>
-                    <Text style={styles.deleteTxt}>Are you sure you want to delete this part?</Text>
-                    <View style={styles.btnModalView}>
+                <View style={styles(Colors).mainModalView}>
+                    <Text style={styles(Colors).deleteTitle}>Delete Part</Text>
+                    <Text style={styles(Colors).deleteTxt}>Are you sure you want to delete this part?</Text>
+                    <View style={styles(Colors).btnModalView}>
                         <Text
-                            style={styles.modalBtnTxt}
+                            style={styles(Colors).modalBtnTxt}
                             onPress={() => deleteHandler(id)}
                         >Yes</Text>
                         <Text
-                            style={styles.modalBtnTxt}
+                            style={styles(Colors).modalBtnTxt}
                             onPress={() => setOpen(!open)}
                         >No</Text>
                     </View>
@@ -163,7 +165,7 @@ const EditBookDetailScreen = (props) => {
     );
 };
 
-const styles = StyleSheet.create({
+const styles = (Colors) => StyleSheet.create({
     activity: {
         flex: 1,
         justifyContent: 'center',

@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { LogBox, Platform } from 'react-native';
+import { LogBox, Platform, Alert } from 'react-native';
 
 import messaging from '@react-native-firebase/messaging';
 import SplashScreen from "react-native-splash-screen";
